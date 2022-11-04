@@ -5,9 +5,9 @@ specifiers:
   '@emotion/styled': ^11.10.5
   '@mui/joy': 5.0.0-alpha.51
   '@mui/types': 7.2.0
-  '@react-fullstack/fullstack': 0.3.1-alpha.2+7357b35
-  '@react-fullstack/fullstack-socket-client': 0.3.1-alpha.2+7357b35
-  '@react-fullstack/fullstack-socket-server': 0.3.1-alpha.2+7357b35
+  '@react-fullstack/fullstack': 0.3.1-alpha.4+99543fa
+  '@react-fullstack/fullstack-socket-client': 0.3.1-alpha.4+99543fa
+  '@react-fullstack/fullstack-socket-server': 0.3.1-alpha.4+99543fa
   '@react-fullstack/render': ^0.3.0
   '@types/node': ^16
   '@types/react': ^18.0.22
@@ -33,10 +33,10 @@ dependencies:
   '@emotion/styled': 11.10.5_wm6ohc3abj5yburmg6pjdgzp24
   '@mui/joy': 5.0.0-alpha.51_gs4twfomdgooimayvnfrqgiwam
   '@mui/types': 7.2.0_@types+react@18.0.24
-  '@react-fullstack/fullstack': 0.3.1-alpha.2_react@18.2.0
-  '@react-fullstack/fullstack-socket-client': 0.3.1-alpha.2_own5uf2pl2atm4dyxbn5hjoxzq
-  '@react-fullstack/fullstack-socket-server': 0.3.1-alpha.2_llsp3535fgjaxjlqoeq7kbos5i
-  '@react-fullstack/render': 0.3.0_llsp3535fgjaxjlqoeq7kbos5i
+  '@react-fullstack/fullstack': 0.3.1-alpha.4_react@18.2.0
+  '@react-fullstack/fullstack-socket-client': 0.3.1-alpha.4_hrddek7shjpwvmw3avzwmb2xmy
+  '@react-fullstack/fullstack-socket-server': 0.3.1-alpha.4_4o3tzdpsd4y6bcpjx66ozaazwy
+  '@react-fullstack/render': 0.3.0_4o3tzdpsd4y6bcpjx66ozaazwy
   '@types/node': 16.18.3
   '@types/react': 18.0.24
   '@types/react-dom': 18.0.8
@@ -696,14 +696,14 @@ packages:
     resolution: {integrity: sha512-50/17A98tWUfQ176raKiOGXuYpLyyVMkxxG6oylzL3BPOlA6ADGdK7EYunSa4I064xerltq9TGXs8HmOk5E+vw==}
     dev: false
 
-  /@react-fullstack/fullstack-socket-client/0.3.1-alpha.2_own5uf2pl2atm4dyxbn5hjoxzq:
-    resolution: {integrity: sha512-vvU8LTK5r4fS/0+hSTkcUMk1U0V4jxKBY9SrvNZ2KYx7Hlebt3JNwktmEP/PqemQud2feKteRpqmBAKM7VMTNQ==}
+  /@react-fullstack/fullstack-socket-client/0.3.1-alpha.4_hrddek7shjpwvmw3avzwmb2xmy:
+    resolution: {integrity: sha512-fESwMOm38nA6gnhrAmTa/ouC6IiqQ57FKxUNB5yzByfQsWn/t3k1u6rycnKRk4jR3bcqfuO786PpyN/70gdZ+w==}
     peerDependencies:
       '@react-fullstack/fullstack': '>=0.2.0'
       react: '>=17.0.0'
       react-dom: '>=17.0.0'
     dependencies:
-      '@react-fullstack/fullstack': 0.3.1-alpha.2_react@18.2.0
+      '@react-fullstack/fullstack': 0.3.1-alpha.4_react@18.2.0
       react: 18.2.0
       react-dom: 18.2.0_react@18.2.0
       socket.io-client: 4.0.2
@@ -713,13 +713,13 @@ packages:
       - utf-8-validate
     dev: false
 
-  /@react-fullstack/fullstack-socket-server/0.3.1-alpha.2_llsp3535fgjaxjlqoeq7kbos5i:
-    resolution: {integrity: sha512-bkBYR3rw5D7EEAqouci76unHXjdCHLtXrO/J9Vz3AVx/QaUTrMLMio1GPiUm1yny8LGxm2IJcNXM8r5/Kjq44A==}
+  /@react-fullstack/fullstack-socket-server/0.3.1-alpha.4_4o3tzdpsd4y6bcpjx66ozaazwy:
+    resolution: {integrity: sha512-B/KRFe8z7wBIUw07GExzlicPuX1cg7hA8w/OlVIZcceO/wAUZRV6drtzJMcdnvdslJXl/RpxiPs5z9lWyX2C7Q==}
     peerDependencies:
       '@react-fullstack/fullstack': '>=0.2.0'
       react: '>=17.0.0'
     dependencies:
-      '@react-fullstack/fullstack': 0.3.1-alpha.2_react@18.2.0
+      '@react-fullstack/fullstack': 0.3.1-alpha.4_react@18.2.0
       react: 18.2.0
       socket.io: 4.0.2
     transitivePeerDependencies:
@@ -728,8 +728,8 @@ packages:
       - utf-8-validate
     dev: false
 
-  /@react-fullstack/fullstack/0.3.1-alpha.2_react@18.2.0:
-    resolution: {integrity: sha512-Cq700/B+7JpQkJp9ADfs/YEeGADN+ukdjTquvOAF/UX7y3sMxYerECMXw/IaAcb/qs0mrSRllnTV9VU5SX6n1A==}
+  /@react-fullstack/fullstack/0.3.1-alpha.4_react@18.2.0:
+    resolution: {integrity: sha512-2zQxGTt6imTBC8rUwQqb/+i35I9F1FEUgIaJrOPoQvkA15iIKX/WXPTusgsEN4liiAGKz1m7Kplwim6aq7Fr2g==}
     peerDependencies:
       react: '>=17.0.0'
     dependencies:
@@ -737,13 +737,13 @@ packages:
       uuid: 3.4.0
     dev: false
 
-  /@react-fullstack/render/0.3.0_llsp3535fgjaxjlqoeq7kbos5i:
+  /@react-fullstack/render/0.3.0_4o3tzdpsd4y6bcpjx66ozaazwy:
     resolution: {integrity: sha512-K/Dvy0kAC2v9lD9By3ElAL2BiWBzHPGGDAoAZT96V8c4KONRVjq2hG5DGv+FAizpqHFc1Jl9AUhB3Mltb7pfMQ==}
     peerDependencies:
       '@react-fullstack/fullstack': '>=0.2.0'
       react: '>=17.0.0'
     dependencies:
-      '@react-fullstack/fullstack': 0.3.1-alpha.2_react@18.2.0
+      '@react-fullstack/fullstack': 0.3.1-alpha.4_react@18.2.0
       react: 18.2.0
       react-test-renderer: 17.0.2_react@18.2.0
     dev: false

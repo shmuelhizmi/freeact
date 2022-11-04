@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
+    "test:calc": "ts-node-dev --watch=./ --project tsconfig.server.json ./test/calculator.tsx",
     "test:counter": "ts-node-dev --watch=./ --project tsconfig.server.json ./test/counter.tsx"
   },
   "dependencies": {
@@ -12,9 +13,9 @@
     "@emotion/styled": "^11.10.5",
     "@mui/joy": "5.0.0-alpha.51",
     "@mui/types": "7.2.0",
-    "@react-fullstack/fullstack": "0.3.1-alpha.2+7357b35",
-    "@react-fullstack/fullstack-socket-client": "0.3.1-alpha.2+7357b35",
-    "@react-fullstack/fullstack-socket-server": "0.3.1-alpha.2+7357b35",
+    "@react-fullstack/fullstack": "0.3.1-alpha.4+99543fa",
+    "@react-fullstack/fullstack-socket-client": "0.3.1-alpha.4+99543fa",
+    "@react-fullstack/fullstack-socket-server": "0.3.1-alpha.4+99543fa",
     "@react-fullstack/render": "^0.3.0",
     "@types/react": "^18.0.22",
     "@types/react-dom": "^18.0.7",

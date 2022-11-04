@@ -1,43 +1,47 @@
 import { InputProps } from "../../types/ui/input";
-import { StyleEnabled, Base } from "./Base";
-import { TextField, Textarea, FormLabel } from "@mui/joy";
-import FormControl from "@mui/joy/FormControl";
-import React, { useCallback } from "react";
+import { TextField, Textarea, ScopedCssBaseline } from "@mui/joy";
+import React, { useCallback, useEffect } from "react";
+import { useDebounce } from '../../utils/debounce'
 
-const Input = (props: InputProps & StyleEnabled) => {
-    const { className } = props;
-    const onChange = useCallback((e: React.ChangeEvent<any>) => {
-        props.onChange?.(e.target.value);
-    }, [props.onChange]);
-
-    const input = () => {
-        if (props.type === 'area') {
-            return (
-                <Textarea
-                    {...props}
-                    className={className}
-                    onChange={onChange}
-                    placeholder={props.label}
-                    defaultValue={props.defaultValue}
-                />
-            );
+const Input = (props: InputProps) => {
+    const [value, setValue] = React.useState(props.value || "");
+    const updateRemote = useDebounce((value: string) => {
+        props.onChange?.(value)
+    }, 350, [])
+    useEffect(() => {
+        if (!value.includes(props.value || '') || props.value === '') {
+            setValue(props.value || '')
         }
-        return (
-            <TextField
-                {...props}
-                className={className}
-                onChange={onChange}
-                placeholder={props.label}
-                defaultValue={props.defaultValue}
-            />
-        );
-    }
+    }, [props.value]);
+    const onChange = useCallback(
+        (e: React.ChangeEvent<any>) => {
+            setValue(e.target.value);
+            updateRemote(e.target.value)
+        },
+        [props.onChange]
+    );
+    const sx = {
+        [`& input`]: {
+            fontSize: props.fontSize,
+        }
+    };
     return (
-        <FormControl>
-            <FormLabel>{props.label}</FormLabel>
-            {input()}
-        </FormControl>
+        props.type === "area" ? (
+            <Textarea
+                onChange={onChange}
+                sx={sx}
+                value={value}
+            />
+        ) : (
+            <TextField
+                onChange={onChange}
+                fullWidth
+                sx={sx}
+                value={value}
+                label={props.label}
+            />
+        )
     );
 };
 
-export default Base(Input);
+export default Input;

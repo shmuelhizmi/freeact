@@ -1,11 +1,12 @@
 import { ColorPaletteProp, VariantProp } from "@mui/joy"
 
 export type Size = `${number}px` | `${number}%` | `${number}rem` | `${number}em` | `${number}vw` | `${number}vh` | `${number}vmin` | `${number}vmax` | `${number}fr`;
-type MinMax = `minmax(${Size}, ${Size})` | `min(${Size})` | `max(${Size})`
+type MinMax = `minmax(${Size}, ${Size})` | `min(${Size}, ${Size})` | `max(${Size}, ${Size})`
 type Repeat = `repeat(${number}, ${Size | MinMax})`;
 type Fit = `fit-content(${Size})`;
+type Calc = `calc(${Size} ${'+' | '-' | '/'} ${Size})`;
 type Auto = `auto-fit` | `auto-fill`;
-export type GridTemplate = (Size | MinMax)[] | Repeat | Fit | Auto | Size | MinMax;
+export type GridTemplate = (Size | MinMax | Calc)[] | Repeat | Fit | Auto | Size | MinMax | Calc;
 
 export interface BaseProps {
     variant?: VariantProp;
