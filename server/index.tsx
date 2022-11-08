@@ -21,6 +21,7 @@ const chromePaths = _chromePaths as unknown as {
 interface ServeOptions {
   runFrom: "chrome-app" | "browser" | "none";
   windowDimensions?: { width: number; height: number };
+  title?: string;
   logger?: (message: string) => void;
 }
 
@@ -63,12 +64,19 @@ async function serve<T>(
   const clientPort = await getPort({ port: 3000 });
   const serverPort = await getPort({ port: 3001 });
 
-  process.env.VITE_SERVER_PORT = serverPort.toString();
 
   const clientServer = await createServer({
     root: path.join(__dirname, ".."),
     server: {
       port: clientPort,
+    },
+    define: {
+      serverPort: serverPort,
+      winTitle: JSON.stringify(options.title),
+      winSize: options.windowDimensions && [
+        options.windowDimensions.width || 800,
+        options.windowDimensions.height || 600,
+      ]
     },
     plugins: [reactVitePlugin()],
     envPrefix: "VITE_",

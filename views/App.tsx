@@ -3,8 +3,24 @@ import { Components } from "../types";
 import { ViewsToComponents } from "@react-fullstack/fullstack";
 import * as Customs from "./customs"
 import * as UIs from "./ui"
-const SERVER_PORT = import.meta.env.VITE_SERVER_PORT || 9382;
 import { CssVarsProvider } from '@mui/joy/styles';
+
+declare global {
+  interface Window {
+    serverPort: number;
+    winSize: [number, number];
+    winTitle: string;
+  }
+}
+
+
+try {
+  window.resizeTo(...window.winSize);
+  window.document.title = window.winTitle;
+} catch (e) {
+}
+
+const SERVER_PORT = window.serverPort;
 
 
 const Views = {

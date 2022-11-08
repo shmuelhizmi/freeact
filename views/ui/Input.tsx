@@ -31,6 +31,7 @@ const Input = (props: InputProps) => {
                 onChange={onChange}
                 sx={sx}
                 value={value}
+                placeholder={props.placeholder}
             />
         ) : (
             <TextField
@@ -39,6 +40,7 @@ const Input = (props: InputProps) => {
                 sx={sx}
                 value={value}
                 label={props.label}
+                placeholder={props.placeholder}
             />
         )
     );

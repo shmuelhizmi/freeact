@@ -10,7 +10,9 @@ function Calculator() {
                 onClick={() => setExpression(expression + num)}
                 variant="solid"
                 size="lg"
-                color="primary"
+                color={
+                    typeof num === "number" ? "primary" : "info"
+                }
                 label={num.toString()}
             />
         )
@@ -20,9 +22,8 @@ function Calculator() {
         setExpression(eval(expression).toString())
     }
     return (
-            <ui.Box variant="soft" columns={"min(100vw, 500px)"} rows={["calc(30% - 80px)", "80px", "60%"]}  gap={"3%"} padding={"3%"}>
-                <ui.Typography variant="solid" type="h1">Calculator App</ui.Typography>
-                <ui.Input onChange={(text) => setExpression(text)} value={expression} label="expression" type="text" fontSize={70}/>
+            <ui.Box variant="soft" columns={"min(100vw, 500px)"} rows={["80px", "calc(95% - 80px)"]}  gap={10} padding={"3%"}>
+                <ui.Input onChange={(text) => setExpression(text)} value={expression} placeholder="expression" type="text" fontSize={60}/>
                 <ui.Box rows={["25%", "25%", "25%", "25%"]} columns={["25%", "25%", "25%", "25%"]} gap={"2%"} padding={"5%"}>
                     {button("+")}
                     {button(1)}
@@ -41,7 +42,7 @@ function Calculator() {
                         onClick={() => setExpression('')}
                         variant="solid"
                         size="lg"
-                        color="primary"
+                        color="danger"
                         label="clear"
                     />  
                     {button(0)}
@@ -49,7 +50,7 @@ function Calculator() {
                         onClick={() => calc()}
                         variant="solid"
                         size="lg"
-                        color="primary"
+                        color="success"
                         label="="
                     />  
                 </ui.Box>
@@ -58,5 +59,10 @@ function Calculator() {
 }
 
 ui.serve(
-    () => <Calculator />
+    () => <Calculator />,
+    {
+        runFrom: 'chrome-app',
+        title: 'Calculator',
+        windowDimensions: { width: 500, height: 750 },
+    }
 )
