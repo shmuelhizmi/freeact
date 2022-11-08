@@ -4,7 +4,7 @@ import { Server } from "@react-fullstack/fullstack-socket-server";
 import { Render } from "@react-fullstack/render";
 import path from "path";
 import { Components, Views, ExposedComponents } from "../types";
-import _chromePaths from "chrome-paths";
+import chromePaths from "chrome-paths";
 import { ViewsProvider } from "@react-fullstack/fullstack";
 import React from "react";
 import { exec } from "child_process";
@@ -12,11 +12,6 @@ import { getPort } from "./utils/getPort";
 import reactVitePlugin from "@vitejs/plugin-react";
 import os from "os";
 
-const chromePaths = _chromePaths as unknown as {
-  chrome: string;
-  chromium: string;
-  chromeCanary: string;
-};
 
 interface ServeOptions {
   runFrom: "chrome-app" | "browser" | "none";
@@ -25,12 +20,21 @@ interface ServeOptions {
   logger?: (message: string) => void;
 }
 
-function runChromeApp(clientPort: number) {
+function runChromeApp(clientPort: number, windowDimensions?: { width: number; height: number }) {
   const chromePath =
     chromePaths.chrome || chromePaths.chromium || chromePaths.chromeCanary;
   if (chromePath) {
     // run in app mode
-    exec(`"${chromePath}" --app=http://127.0.0.1:${clientPort}`);
+    const app = exec(
+      [
+        `"${chromePath}"`,
+        `--user-data-dir=${os.tmpdir()}`,
+        `--app=http://127.0.0.1:${clientPort}?size=${windowDimensions?.width || 500},${windowDimensions?.height || 700}`,
+        `--window-size=${windowDimensions?.width || 500},${windowDimensions?.height || 700}`
+      ].join(" "));
+    process.on("exit", () => {
+      app.kill();
+    });
   }
 }
 
@@ -94,14 +98,14 @@ async function serve<T>(
     }),
     clientServer.listen().then(() => {
       logger(`Client server running at http://127.0.0.1:${clientPort}`);
+      if (options.runFrom === "chrome-app") {
+        runChromeApp(clientPort);
+      }
+      if (options.runFrom === "browser") {
+        openBrowser(clientPort);
+      }
     }),
   ]);
-  if (options.runFrom === "chrome-app") {
-    runChromeApp(clientPort);
-  }
-  if (options.runFrom === "browser") {
-    openBrowser(clientPort);
-  }
 
   return { clientPort, serverPort, result };
 }
