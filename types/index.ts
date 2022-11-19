@@ -1,5 +1,5 @@
 import { ExposedTerminal, TerminalViewProps } from './terminal';
-import { View } from "@react-fullstack/fullstack"
+import { View } from "@react-fullstack/fullstack/shared"
 import type { UIComponents, UIViews } from "./ui"
 
 export type ExposedComponents = UIComponents & {

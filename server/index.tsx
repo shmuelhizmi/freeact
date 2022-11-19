@@ -1,17 +1,19 @@
 import { createServer } from "vite";
 import * as CompOverride from "./components";
-import { Server } from "@react-fullstack/fullstack-socket-server";
+import { createSocketServer } from "@react-fullstack/fullstack-socket-server";
 import { Render } from "@react-fullstack/render";
 import path from "path";
-import { Components, Views, ExposedComponents } from "../types";
+import { Components, ExposedComponents } from "../types";
 import chromePaths from "chrome-paths";
-import { ViewsProvider } from "@react-fullstack/fullstack";
+import { ViewsProvider, Server } from "@react-fullstack/fullstack/server";
 import React from "react";
 import { exec } from "child_process";
 import { getPort } from "./utils/getPort";
 import reactVitePlugin from "@vitejs/plugin-react";
 import os from "os";
 
+
+const SocketServer = createSocketServer(Server);
 
 interface ServeOptions {
   runFrom: "chrome-app" | "browser" | "none";
@@ -91,9 +93,9 @@ async function serve<T>(
   const [result] = await Promise.all([
     new Promise<T>((resolve) => {
       Render(
-        <Server<Components> singleInstance port={serverPort} views={Views}>
+        <SocketServer singleInstance port={serverPort}>
           {() => render(resolve)}
-        </Server>
+        </SocketServer>
       );
     }),
     clientServer.listen().then(() => {

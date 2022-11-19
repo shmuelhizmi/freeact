@@ -6,7 +6,7 @@ import type { SelectProps } from "./ui/select"
 import type { MDProps } from "./ui/md"
 import type { SliderProps } from "./ui/slider"
 import type { UploadProps } from "./ui/upload"
-import { View } from "@react-fullstack/fullstack"
+import { View } from "@react-fullstack/fullstack/shared"
 import React from "react"
 
 export type UIViews = {

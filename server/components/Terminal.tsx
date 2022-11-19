@@ -6,7 +6,7 @@ import * as os from "os";
 import { TerminalProps } from '../../types/terminal';
 import { Components } from '../../types';
 import { useEffect } from "react";
-import { ViewsProvider } from "@react-fullstack/fullstack";
+import { ViewsProvider } from "@react-fullstack/fullstack/server";
 import { getPort } from '../utils/getPort'
 
 export const maxTerminalHistoryLength = 100000;

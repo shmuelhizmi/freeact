@@ -1,6 +1,6 @@
 import { Client } from "@react-fullstack/fullstack-socket-client"
 import { Components } from "../types";
-import { ViewsToComponents } from "@react-fullstack/fullstack";
+import { ViewsToComponents } from "@react-fullstack/fullstack/client";
 import * as Customs from "./customs"
 import * as UIs from "./ui"
 import { CssVarsProvider } from '@mui/joy/styles';
