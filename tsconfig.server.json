@@ -1,22 +1,22 @@
 {
-    "compilerOptions": {
-      "target": "es6",
-      "useDefineForClassFields": true,
-      "lib": ["DOM", "DOM.Iterable", "ESNext"],
-      "allowJs": false,
-      "skipLibCheck": true,
-      "esModuleInterop": true,
-      "declaration": true,
-      "allowSyntheticDefaultImports": true,
-      "strict": true,
-      "forceConsistentCasingInFileNames": true,
-      "module": "CommonJS",
-      "moduleResolution": "Node",
-      "resolveJsonModule": true,
-      "isolatedModules": true,
-      "noEmit": true,
-      "noImplicitAny": false,
-      "jsx": "react-jsx"
-    },
-  }
-  
+  "compilerOptions": {
+    "target": "es6",
+    "useDefineForClassFields": true,
+    "lib": ["DOM", "DOM.Iterable", "ESNext"],
+    "allowJs": false,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "declaration": true,
+    "allowSyntheticDefaultImports": true,
+    "strict": true,
+    "forceConsistentCasingInFileNames": true,
+    "module": "CommonJS",
+    "moduleResolution": "Node",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "noEmit": true,
+    "noImplicitAny": false,
+    "jsx": "react-jsx"
+  },
+  "include": ["server/**/*", "types/**/*", "utils/**/*"],
+}

@@ -1,8 +1,7 @@
 import { buildViteClient } from "./server/vite";
 import esbuild from "esbuild";
-
+import { spawn } from "child_process";
 buildViteClient();
-
 
 esbuild
   .build({
@@ -14,7 +13,7 @@ esbuild
     format: "cjs",
     platform: "node",
     external: ["fsevents", "node-pty", "esbuild", "eiows", "vite", "@vitejs/*"],
-    tsconfig: "./tsconfig.server.json"
+    tsconfig: "./tsconfig.server.json",
   })
   .catch((e) => {
     console.error(e);

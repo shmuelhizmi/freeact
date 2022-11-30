@@ -1,16 +1,16 @@
 {
   "name": "freeact",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "",
   "main": "dist/server/index.js",
-  "types": "server/index.d.ts",
+  "types": "dist/types/server/index.d.ts",
 
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "test:calc": "ts-node-dev --project tsconfig.server.json ./test/calculator.tsx",
     "test:counter": "ts-node-dev --project tsconfig.server.json ./test/counter.tsx",
     "test:customLocalServer": "ts-node-dev --project tsconfig.server.json ./test/customLocalServer.tsx",
-    "build": "ts-node --project tsconfig.server.json ./build.ts"
+    "build": "ts-node --project tsconfig.server.json ./build.ts && tsc --emitDeclarationOnly --noEmit false --outDir dist/types --project tsconfig.server.json"
   },
   "dependencies": {
     "eiows": "^4.1.2",
