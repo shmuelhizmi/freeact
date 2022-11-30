@@ -1,6 +1,6 @@
 {
-  "name": "dev-ui",
-  "version": "1.0.0",
+  "name": "freeact",
+  "version": "0.0.1",
   "description": "",
   "main": "dist/server/index.js",
   "types": "server/index.d.ts",
