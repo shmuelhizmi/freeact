@@ -2,28 +2,26 @@
   "name": "dev-ui",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "dist/server/index.js",
+  "types": "server/index.d.ts",
+
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "test:calc": "ts-node-dev --project tsconfig.server.json ./test/calculator.tsx",
-    "test:counter": "ts-node-dev --project tsconfig.server.json ./test/counter.tsx"
+    "test:counter": "ts-node-dev --project tsconfig.server.json ./test/counter.tsx",
+    "test:customLocalServer": "ts-node-dev --project tsconfig.server.json ./test/customLocalServer.tsx",
+    "build": "ts-node --project tsconfig.server.json ./build.ts"
   },
   "dependencies": {
-    "@emotion/react": "^11.10.5",
-    "@emotion/styled": "^11.10.5",
-    "@mui/joy": "5.0.0-alpha.51",
-    "@mui/types": "7.2.0",
-    "@react-fullstack/fullstack": "0.3.1-alpha.6",
-    "@react-fullstack/fullstack-socket-client": "0.3.1-alpha.6",
-    "@react-fullstack/fullstack-socket-server": "0.3.1-alpha.6",
-    "@react-fullstack/render": "^0.3.0",
+    "eiows": "^4.1.2",
+    "node-pty": "^0.10.1"
+  },
+  "devDependencies": {
+    "@types/node": "^16",
     "@types/react": "^18.0.22",
     "@types/react-dom": "^18.0.7",
-    "@vitejs/plugin-react": "^2.2.0",
-    "@types/node": "^16",
-    "chrome-paths": "^1.0.1",
+    "esbuild": "0.15.16",
     "get-port": "5.1.1",
-    "node-pty": "^0.10.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-resize-detector": "^7.1.2",
@@ -34,8 +32,22 @@
     "typescript": "^4.6.4",
     "vite": "^3.2.0",
     "xterm": "^5.0.0",
-    "xterm-addon-fit": "^0.6.0"
+    "xterm-addon-fit": "^0.6.0",
+    "@emotion/react": "^11.10.5",
+    "@emotion/styled": "^11.10.5",
+    "@mui/joy": "5.0.0-alpha.51",
+    "@mui/types": "7.2.0",
+    "@react-fullstack/fullstack": "0.3.1-alpha.6",
+    "@react-fullstack/fullstack-socket-client": "0.3.1-alpha.6",
+    "@react-fullstack/fullstack-socket-server": "0.3.1-alpha.6",
+    "@react-fullstack/render": "^0.3.0",
+    "@vitejs/plugin-react": "^2.2.0",
+    "chrome-paths": "^1.0.1"
   },
+  "files": [
+    "dist",
+    "**/*.d.ts"
+  ],
   "keywords": [],
   "author": "",
   "license": "ISC"

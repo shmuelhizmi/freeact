@@ -1,12 +1,11 @@
-import React, { useState } from "react";
-import ui from '../server'
+import React, { useState } from '../dist/server'
 
 
 function Calculator() {
     const [expression, setExpression] = useState("");
     const button = (num: number | string) => {
         return (
-            <ui.Button
+            <React.Button
                 onClick={() => setExpression(expression + num)}
                 variant="solid"
                 size="lg"
@@ -22,9 +21,9 @@ function Calculator() {
         setExpression(eval(expression).toString())
     }
     return (
-            <ui.Box variant="soft" columns={"min(100vw, 500px)"} rows={["80px", "calc(95% - 80px)"]}  gap={10} padding={"3%"}>
-                <ui.Input onChange={(text) => setExpression(text)} value={expression} placeholder="expression" type="text" fontSize={60}/>
-                <ui.Box rows={["25%", "25%", "25%", "25%"]} columns={["25%", "25%", "25%", "25%"]} gap={"2%"} padding={"5%"}>
+            <React.Box variant="soft" columns={"min(100vw, 500px)"} rows={["80px", "calc(95% - 80px)"]}  gap={10} padding={"3%"}>
+                <React.Input onChange={(text) => setExpression(text)} value={expression} placeholder="expression" type="text" fontSize={60}/>
+                <React.Box rows={["25%", "25%", "25%", "25%"]} columns={["25%", "25%", "25%", "25%"]} gap={"2%"} padding={"5%"}>
                     {button("+")}
                     {button(1)}
                     {button(2)}
@@ -38,7 +37,7 @@ function Calculator() {
                     {button(8)}
                     {button(9)}
                     {button("*")}
-                    <ui.Button
+                    <React.Button
                         onClick={() => setExpression('')}
                         variant="solid"
                         size="lg"
@@ -46,22 +45,22 @@ function Calculator() {
                         label="clear"
                     />  
                     {button(0)}
-                    <ui.Button
+                    <React.Button
                         onClick={() => calc()}
                         variant="solid"
                         size="lg"
                         color="success"
                         label="="
                     />  
-                </ui.Box>
-            </ui.Box>
+                </React.Box>
+            </React.Box>
     )
 }
 
-ui.serve(
+React.serve(
     () => <Calculator />,
     {
-        runFrom: 'chrome-app',
+        runFrom: 'browser',
         title: 'Calculator',
         windowDimensions: { width: 500, height: 750 },
     }

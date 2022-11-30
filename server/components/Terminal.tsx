@@ -1,5 +1,5 @@
 import React from "react";
-import socketIO from "socket.io";
+import * as socketIO from "socket.io";
 import * as http from "http";
 import { spawn, IPty } from "node-pty";
 import * as os from "os";
