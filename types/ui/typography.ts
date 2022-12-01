@@ -1,12 +1,11 @@
 import { BaseProps } from "./base"
-import { TypographyClasses } from "@mui/joy"
-import React from "react";
+import { TypographyClasses } from "../mui";
 
 export interface TypographyProps extends BaseProps {
-    type: keyof TypographyClasses;
+    type: TypographyClasses;
     children: string | number | (string | number)[];
 }
 export interface TypographyViewProps extends BaseProps {
-    type: keyof TypographyClasses;
+    type: TypographyClasses;
     txt: string;
 }
