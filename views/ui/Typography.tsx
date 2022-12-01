@@ -3,9 +3,9 @@ import { StyleEnabled, Base } from "./Base";
 import { Typography as JoyTypography } from "@mui/joy";
 
 const Typography = (props: TypographyViewProps & StyleEnabled) => {
-  const { className, ...rest } = props;
+  const { className, type, ...rest } = props;
   return (
-    <JoyTypography className={className} {...rest}>
+    <JoyTypography className={className} level={type} {...rest}>
       {props.txt}
     </JoyTypography>
   );

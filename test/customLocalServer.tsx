@@ -14,7 +14,7 @@ function App() {
   return (
     <React.Box rows={["45px", "25%", "30%"]} columns="70%" gap={35}>
       <React.Typography variant="solid" type="h1">
-        Terminal Output Counter
+        The Terminal Output Counter
       </React.Typography>
       <React.Box
         variant="soft"
