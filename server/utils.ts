@@ -76,7 +76,7 @@ export function openBrowserOnHost(
 
 export function getClientsGlobals(options: ServeOptions, serverPort?: number) {
   return {
-    winTitle: JSON.stringify(options.title),
+    winTitle: options.title,
     winSize: options.windowDimensions && [
       options.windowDimensions.width || 800,
       options.windowDimensions.height || 600,

@@ -4,6 +4,7 @@ import path from "path";
 import { ServeOptions } from "./types";
 import fs from "fs/promises";
 import { getClientsGlobals } from "./utils";
+import mime from "mime-types";
 
 const isProd = __filename.endsWith("dist/server/index.js");
 
@@ -13,12 +14,6 @@ export async function httpServe(
   serverPort: number
 ) {
   const statics = path.join(__dirname, "..", "client");
-  const mime = {
-    ".js": "text/javascript",
-    ".css": "text/css",
-    ".html": "text/html",
-    ".svg": "image/svg+xml",
-  };
   const globals = getClientsGlobals(options, serverPort);
   let index = await fs.readFile(path.join(statics, "index.html"), "utf-8");
   index = index.replace(
@@ -39,8 +34,7 @@ export async function httpServe(
         res.writeHead(200, { "Content-Type": "text/html" });
         res.end(index);
       } else {
-        const ext = path.extname(pathname);
-        const type = mime[ext];
+        const type = mime.lookup(pathname);
         const file = path.join(statics, pathname);
         const content = await fs.readFile(file);
         res.writeHead(200, { "Content-Type": type || "text/plain" });

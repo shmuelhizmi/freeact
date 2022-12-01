@@ -8,7 +8,7 @@ esbuild
     outdir: "dist/server",
     bundle: true,
     sourcemap: true,
-    minify: false,
+    minify: true,
     format: "cjs",
     platform: "node",
     external: ["fsevents", "node-pty", "esbuild", "eiows", "vite", "@vitejs/*"],

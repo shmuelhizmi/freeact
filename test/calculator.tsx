@@ -1,4 +1,4 @@
-import React, { useState } from '../dist/server'
+import React, { useState } from '../server'
 
 
 function Calculator() {
@@ -18,11 +18,23 @@ function Calculator() {
     }
 
     const calc = () => {
-        setExpression(eval(expression).toString())
+        // make sure expression is valid otherwise could lead to security issues
+        const valid = expression.match(/^[0-9\+\-\*\/\.]+$/);
+        if (!valid) {
+            setExpression("0-0");
+            return;
+        }
+        try {
+            setExpression(eval(expression).toString())
+        } catch (e) {
+            setExpression("WTF?")
+        }
     }
     return (
-            <React.Box variant="soft" columns={"min(100vw, 500px)"} rows={["80px", "calc(95% - 80px)"]}  gap={10} padding={"3%"}>
-                <React.Input onChange={(text) => setExpression(text)} value={expression} placeholder="expression" type="text" fontSize={60}/>
+        <>
+            <React.Favicon type='path' absolutePath={__dirname + "/assets/circle.svg"} />
+            <React.Box variant="soft" columns={"min(100vw, 500px)"} rows={["80px", "calc(95% - 80px)"]} gap={10} padding={"3%"}>
+                <React.Input onChange={(text) => setExpression(text)} value={expression} placeholder="expression" type="text" fontSize={60} />
                 <React.Box rows={["25%", "25%", "25%", "25%"]} columns={["25%", "25%", "25%", "25%"]} gap={"2%"} padding={"5%"}>
                     {button("+")}
                     {button(1)}
@@ -43,7 +55,7 @@ function Calculator() {
                         size="lg"
                         color="danger"
                         label="clear"
-                    />  
+                    />
                     {button(0)}
                     <React.Button
                         onClick={() => calc()}
@@ -51,9 +63,10 @@ function Calculator() {
                         size="lg"
                         color="success"
                         label="="
-                    />  
+                    />
                 </React.Box>
             </React.Box>
+        </>
     )
 }
 

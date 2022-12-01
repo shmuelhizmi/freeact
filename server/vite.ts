@@ -5,6 +5,17 @@ import reactVitePlugin from "@vitejs/plugin-react";
 import getPort from "get-port";
 import { getClientsGlobals } from "./utils";
 
+const processDefined = <T extends object>(obj: T) => {
+  return Object.entries(obj).reduce((acc, [key, value]) => {
+    if (typeof value === "string") {
+      acc[key] = JSON.stringify(value);
+    } else {
+      acc[key] = value;
+    }
+    return acc;
+  }, {} as T);
+}
+
 export async function startViteServer(
   options: ServeOptions,
   port: number,
@@ -15,7 +26,7 @@ export async function startViteServer(
     server: {
       port,
     },
-    define: getClientsGlobals(options, serverPort),
+    define: processDefined(getClientsGlobals(options, serverPort)),
     plugins: [reactVitePlugin()],
     envPrefix: "VITE_",
     logLevel: process.env.NODE_ENV === "production" ? "error" : "info",
