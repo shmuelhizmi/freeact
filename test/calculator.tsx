@@ -1,4 +1,4 @@
-import React, { useState } from '../server'
+import React, { useState } from '../dist/server'
 
 
 function Calculator() {

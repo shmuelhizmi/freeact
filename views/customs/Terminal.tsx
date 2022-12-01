@@ -18,7 +18,9 @@ class Terminal extends Component<
     containerElement?: HTMLDivElement;
     constructor(props: Terminal["props"]) {
         super(props);
-        this.socket = io('127.0.0.1:' + props.port);
+        this.socket = io(window.location.hostname + ":" + props.port, {
+            protocols: ['websocket'],
+        });
         this.terminal = new XTerm();
         this.fitAddon = new FitAddon();
         this.terminal.loadAddon(this.fitAddon);
@@ -32,6 +34,7 @@ class Terminal extends Component<
 
     mount = () => {
         if (this.containerElement) {
+            this.terminal.open(this.containerElement);
             this.fit();
         }
     };

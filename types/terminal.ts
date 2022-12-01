@@ -1,13 +1,13 @@
 export interface TerminalProps {
-    initialExecution: {
-        command?: string;
+    initialExecution?: {
+        shell?: string;
         args?: string[];
         cwd?: string;
     };
-    onExecutionEnd: (exitCode: number, signal?: number) => void;
-    onData: (data: string) => void;
-    environmentVariables: EnvironmentVariables;
-    readOnly: boolean;
+    onExecutionEnd?: (exitCode: number, signal?: number) => void;
+    onData?: (data: string) => void;
+    environmentVariables?: EnvironmentVariables;
+    readOnly?: boolean;
 }
 
 export interface TerminalViewProps {
