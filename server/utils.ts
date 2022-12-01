@@ -18,9 +18,6 @@ const appendDimensions = (
   url: string,
   dimensions?: { width: number; height: number }
 ) => {
-  if (!dimensions) {
-    return url;
-  }
   return appendQuery(url, {
     size: dimensionsStr(dimensions),
   });
