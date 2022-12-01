@@ -1,6 +1,7 @@
 {
   "name": "freeact",
   "version": "0.0.6",
+  "private": false,
   "description": "",
   "main": "dist/server/index.js",
   "types": "dist/types/server/index.d.ts",
@@ -9,6 +10,7 @@
     "test:calc": "tsx watch ./test/calculator.tsx",
     "test:counter": "tsx watch ./test/counter.tsx",
     "test:customLocalServer": "tsx watch ./test/customLocalServer.tsx",
+    "prepublish": "pnpm run build",
     "build": "tsx ./build.ts && tsc --emitDeclarationOnly --noEmit false --outDir dist/types --project tsconfig.server.json"
   },
   "dependencies": {
@@ -51,5 +53,5 @@
   ],
   "keywords": [],
   "author": "",
-  "license": "ISC"
+  "license": "MIT"
 }
