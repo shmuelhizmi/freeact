@@ -1,15 +1,14 @@
-import React from 'react';
+import React from "react";
 import { Render } from "@react-fullstack/render";
 import getPort from "get-port";
 import { ServeOptions, ServerTransport } from "./types";
 import { createSocketServer } from "@react-fullstack/fullstack-socket-server";
 import { Server } from "@react-fullstack/fullstack/server";
 import { Server as SocketIOserver } from "socket.io";
-import { openBrowserOnHost, runChromeApp } from './utils';
-import { startClient } from './client';
+import { openBrowserOnHost, runChromeApp } from "./utils";
+import { startClient } from "./client";
 
 const SocketServer = createSocketServer(Server);
-
 
 export function socketIoToTransport(io: SocketIOserver): ServerTransport {
   return {
@@ -27,7 +26,7 @@ export function socketIoToTransport(io: SocketIOserver): ServerTransport {
         io.off(event, callback);
       }
     },
-  } as ServerTransport
+  } as ServerTransport;
 }
 
 export async function serve<T>(
@@ -35,8 +34,9 @@ export async function serve<T>(
   options: ServeOptions = { runFrom: "chrome-app", logger: console.log }
 ) {
   const isUsingCustomConnection = options.customConnection !== undefined;
-  const serverPort = !isUsingCustomConnection ? await getPort({ port: options.serverPort || 3001 }) : undefined;
-
+  const serverPort = !isUsingCustomConnection
+    ? await getPort({ port: options.serverPort || 3001 })
+    : undefined;
 
   const logger = options.logger || console.log;
   if (serverPort) {
@@ -52,16 +52,16 @@ export async function serve<T>(
         );
       } else {
         Render(
-          <Server singleInstance transport={options.customConnection!.server.customTransport}>
+          <Server
+            singleInstance
+            transport={options.customConnection!.server.customTransport}
+          >
             {() => render(resolve)}
           </Server>
         );
       }
     }),
-    startClient(
-      options,
-      serverPort
-    ).then(({ url, port }) => {
+    startClient(options, serverPort).then(({ url, port }) => {
       logger(`Client server running at ${url}`);
       if (options.runFrom === "chrome-app") {
         runChromeApp(url, options.windowDimensions);

@@ -2,8 +2,9 @@ import { InputProps } from "../../types/ui/input";
 import { TextField, Textarea, ScopedCssBaseline } from "@mui/joy";
 import React, { useCallback, useEffect } from "react";
 import { useDebounce } from '../../utils/debounce'
+import { Base, StyleEnabled } from "./Base";
 
-const Input = (props: InputProps) => {
+const Input = (props: InputProps & StyleEnabled) => {
     const [value, setValue] = React.useState(props.value || "");
     const updateRemote = useDebounce((value: string) => {
         props.onChange?.(value)
@@ -32,6 +33,7 @@ const Input = (props: InputProps) => {
                 sx={sx}
                 value={value}
                 placeholder={props.placeholder}
+                className={props.className}
             />
         ) : (
             <TextField
@@ -41,9 +43,11 @@ const Input = (props: InputProps) => {
                 value={value}
                 label={props.label}
                 placeholder={props.placeholder}
+                className={props.className}
+                type={props.type}
             />
         )
     );
 };
 
-export default Input;
+export default Base(Input);

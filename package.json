@@ -14,11 +14,9 @@
     "build": "tsx ./build.ts && tsc --emitDeclarationOnly --noEmit false --outDir dist/types --project tsconfig.server.json"
   },
   "dependencies": {
-    "@types/mime-types": "^2.1.1",
     "eiows": "^4.1.2",
-    "mime-types": "^2.1.35",
-    "tsx": "3.12.1",
-    "node-pty": "^0.10.1"
+    "node-pty": "^0.10.1",
+    "tsx": "3.12.1"
   },
   "bin": "./bin/index.js",
   "devDependencies": {
@@ -30,6 +28,7 @@
     "@react-fullstack/fullstack-socket-client": "0.3.1-alpha.6",
     "@react-fullstack/fullstack-socket-server": "0.3.1-alpha.6",
     "@react-fullstack/render": "^0.3.0",
+    "@types/mime-types": "^2.1.1",
     "@types/node": "^16",
     "@types/react": "^18.0.22",
     "@types/react-dom": "^18.0.7",
@@ -37,6 +36,7 @@
     "chrome-paths": "^1.0.1",
     "esbuild": "0.15.16",
     "get-port": "5.1.1",
+    "mime-types": "^2.1.35",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-resize-detector": "^7.1.2",

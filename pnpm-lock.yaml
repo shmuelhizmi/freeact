@@ -32,9 +32,7 @@ specifiers:
   xterm-addon-fit: ^0.6.0
 
 dependencies:
-  '@types/mime-types': 2.1.1
   eiows: 4.1.2
-  mime-types: 2.1.35
   node-pty: 0.10.1
   tsx: 3.12.1
 
@@ -47,6 +45,7 @@ devDependencies:
   '@react-fullstack/fullstack-socket-client': 0.3.1-alpha.6_5rzxxa6aiy3gfux2epn3dph3fi
   '@react-fullstack/fullstack-socket-server': 0.3.1-alpha.6_2dlsndw45shi2hikoa3jyblula
   '@react-fullstack/render': 0.3.0_2dlsndw45shi2hikoa3jyblula
+  '@types/mime-types': 2.1.1
   '@types/node': 16.18.3
   '@types/react': 18.0.24
   '@types/react-dom': 18.0.8
@@ -54,6 +53,7 @@ devDependencies:
   chrome-paths: 1.0.1
   esbuild: 0.15.16
   get-port: 5.1.1
+  mime-types: 2.1.35
   react: 18.2.0
   react-dom: 18.2.0_react@18.2.0
   react-resize-detector: 7.1.2_biqbaboplfbrettd7655fr4n2y
@@ -776,7 +776,7 @@ packages:
 
   /@types/mime-types/2.1.1:
     resolution: {integrity: sha512-vXOTGVSLR2jMw440moWTC7H19iUyLtP3Z1YTj7cSsubOICinjMxFeb/V57v9QdyyPGbbWolUFSSmSiRSn94tFw==}
-    dev: false
+    dev: true
 
   /@types/node/16.18.3:
     resolution: {integrity: sha512-jh6m0QUhIRcZpNv7Z/rpN+ZWXOicUUQbSoWks7Htkbb9IjFQj4kzcX/xFCkjstCj5flMsN8FiSvt+q+Tcs4Llg==}
@@ -1389,12 +1389,14 @@ packages:
   /mime-db/1.52.0:
     resolution: {integrity: sha512-sPU4uV7dYlvtWJxwwxHD0PuihVNiE7TyAbQ5SWxDCB9mUYvOgroQOwYQQOKPJ8CIbE+1ETVlOoK1UC2nU3gYvg==}
     engines: {node: '>= 0.6'}
+    dev: true
 
   /mime-types/2.1.35:
     resolution: {integrity: sha512-ZDY+bPm5zTTF+YpCrAU9nK0UgICYPT0QtT1NZWFv4s++TNkcgVaT0g6+4R2uI4MjQjzysHB1zxuWL50hzaeXiw==}
     engines: {node: '>= 0.6'}
     dependencies:
       mime-db: 1.52.0
+    dev: true
 
   /ms/2.1.2:
     resolution: {integrity: sha512-sGkPx+VjMtmA6MX27oA4FBFELFCZZ4S4XqeGOXCv68tT+jb3vk/RyaKWP0PTKyWtmLSM0b+adUTEvbs1PEaH2w==}

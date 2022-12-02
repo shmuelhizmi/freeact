@@ -20,7 +20,7 @@ const stringSize = (size?: Size | number) => {
 }
 
 export const Base = <P extends BaseProps & StyleEnabled> (Comp: React.ComponentType<P>): React.ComponentType<Omit<P, keyof StyleEnabled>> => {
-    const StyledComp = styled(Comp)(({ columns: gridTemplateColumns, rows: gridTemplateRows, gap, padding }) => ({
+    const StyledComp = styled(Comp)(({ columns: gridTemplateColumns, rows: gridTemplateRows, gap, padding, radius, rowEnd, rowStart, columnEnd, columnStart }) => ({
         display: "grid",
         gridTemplateColumns: makeGridTemplate(gridTemplateColumns),
         gridTemplateRows: makeGridTemplate(gridTemplateRows),
@@ -32,6 +32,11 @@ export const Base = <P extends BaseProps & StyleEnabled> (Comp: React.ComponentT
         padding: stringSize(padding),
         boxSizing: "border-box",
         margin: 0,
+        borderRadius: radius,
+        gridRowEnd: rowEnd,
+        gridRowStart: rowStart,
+        gridColumnEnd: columnEnd,
+        gridColumnStart: columnStart,
     }))
     return StyledComp as any;
 }

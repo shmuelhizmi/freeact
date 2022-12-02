@@ -13,8 +13,13 @@ export interface BaseProps {
     color?: ColorPaletteProp;
     columns?: GridTemplate;
     rows?: GridTemplate;
+    rowStart?: number;
+    rowEnd?: number;
+    columnStart?: number;
+    columnEnd?: number;
     gap?: Size | number;
     padding?: Size | number;
     size?: "sm" | "md" | "lg";
     children?: React.ReactNode;
+    radius?: Size | number;
 }

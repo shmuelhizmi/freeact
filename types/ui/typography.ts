@@ -6,6 +6,6 @@ export interface TypographyProps extends BaseProps {
     children: string | number | (string | number)[];
 }
 export interface TypographyViewProps extends BaseProps {
-    type: TypographyClasses;
+    type: TypographyClasses | 'none';
     txt: string;
 }

@@ -1,9 +1,9 @@
-
 import * as CompOverride from "./components";
 import { Components, ExposedComponents } from "../types";
 import { ViewsProvider } from "@react-fullstack/fullstack/server";
 import React from "react";
 import { serve } from "./server";
+import { replaceTextWithTypography } from "./utils";
 
 
 export default new Proxy(CompOverride, {
@@ -26,7 +26,8 @@ export default new Proxy(CompOverride, {
               if (!Comp) {
                 throw new Error(`Component ${prop} not found`);
               }
-              return <Comp {...props} />;
+              const children = replaceTextWithTypography(props.children);
+              return <Comp {...props} children={children} />;
             }}
           </ViewsProvider>
         );
@@ -35,7 +36,6 @@ export default new Proxy(CompOverride, {
     return target[prop];
   },
 }) as unknown as ExposedComponents & { serve: typeof serve } & typeof React;
-
 
 export {
   useState,
@@ -63,6 +63,4 @@ export {
   version,
 } from "react";
 
-export {
-  socketIoToTransport,
-} from "./server";
+export { socketIoToTransport } from "./server";

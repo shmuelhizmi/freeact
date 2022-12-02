@@ -6,6 +6,7 @@ import type { SelectProps } from "./ui/select"
 import type { MDProps } from "./ui/md"
 import type { SliderProps } from "./ui/slider"
 import type { UploadProps } from "./ui/upload"
+import type { ImageProps } from "./ui/image"
 import { View } from "@react-fullstack/fullstack/shared"
 import React from "react"
 
@@ -18,6 +19,7 @@ export type UIViews = {
     MD: View<MDProps>;
     Slider: View<SliderProps>;
     Upload: View<UploadProps>;
+    Image: View<ImageProps>;
 }
 
 export type UIComponents = {
@@ -29,4 +31,5 @@ export type UIComponents = {
     MD: React.FC<MDProps>;
     Slider: React.FC<SliderProps>;
     Upload: React.FC<UploadProps>;
+    Image: React.FC<ImageProps>;
 }
