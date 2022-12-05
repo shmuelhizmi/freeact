@@ -69,7 +69,7 @@ function App() {
     throw new Error("Server host not found");
   }
   return (
-    <CssVarsProvider defaultColorScheme={"light"} defaultMode="light">
+    <CssVarsProvider defaultColorScheme={"dark"} defaultMode="dark">
       <Client<Components>
         host={SERVER_HOST.host}
         port={SERVER_HOST.port}
