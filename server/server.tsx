@@ -31,7 +31,7 @@ export function socketIoToTransport(io: SocketIOserver): ServerTransport {
 
 export async function serve<T>(
   render: (resolve: (value: T) => void) => JSX.Element,
-  options: ServeOptions = { runFrom: "chrome-app", logger: console.log }
+  options: ServeOptions = {}
 ) {
   const isUsingCustomConnection = options.customConnection !== undefined;
   const serverPort = !isUsingCustomConnection
@@ -61,7 +61,7 @@ export async function serve<T>(
         );
       }
     }),
-    startClient(options, serverPort).then(({ url, port }) => {
+    startClient(options, serverPort, options.additionalComponentsBundles).then(({ url, port }) => {
       logger(`Client server running at ${url}`);
       if (options.runFrom === "chrome-app") {
         runChromeApp(url, options.windowDimensions);
@@ -75,3 +75,4 @@ export async function serve<T>(
 
   return { serverPort, result, clientPort };
 }
+

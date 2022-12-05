@@ -1,5 +1,6 @@
+import { StyleEnabled } from "../../types/ui/base";
 import { ImageProps } from "../../types/ui/image";
-import { StyleEnabled, Base } from "./Base";
+import { Base } from "./Base";
 
 const Image = (props: ImageProps & StyleEnabled) => {
   const { className, ...rest } = props;

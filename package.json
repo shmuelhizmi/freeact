@@ -16,6 +16,7 @@
   "dependencies": {
     "eiows": "^4.1.2",
     "node-pty": "^0.10.1",
+    "esbuild": "0.15.16",
     "tsx": "3.12.1"
   },
   "bin": "./bin/index.js",
@@ -34,7 +35,6 @@
     "@types/react-dom": "^18.0.7",
     "@vitejs/plugin-react": "^2.2.0",
     "chrome-paths": "^1.0.1",
-    "esbuild": "0.15.16",
     "get-port": "5.1.1",
     "mime-types": "^2.1.35",
     "react": "^18.2.0",

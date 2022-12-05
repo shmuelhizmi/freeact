@@ -23,3 +23,7 @@ export interface BaseProps {
     children?: React.ReactNode;
     radius?: Size | number;
 }
+
+export type StyleEnabled = {
+    className?: string;
+};

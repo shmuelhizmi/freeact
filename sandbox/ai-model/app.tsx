@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "freeact";
+import { useRef, useState, createCompiler } from "freeact";
 import { interpreter } from "node-calls-python";
 
 async function createModel() {
@@ -39,6 +39,10 @@ function useModel() {
   };
 }
 
+const React = createCompiler()
+  .withComponents<typeof import('./dom/button')>('./dom/button.tsx')
+  .compile();
+
 function App() {
   const { add, multiply, results } = useModel();
   const [multiplyV, setMultiply] = useState<[number, number]>([0, 0]);
@@ -77,11 +81,9 @@ function App() {
               rowEnd={3}
             />
           </React.Box>
-          <React.Button
-            color="info"
-            onClick={() => multiply(multiplyV[0], multiplyV[1])}
-            label="Multiply"
-          />
+          <React.Button2 onClick={() => multiply(multiplyV[0], multiplyV[1])}>
+            Multiply
+          </React.Button2>
         </React.Box>
         <React.Box
           variant="outlined"

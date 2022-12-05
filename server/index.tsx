@@ -1,41 +1,11 @@
-import * as CompOverride from "./components";
-import { Components, ExposedComponents } from "../types";
-import { ViewsProvider } from "@react-fullstack/fullstack/server";
-import React from "react";
 import { serve } from "./server";
-import { replaceTextWithTypography } from "./utils";
+import { createViewProxy } from "./view";
+import { buildAdditionalComponents, createCompiler } from "./compiler";
 
-
-export default new Proxy(CompOverride, {
-  get: (target, prop) => {
-    if (typeof prop !== "string") {
-      throw new Error("Invalid prop");
-    }
-    if (prop === "serve") {
-      return serve;
-    }
-    if (prop in React) {
-      return React[prop];
-    }
-    if (!target[prop]) {
-      target[prop] = (props: any) => {
-        return (
-          <ViewsProvider<Components>>
-            {(Comps) => {
-              const Comp = Comps[prop];
-              if (!Comp) {
-                throw new Error(`Component ${prop} not found`);
-              }
-              const children = replaceTextWithTypography(props.children);
-              return <Comp {...props} children={children} />;
-            }}
-          </ViewsProvider>
-        );
-      };
-    }
-    return target[prop];
-  },
-}) as unknown as ExposedComponents & { serve: typeof serve } & typeof React;
+export default createViewProxy({
+  serve,
+  createCompiler,
+});
 
 export {
   useState,
@@ -64,3 +34,7 @@ export {
 } from "react";
 
 export { socketIoToTransport } from "./server";
+export {
+  buildAdditionalComponents,
+  createCompiler,
+}

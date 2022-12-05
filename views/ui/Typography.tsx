@@ -1,6 +1,7 @@
 import { TypographyViewProps } from "../../types/ui/typography";
-import { StyleEnabled, Base } from "./Base";
+import { Base } from "./Base";
 import { Typography as JoyTypography } from "@mui/joy";
+import { StyleEnabled } from "../../types/ui/base";
 
 const Typography = (props: TypographyViewProps & StyleEnabled) => {
   const { className, type, ...rest } = props;
