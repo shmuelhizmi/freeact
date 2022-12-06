@@ -34,7 +34,6 @@ function Calculator() {
         absolutePath={__dirname + "/assets/circle.svg"}
       />
       <React.Box
-        variant="soft"
         columns={"min(100vw, 500px)"}
         rows={["80px", "calc(95% - 80px)"]}
         gap={10}
@@ -90,5 +89,6 @@ function Calculator() {
 React.serve(() => <Calculator />, {
   runFrom: "browser",
   title: "Calculator",
+  enableSSR: true,
   windowDimensions: { width: 500, height: 750 },
 });

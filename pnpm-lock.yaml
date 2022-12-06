@@ -5,9 +5,9 @@ specifiers:
   '@emotion/styled': ^11.10.5
   '@mui/joy': 5.0.0-alpha.51
   '@mui/types': 7.2.0
-  '@react-fullstack/fullstack': 0.3.1-alpha.6
-  '@react-fullstack/fullstack-socket-client': 0.3.1-alpha.6
-  '@react-fullstack/fullstack-socket-server': 0.3.1-alpha.6
+  '@react-fullstack/fullstack': 0.3.1-alpha.8
+  '@react-fullstack/fullstack-socket-client': 0.3.1-alpha.8
+  '@react-fullstack/fullstack-socket-server': 0.3.1-alpha.8
   '@react-fullstack/render': ^0.3.0
   '@types/http-proxy': ^1.17.9
   '@types/mime-types': ^2.1.1
@@ -44,10 +44,10 @@ devDependencies:
   '@emotion/styled': 11.10.5_wm6ohc3abj5yburmg6pjdgzp24
   '@mui/joy': 5.0.0-alpha.51_gs4twfomdgooimayvnfrqgiwam
   '@mui/types': 7.2.0_@types+react@18.0.24
-  '@react-fullstack/fullstack': 0.3.1-alpha.6_react@18.2.0
-  '@react-fullstack/fullstack-socket-client': 0.3.1-alpha.6_5rzxxa6aiy3gfux2epn3dph3fi
-  '@react-fullstack/fullstack-socket-server': 0.3.1-alpha.6_2dlsndw45shi2hikoa3jyblula
-  '@react-fullstack/render': 0.3.0_2dlsndw45shi2hikoa3jyblula
+  '@react-fullstack/fullstack': 0.3.1-alpha.8_react@18.2.0
+  '@react-fullstack/fullstack-socket-client': 0.3.1-alpha.8_ca5z6dbbocbqwyocyyibwwbyn4
+  '@react-fullstack/fullstack-socket-server': 0.3.1-alpha.8_xzyeqo3hj3rimsb6rjp32hf5lu
+  '@react-fullstack/render': 0.3.0_xzyeqo3hj3rimsb6rjp32hf5lu
   '@types/http-proxy': 1.17.9
   '@types/mime-types': 2.1.1
   '@types/node': 16.18.3
@@ -713,14 +713,14 @@ packages:
     resolution: {integrity: sha512-50/17A98tWUfQ176raKiOGXuYpLyyVMkxxG6oylzL3BPOlA6ADGdK7EYunSa4I064xerltq9TGXs8HmOk5E+vw==}
     dev: true
 
-  /@react-fullstack/fullstack-socket-client/0.3.1-alpha.6_5rzxxa6aiy3gfux2epn3dph3fi:
-    resolution: {integrity: sha512-wIa7cWX/wNUeAJH28vCiJYlBufI3wLZZW755xLqsa6o+1UQyss/7jV30vPFSZoAUmh6cYFKuOW/rL3aorEffjg==}
+  /@react-fullstack/fullstack-socket-client/0.3.1-alpha.8_ca5z6dbbocbqwyocyyibwwbyn4:
+    resolution: {integrity: sha512-AT/3N19YKuS/DFZ+HLZbtftN5V02VBEm6v2UQmQNDdwB+o0J7GUBiF+p0lrWNn4igRbeN4AkvwUEYp7FlunbWA==}
     peerDependencies:
-      '@react-fullstack/fullstack': '>=0.3.1-alpha.6'
+      '@react-fullstack/fullstack': '>=0.3.1-alpha.8'
       react: '>=18.0.0'
       react-dom: '>=17.0.0'
     dependencies:
-      '@react-fullstack/fullstack': 0.3.1-alpha.6_react@18.2.0
+      '@react-fullstack/fullstack': 0.3.1-alpha.8_react@18.2.0
       react: 18.2.0
       react-dom: 18.2.0_react@18.2.0
       socket.io-client: 4.5.3
@@ -730,15 +730,14 @@ packages:
       - utf-8-validate
     dev: true
 
-  /@react-fullstack/fullstack-socket-server/0.3.1-alpha.6_2dlsndw45shi2hikoa3jyblula:
-    resolution: {integrity: sha512-s1Xo1bVJacImedZb7qJ33Nlykn4ZDGG8LIZkfnDge4O39IWYMdXKq+zRBe6kkX+H7j7Cokywz523ht7GwG1PWw==}
+  /@react-fullstack/fullstack-socket-server/0.3.1-alpha.8_xzyeqo3hj3rimsb6rjp32hf5lu:
+    resolution: {integrity: sha512-OJp1K9LwvCzcRu59f67PQ137zQm51351oIUPljBlt9LXwUDaUyEPIVXhmMjrXt+8rZZ3trOnPIOwIoMqdBQBIw==}
     peerDependencies:
-      '@react-fullstack/fullstack': '>=0.3.1-alpha.6'
+      '@react-fullstack/fullstack': '>=0.3.1-alpha.8'
       react: '>=18.0.0'
     dependencies:
-      '@react-fullstack/fullstack': 0.3.1-alpha.6_react@18.2.0
+      '@react-fullstack/fullstack': 0.3.1-alpha.8_react@18.2.0
       bufferutil: 4.0.7
-      eiows: 4.1.2
       react: 18.2.0
       socket.io: 4.5.3_3cxu5zja4e2r5wmvge7mdcljwq
       utf-8-validate: 5.0.10
@@ -746,8 +745,8 @@ packages:
       - supports-color
     dev: true
 
-  /@react-fullstack/fullstack/0.3.1-alpha.6_react@18.2.0:
-    resolution: {integrity: sha512-z1YwyHy7cXRG7mEjIN3uMx9tSQUezNm2B5c9RoYAwLNTYv+jSfAVbrVQwvvYrkgWpBkJYW27zi47Sou2t8RXig==}
+  /@react-fullstack/fullstack/0.3.1-alpha.8_react@18.2.0:
+    resolution: {integrity: sha512-4jjo6VBnnnMqEVqOwP3lPki+hNHgWfFwRZ4HEzpSKXBwSjH1C70/icmgb8f/fR2KGcJeTWEmihXV11KludxioA==}
     peerDependencies:
       react: '>=18.0.0'
     dependencies:
@@ -755,13 +754,13 @@ packages:
       react: 18.2.0
     dev: true
 
-  /@react-fullstack/render/0.3.0_2dlsndw45shi2hikoa3jyblula:
+  /@react-fullstack/render/0.3.0_xzyeqo3hj3rimsb6rjp32hf5lu:
     resolution: {integrity: sha512-K/Dvy0kAC2v9lD9By3ElAL2BiWBzHPGGDAoAZT96V8c4KONRVjq2hG5DGv+FAizpqHFc1Jl9AUhB3Mltb7pfMQ==}
     peerDependencies:
       '@react-fullstack/fullstack': '>=0.2.0'
       react: '>=17.0.0'
     dependencies:
-      '@react-fullstack/fullstack': 0.3.1-alpha.6_react@18.2.0
+      '@react-fullstack/fullstack': 0.3.1-alpha.8_react@18.2.0
       react: 18.2.0
       react-test-renderer: 17.0.2_react@18.2.0
     dev: true
@@ -992,6 +991,7 @@ packages:
     resolution: {integrity: sha512-dNu+yOdp/mPROgEIW9pFnx+iBLob130BPqspXxSt63OvICtitrpYQSmdJ2M7irIwqh3oj1JfDKadHPCocKPBpg==}
     engines: {node: '>=14.13.0 <19.0'}
     requiresBuild: true
+    dev: false
 
   /electron-to-chromium/1.4.284:
     resolution: {integrity: sha512-M8WEXFuKXMYMVr45fo8mq0wUrrJHheiKZf6BArTKk9ZBYCKJEOU5H8cdWgDT+qCVZf7Na4lVUaZsA+h6uA9+PA==}

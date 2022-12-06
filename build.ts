@@ -1,6 +1,8 @@
 import { buildViteClient } from "./server/vite";
 import esbuild from "esbuild";
+
 buildViteClient();
+
 
 esbuild
   .build({
@@ -19,3 +21,5 @@ esbuild
     console.error(e);
     process.exit(1);
   });
+
+

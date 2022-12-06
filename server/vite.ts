@@ -4,6 +4,7 @@ import { ServeOptions } from "./types";
 import reactVitePlugin from "@vitejs/plugin-react";
 import { getClientsGlobals } from "./utils";
 import { IncomingMessage, ServerResponse } from "http";
+import esbuild from "esbuild";
 
 const processDefined = <T extends object>(obj: T) => {
   return Object.entries(obj).reduce((acc, [key, value]) => {
@@ -48,12 +49,28 @@ export async function startViteServer(
 }
 
 export async function buildViteClient(): Promise<void> {
-  await build({
-    root: path.join(__dirname, ".."),
-    plugins: [reactVitePlugin()],
-    build: {
-      outDir: path.join(__dirname, "..", "dist/client"),
-    },
-    envPrefix: "VITE_",
+  // await build({
+  //   root: path.join(__dirname, "..", "views"),
+  //   plugins: [reactVitePlugin()],
+  //   build: {
+  //     outDir: path.join(__dirname, "..", "dist/client"),
+  //     lib: {
+  //       entry: path.join(__dirname, "..", "views/main.tsx"),
+  //       formats: ["es"],
+  //     },
+  //   },
+  //   envPrefix: "VITE_",
+  // });
+  await esbuild.build({
+    entryPoints: ["./views/main.tsx"],
+    // outdir: "",
+    bundle: true,
+    sourcemap: true,
+    minify: true,
+    format: "esm",
+    platform: "browser",
+    outfile: "dist/client/freeact.mjs",
+    target: "es2019",
+    external: ["crypto"],
   });
 }

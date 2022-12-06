@@ -1,10 +1,10 @@
 import fs from 'fs/promises';
 import mime from 'mime-types';
 import { FaviconProps } from '../../types/favicon';
-import { ViewsProvider } from "@react-fullstack/fullstack/server";
 import { Components } from '../../types';
 import { useEffect, useState } from 'react';
 import React from 'react';
+import { ViewsProvider } from '@react-fullstack/fullstack/server';
 
 /**
  * convert to base64 data url

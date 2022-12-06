@@ -1,13 +1,12 @@
+import React, { useEffect, useState } from "react";
 import { Client } from "@react-fullstack/fullstack-socket-client";
 import { Components } from "../types";
 import { ClientConnection } from "../types/connection";
 import { ViewsToComponents } from "@react-fullstack/fullstack/client";
-import * as Customs from "./customs";
-import * as UIs from "./ui";
-import { CssVarsProvider } from "@mui/joy/styles";
-import React, { useEffect, useState } from "react";
+import AppWrapper from "./baseWrapper";
 import { Base } from "./ui/Base";
 import { StyleEnabled } from "../types/ui/base";
+import { Views } from "./views";
 
 declare global {
   interface Window {
@@ -32,11 +31,6 @@ const SERVER_HOST =
       }
     : undefined;
 
-const Views = {
-  ...UIs,
-  ...Customs,
-} as any;
-
 function useLoadAdditionalBundles() {
   const [comps, setComps] = useState<Record<string, any>>({});
   const [loaded, setLoaded] = useState(false);
@@ -50,7 +44,10 @@ function useLoadAdditionalBundles() {
         return {
           ...acc,
           ...Object.entries(mod).reduce((acc, [k, v]) => {
-            return { ...acc, [k]: Base(v as React.FunctionComponent<StyleEnabled>) };
+            return {
+              ...acc,
+              [k]: Base(v as React.FunctionComponent<StyleEnabled>),
+            };
           }, {}),
         };
       }, {});
@@ -69,7 +66,7 @@ function App() {
     throw new Error("Server host not found");
   }
   return (
-    <CssVarsProvider defaultColorScheme={"dark"} defaultMode="dark">
+    <AppWrapper>
       <Client<Components>
         host={SERVER_HOST.host}
         port={SERVER_HOST.port}
@@ -83,7 +80,7 @@ function App() {
           ...comps,
         }}
       />
-    </CssVarsProvider>
+    </AppWrapper>
   );
 }
 

@@ -2,7 +2,7 @@ import React from "react";
 import { Render } from "@react-fullstack/render";
 import getPort from "get-port";
 import { ServeOptions, ServerTransport } from "./types";
-import { Server } from "@react-fullstack/fullstack/server";
+import { Server, createInstanceRenderHandler } from "@react-fullstack/fullstack/server";
 import { Server as SocketIOserver } from "socket.io";
 import { openBrowserOnHost, runChromeApp } from "./utils";
 import { createClient } from "./client";
@@ -29,11 +29,10 @@ export function socketIoToTransport(io: SocketIOserver): ServerTransport {
 }
 
 export async function serve<T>(
-  render: (resolve: (value: T) => void) => JSX.Element,
+  render: (resolve?: (value: T) => void) => JSX.Element,
   options: ServeOptions = {}
 ) {
   const logger = options.logger || console.log;
-  const isUsingCustomConnection = options.customConnection !== undefined;
   const { basePath, httpServer } = options.customConnection || {};
   if (basePath && (!basePath.startsWith("/") || !basePath.endsWith("/"))) {
     throw new Error(
@@ -42,11 +41,12 @@ export async function serve<T>(
   }
   const serverPath = path.join(basePath || "/", "server");
   const server = createRouter(httpServer, serverPath);
-  const client = await createClient(options, serverPath);
+  const ssrHandler = createInstanceRenderHandler();
+  const client = await createClient(options, serverPath, ssrHandler.render);
   server.handle(client);
   const result = new Promise<T>((resolve) => {
     Render(
-      <Server singleInstance transport={server.transport}>
+      <Server singleInstance instanceRenderHandler={ssrHandler} transport={server.transport}>
         {() => render(resolve)}
       </Server>
     );

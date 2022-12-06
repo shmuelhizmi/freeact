@@ -21,10 +21,7 @@ export function createViewProxy<BaseObj ,AdditionalComps>(obj: BaseObj) {
           return (
             <ViewsProvider<Components>>
               {(Comps) => {
-                const Comp = Comps[prop];
-                if (!Comp) {
-                  throw new Error(`Component ${prop} not found`);
-                }
+                const Comp = Comps[prop] || (({ children }: any) => <>{children}</>)
                 const children = replaceTextWithTypography(props.children);
                 return <Comp {...props} children={children} />;
               }}
