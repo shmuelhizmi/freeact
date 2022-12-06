@@ -1,13 +1,26 @@
 import React, { useState, socketIoToTransport } from "../server";
-import { Server } from "socket.io";
+import http from "http";
 
-const io = new Server({
-  cors: {
-    origin: "*",
-  },
+const server = http.createServer((req, res) => {
+  console.log(req.url);
+  if (req.url === "/") {
+    res.writeHead(200, { "Content-Type": "text/html" });
+    res.end(`
+    <html>
+      <head>
+        <title>Freeact Demo</title>
+      </head>
+      <body>
+        <div style="display: block; margin: 0 auto; width: 100%; text-align: center;">
+          <a href="/dev/">Start</a>
+          <a href="/dev">Start (redirect)</a>
+        </div>
+      </body>
+    </html>
+    `);
+  }
 });
-const PORT = 4433;
-io.listen(PORT);
+server.listen(4433);
 
 function App() {
   const [count, setCount] = useState(69);
@@ -41,13 +54,8 @@ function App() {
 
 React.serve(() => <App />, {
   customConnection: {
-    client: {
-      type: "HTTP-SOCKET",
-      port: PORT,
-    },
-    server: {
-      customTransport: socketIoToTransport(io),
-    },
+    basePath: "/dev/",
+    httpServer: server,
   },
   runFrom: "browser",
 });

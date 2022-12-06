@@ -1,5 +1,5 @@
 import getPort from "get-port";
-import { createServer } from "http";
+import { IncomingMessage, ServerResponse } from "http";
 import path from "path";
 import { ServeOptions } from "./types";
 import fs from "fs/promises";
@@ -10,14 +10,14 @@ const isProd = __filename.endsWith("dist/server/index.js");
 
 export async function httpServe(
   options: ServeOptions,
-  port: number,
-  serverPort: number,
-  additionalComponents?: string[]
+  serverPath: string
 ) {
+  const { additionalComponentsBundles: additionalComponents = [], customConnection } = options;
+  const { basePath } = customConnection || {};
   const statics = path.join(__dirname, "..", "client");
-  const globals = getClientsGlobals(options, serverPort);
+  const globals = getClientsGlobals(options, serverPath);
   let index = await fs.readFile(path.join(statics, "index.html"), "utf-8");
-  const additionalJsBundle = Array(additionalComponents?.length || 0)
+  const additionalJsBundle = Array(additionalComponents.length || 0)
     .fill("")
     .map((_, i) => {
       return `additional-${i}.js`;
@@ -34,10 +34,16 @@ export async function httpServe(
     }
   </script>`
   );
-  const server = createServer(async (req, res) => {
+  const handler = async (req: IncomingMessage, res: ServerResponse) => {
     try {
-      const url = req.url!;
+      let url = req.url!;
       const queryIndex = url.indexOf("?");
+      if (!url.startsWith(basePath || "/")) {
+        return;
+      }
+      if (basePath) {
+        url = url.slice(basePath.length);
+      }
       const pathname = queryIndex === -1 ? url : url.slice(0, queryIndex);
       if (pathname === "/" || pathname === "/index.html") {
         res.writeHead(200, { "Content-Type": "text/html" });
@@ -60,29 +66,21 @@ export async function httpServe(
       res.writeHead(404);
       res.end();
     }
-  });
-  await new Promise<void>((resolve) => server.listen(port, resolve));
+  };
+  return {
+    handler: (req: IncomingMessage, res: ServerResponse) => {
+      handler(req, res);
+    }
+  }
 }
 
-export async function startClient(
+export async function createClient(
   options: ServeOptions,
-  serverPort?: number,
-  additionalBundles?: string[]
-): Promise<{ url: string; port?: number }> {
-  if (options.customConnection?.client.type === "URL") {
-    return { url: options.customConnection.client.url };
-  }
-  const port = await getPort({ port: options.clientPort || 3000 });
+  serverPath: string
+) {
   if (isProd) {
-    await httpServe(options, port, serverPort!, additionalBundles);
-    return {
-      url: `http://127.0.0.1:${port}`,
-      port,
-    };
+    return (await httpServe(options, serverPath)).handler;
   }
   const { startViteServer } = await import("./vite");
-  return {
-    url: await startViteServer(options, port, serverPort),
-    port,
-  };
+  return await (await startViteServer(options, serverPath)).handle;
 }

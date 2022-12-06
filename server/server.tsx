@@ -2,13 +2,12 @@ import React from "react";
 import { Render } from "@react-fullstack/render";
 import getPort from "get-port";
 import { ServeOptions, ServerTransport } from "./types";
-import { createSocketServer } from "@react-fullstack/fullstack-socket-server";
 import { Server } from "@react-fullstack/fullstack/server";
 import { Server as SocketIOserver } from "socket.io";
 import { openBrowserOnHost, runChromeApp } from "./utils";
-import { startClient } from "./client";
-
-const SocketServer = createSocketServer(Server);
+import { createClient } from "./client";
+import { createRouter, redirect } from "./http";
+import path from "path";
 
 export function socketIoToTransport(io: SocketIOserver): ServerTransport {
   return {
@@ -33,46 +32,50 @@ export async function serve<T>(
   render: (resolve: (value: T) => void) => JSX.Element,
   options: ServeOptions = {}
 ) {
-  const isUsingCustomConnection = options.customConnection !== undefined;
-  const serverPort = !isUsingCustomConnection
-    ? await getPort({ port: options.serverPort || 3001 })
-    : undefined;
-
   const logger = options.logger || console.log;
-  if (serverPort) {
-    logger(`Server running at http://127.0.0.1:${serverPort}`);
+  const isUsingCustomConnection = options.customConnection !== undefined;
+  const { basePath, httpServer } = options.customConnection || {};
+  if (basePath && (!basePath.startsWith("/") || !basePath.endsWith("/"))) {
+    throw new Error(
+      `customConnection.basePath must start with a slash and not end with a slash. basePath: ${basePath}`
+    );
   }
-  const [result, clientPort] = await Promise.all([
-    new Promise<T>((resolve) => {
-      if (!isUsingCustomConnection) {
-        Render(
-          <SocketServer singleInstance port={serverPort!}>
-            {() => render(resolve)}
-          </SocketServer>
-        );
-      } else {
-        Render(
-          <Server
-            singleInstance
-            transport={options.customConnection!.server.customTransport}
-          >
-            {() => render(resolve)}
-          </Server>
-        );
-      }
-    }),
-    startClient(options, serverPort, options.additionalComponentsBundles).then(({ url, port }) => {
-      logger(`Client server running at ${url}`);
-      if (options.runFrom === "chrome-app") {
-        runChromeApp(url, options.windowDimensions);
-      }
-      if (options.runFrom === "browser") {
-        openBrowserOnHost(url, options.windowDimensions);
-      }
-      return port;
-    }),
-  ]);
+  const serverPath = path.join(basePath || "/", "server");
+  const server = createRouter(httpServer, serverPath);
+  const client = await createClient(options, serverPath);
+  server.handle(client);
+  const result = new Promise<T>((resolve) => {
+    Render(
+      <Server singleInstance transport={server.transport}>
+        {() => render(resolve)}
+      </Server>
+    );
+  });
+  if (basePath) {
+    server.handle(redirect(basePath.slice(0, basePath.length - 1), basePath));
+  }
+  if (!httpServer) {
+    const port = await getPort({ port: options.port || 3000 });
+    const url = `http://localhost:${port}`;
+    server.listen(port, () => {
+      logger(`Server running at ${url}`);
+    });
+    switch (options.runFrom) {
+      case "chrome-app":
+        runChromeApp(`${url}`);
+        break;
+      case "browser":
+        openBrowserOnHost(`${url}`);
+        break;
+    }
 
-  return { serverPort, result, clientPort };
+    return {
+      serverPort: port,
+      await: result,
+    };
+  }
+
+  return {
+    await: result,
+  };
 }
-

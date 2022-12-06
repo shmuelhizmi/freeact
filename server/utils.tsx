@@ -74,19 +74,17 @@ export function openBrowserOnHost(
   }
 }
 
-export function getClientsGlobals(options: ServeOptions, serverPort?: number) {
+export function getClientsGlobals(options: ServeOptions, serverPath: string) {
   return {
     winTitle: options.title,
     winSize: options.windowDimensions && [
       options.windowDimensions.width || 800,
       options.windowDimensions.height || 600,
     ],
-    server: serverPort
-      ? {
-          type: "SOCKET",
-          port: serverPort,
-        }
-      : options.customConnection?.client,
+    server: {
+      type: "SOCKET",
+      path: serverPath,
+    },
   };
 }
 

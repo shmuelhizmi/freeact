@@ -27,7 +27,7 @@ const SERVER_HOST =
   window.server.type === "SOCKET" || window.server.type === "HTTP-SOCKET"
     ? {
         host: window.server.host || window.location.hostname,
-        port: window.server.port,
+        port: window.server.port || Number(window.location.port),
         path: window.server.path,
       }
     : undefined;

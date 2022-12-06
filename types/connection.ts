@@ -6,6 +6,6 @@ export type ClientConnection =
   | {
       type: "SOCKET" | "HTTP-SOCKET";
       host?: string;
-      port: number;
+      port?: number;
       path?: string;
     };

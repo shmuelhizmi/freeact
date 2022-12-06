@@ -15,8 +15,8 @@
   },
   "dependencies": {
     "eiows": "^4.1.2",
-    "node-pty": "^0.10.1",
     "esbuild": "0.15.16",
+    "node-pty": "^0.10.1",
     "tsx": "3.12.1"
   },
   "bin": "./bin/index.js",
@@ -29,6 +29,7 @@
     "@react-fullstack/fullstack-socket-client": "0.3.1-alpha.6",
     "@react-fullstack/fullstack-socket-server": "0.3.1-alpha.6",
     "@react-fullstack/render": "^0.3.0",
+    "@types/http-proxy": "^1.17.9",
     "@types/mime-types": "^2.1.1",
     "@types/node": "^16",
     "@types/react": "^18.0.22",
@@ -36,6 +37,7 @@
     "@vitejs/plugin-react": "^2.2.0",
     "chrome-paths": "^1.0.1",
     "get-port": "5.1.1",
+    "http-proxy": "^1.18.1",
     "mime-types": "^2.1.35",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
