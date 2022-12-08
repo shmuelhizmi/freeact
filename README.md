@@ -1,13 +1,13 @@
 # Freeact - extremely easy GUI in react
-## the fastest way to create slick nodejs GUI applications
+## the fastest way to create slick nodejs GUI applications and web apps 
 
 * ### zero config
-* ### zero css/html/dom
-* ### single self contained library
+* ### zero css/html/dom knowledge necessary
+* ### one self contained library
 * ### out of the box typescript
 * ### transparent server to client communication you wont need to even think about.
-* ### create web/gui apps with just as easily as you would create node cli apps
-* ### great for ML applications and dev tools
+* ### out of the box SSR
+* ### great for ML applications/dev tools/back-office apps
 
 # Quick Example
 the following application is created by only a single code typescript
