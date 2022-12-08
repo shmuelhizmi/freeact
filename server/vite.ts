@@ -5,6 +5,7 @@ import reactVitePlugin from "@vitejs/plugin-react";
 import { getClientsGlobals } from "./utils";
 import { IncomingMessage, ServerResponse } from "http";
 import esbuild from "esbuild";
+import { Router } from "./http";
 
 const processDefined = <T extends object>(obj: T) => {
   return Object.entries(obj).reduce((acc, [key, value]) => {
@@ -19,12 +20,12 @@ const processDefined = <T extends object>(obj: T) => {
 
 export async function startViteServer(
   options: ServeOptions,
-  serverPath: string
+  router: Router
 ) {
   const basePath = options.customConnection?.basePath;
   const vite = await createServer({
     root: path.join(__dirname, ".."),
-    define: processDefined(getClientsGlobals(options, serverPath)),
+    define: processDefined(getClientsGlobals(options, router)),
     plugins: [reactVitePlugin()],
     envPrefix: "VITE_",
     base: basePath || "/",
@@ -35,7 +36,7 @@ export async function startViteServer(
     if (basePath && !req.url?.startsWith(basePath)) {
       return;
     }
-    if (req.url?.startsWith(serverPath)) {
+    if (req.url?.startsWith(router.socket.path)) {
       return;
     }
     vite.middlewares.handle(req, res, () => {

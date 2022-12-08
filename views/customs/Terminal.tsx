@@ -3,13 +3,13 @@ import { Component } from "@react-fullstack/fullstack/client";
 import { View } from "@react-fullstack/fullstack/shared";
 import { TerminalViewProps } from "../../types/terminal";
 import io, { Socket } from "socket.io-client";
-// import { FitAddon } from "xterm-addon-fit";
 import ResizeDetector from "react-resize-detector";
+
 
 class Terminal extends Component<View<TerminalViewProps>> {
   socket!: Socket;
-  terminal!: XTerm;
-  fitAddon!: FitAddon;
+  terminal!: InstanceType<(typeof import("xterm"))['Terminal']>;
+  fitAddon!: InstanceType<(typeof import("xterm-addon-fit"))['FitAddon']>;
   containerElement?: HTMLDivElement;
   constructor(props: Terminal["props"]) {
     super(props);

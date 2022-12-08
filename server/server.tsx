@@ -39,25 +39,24 @@ export async function serve<T>(
       `customConnection.basePath must start with a slash and not end with a slash. basePath: ${basePath}`
     );
   }
-  const serverPath = path.join(basePath || "/", "server");
-  const server = createRouter(httpServer, serverPath);
+  const router = createRouter(options);
   const ssrHandler = createInstanceRenderHandler();
-  const client = await createClient(options, serverPath, ssrHandler.render);
-  server.handle(client);
+  const client = await createClient(options, router, ssrHandler.render);
+  router.handle(client);
   const result = new Promise<T>((resolve) => {
     Render(
-      <Server singleInstance instanceRenderHandler={ssrHandler} transport={server.transport}>
+      <Server singleInstance instanceRenderHandler={ssrHandler} transport={router.transport}>
         {() => render(resolve)}
       </Server>
     );
   });
   if (basePath) {
-    server.handle(redirect(basePath.slice(0, basePath.length - 1), basePath));
+    router.handle(redirect(basePath.slice(0, basePath.length - 1), basePath));
   }
   if (!httpServer) {
     const port = await getPort({ port: options.port || 3000 });
     const url = `http://localhost:${port}`;
-    server.listen(port, () => {
+    router.listen(port, () => {
       logger(`Server running at ${url}`);
     });
     switch (options.runFrom) {

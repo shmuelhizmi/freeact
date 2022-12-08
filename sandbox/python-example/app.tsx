@@ -40,7 +40,7 @@ function useModel() {
 }
 
 const React = createCompiler()
-  .withComponents<typeof import('./dom/button')>('./dom/button.tsx')
+  .withComponents<typeof import('./dom/button')>('./dom/button.tsx', require('./dom/button'))
   .compile();
 
 function App() {
@@ -136,4 +136,5 @@ function App() {
 
 React.serve(() => <App />, {
   runFrom: "browser",
+  title: "python example"
 });

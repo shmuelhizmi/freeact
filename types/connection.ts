@@ -8,4 +8,5 @@ export type ClientConnection =
       host?: string;
       port?: number;
       path?: string;
+      namespace?: string;
     };

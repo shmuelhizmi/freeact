@@ -3,6 +3,7 @@ import React from "react";
 import { AdditionalComponentsExportBase } from "../types/additionalComponents";
 import { serve } from "./server";
 import { createViewProxy } from "./view";
+import { Base } from "../views/ui/Base"
 
 export type OmitClassNames<T extends AdditionalComponentsExportBase> = {
   [K in keyof T]: T[K] extends React.FunctionComponent<infer P>
@@ -26,14 +27,25 @@ export async function buildAdditionalComponents(path: string) {
 }
 
 function createCompilerBase<TBase extends AdditionalComponentsExportBase>(
-  bundles: Promise<string>[] = []
+  bundles: Promise<string>[] = [],
+  ssrViewsBase: TBase = {} as TBase
 ) {
   return {
     withComponents<T extends AdditionalComponentsExportBase>(
-      entryPoint: string
+      entryPoint: string,
+      ssrViews: T
     ) {
       bundles.push(buildAdditionalComponents(entryPoint));
-      return createCompilerBase<TBase & OmitClassNames<T>>(bundles);
+      return createCompilerBase<TBase & OmitClassNames<T>>(bundles, {
+        ...ssrViewsBase,
+        ...Object.entries(ssrViews).reduce(
+          (acc, [key, value]) => ({
+            ...acc,
+            [key]: Base(value),
+          }),
+          {} as TBase & OmitClassNames<T>
+        ),
+      });
     },
     compile() {
       return createViewProxy<{ serve: typeof serve }, TBase>({
@@ -41,10 +53,16 @@ function createCompilerBase<TBase extends AdditionalComponentsExportBase>(
           const additionalComponents = await Promise.all(bundles);
           return serve(render, {
             ...options,
-            additionalComponentsBundles: [
-              ...(options?.additionalComponentsBundles || []),
-              ...additionalComponents,
-            ],
+            additionalComponents: {
+              ssrViews: {
+                ...ssrViewsBase,
+                ...(options?.additionalComponents?.ssrViews ?? {}),
+              },
+              bundles: [
+                ...additionalComponents,
+                ...(options?.additionalComponents?.bundles ?? []),
+              ],
+            },
           });
         },
       });

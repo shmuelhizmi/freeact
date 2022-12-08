@@ -28,6 +28,7 @@ const SERVER_HOST =
         host: window.server.host || window.location.hostname,
         port: window.server.port || Number(window.location.port),
         path: window.server.path,
+        namespace: window.server.namespace,
       }
     : undefined;
 
@@ -69,7 +70,10 @@ function App() {
     <AppWrapper>
       <Client<Components>
         host={SERVER_HOST.host}
-        port={SERVER_HOST.port}
+        port={
+          (SERVER_HOST.port +
+            (SERVER_HOST.namespace ?? "")) as unknown as number
+        }
         socketOptions={{
           transports:
             window.server.type === "SOCKET" ? ["websocket"] : undefined,
