@@ -1,8 +1,4 @@
-import { buildViteClient } from "./server/vite";
 import esbuild from "esbuild";
-
-buildViteClient();
-
 
 esbuild
   .build({
@@ -22,4 +18,20 @@ esbuild
     process.exit(1);
   });
 
-
+esbuild
+  .build({
+    entryPoints: ["./views/main.tsx"],
+    // outdir: "",
+    bundle: true,
+    sourcemap: true,
+    minify: true,
+    format: "esm",
+    platform: "browser",
+    outfile: "dist/client/freeact.mjs",
+    target: "es2019",
+    external: ["crypto"],
+  })
+  .catch((e) => {
+    console.error(e);
+    process.exit(1);
+  });

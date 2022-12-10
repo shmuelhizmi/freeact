@@ -1,13 +1,13 @@
 import { IncomingMessage, ServerResponse } from "http";
 import path from "path";
-import { ServeOptions } from "./types";
+import { GlobalAppServeOptions, ServeOptionsBase } from "./types";
 import fs from "fs/promises";
 import { getClientsGlobals } from "./utils";
 import mime from "mime-types";
 import { renderToString } from "react-dom/server";
 import React from "react";
 import { SSRHeadViews, Views, BaseWrapper } from "../views/views";
-import { Router } from "./http";
+import { HTTPRequestHandler, SocketConnection } from "./http";
 
 const isProd = __filename.endsWith("dist/server/index.js");
 
@@ -23,82 +23,38 @@ const withFallbackComp = <T extends Record<string, any>>(obj: T): T => {
   });
 };
 
-export function httpServe(
-  options: ServeOptions,
-  router: Router,
-  ssrFunction: (views: Record<string, React.ComponentType>) => JSX.Element
-) {
-  const { additionalComponents, customConnection } = options;
-  const { ssrViews, bundles = [] } = additionalComponents || {};
-  const { basePath } = customConnection || {};
-  const statics = isProd
-    ? path.join(__dirname, "..", "client")
-    : path.join(__dirname, "..", "dist", "client");
-  const globals = getClientsGlobals(options, router);
+const makeBundles = (bundles: string[]) => {
   const additionalJsBundle = Array(bundles.length || 0)
     .fill("")
     .map((_, i) => {
       return `additional-${i}.js`;
     });
-  const handler = async (req: IncomingMessage, res: ServerResponse) => {
+  return {
+    additionalJsBundle,
+    getBundle(filename: string) {
+      return bundles[additionalJsBundle.indexOf(filename)];
+    },
+  };
+};
+
+export function hostStatics(additionalComponentsBundles: string[]) {
+  const statics = isProd
+    ? path.join(__dirname, "..", "client")
+    : path.join(__dirname, "..", "dist", "client");
+
+  const { getBundle } = makeBundles(additionalComponentsBundles);
+  const handler: HTTPRequestHandler<Promise<void>> = async (req, res) => {
     try {
-      let url = req.url!;
-      const queryIndex = url.indexOf("?");
-      if (!url.startsWith(basePath || "/")) {
-        return;
-      }
-      if (basePath) {
-        url = url.slice(basePath.length);
-      }
-      const pathname =
-        (queryIndex === -1 ? url : url.slice(0, queryIndex)) || "/";
+      const url = new URL(req.url || "", `http://${req.headers.host}`);
+      const pathname = url.pathname;
       if (pathname === "/" || pathname === "/index.html") {
-        res.writeHead(200, { "Content-Type": "text/html" });
-        const index = renderToString(
-          <html>
-            <head>
-              <meta charSet="UTF-8" />
-              <meta
-                name="viewport"
-                content="width=device-width, initial-scale=1.0"
-              />
-              <script
-                dangerouslySetInnerHTML={{
-                  __html: `
-                const toInject = ${JSON.stringify({
-                  ...globals,
-                  bundles: additionalJsBundle,
-                })};
-                for (const key in toInject) {
-                  window[key] = toInject[key];
-                }
-                window.process = { env: { NODE_ENV: "${
-                  process.env.NODE_ENV
-                }" } };
-              `,
-                }}
-              ></script>
-              <script type="module" crossOrigin="" src="./freeact.mjs"></script>
-              <link rel="stylesheet" href="./freeact.css" />
-              {ssrFunction ? ssrFunction(withFallbackComp(SSRHeadViews)) : null}
-              <title>{options.title}</title>
-            </head>
-            <body>
-              <div id="root">
-                <BaseWrapper>
-                  {ssrFunction ? ssrFunction({ ...Views, ...ssrViews }) : null}
-                </BaseWrapper>
-              </div>
-            </body>
-          </html>
-        );
-        res.end(index);
         return;
       }
       const filename = pathname.slice(1);
-      if (additionalJsBundle.includes(filename)) {
+      const bundle = getBundle(filename);
+      if (bundle) {
         res.writeHead(200, { "Content-Type": "text/javascript" });
-        res.end(bundles?.[additionalJsBundle.indexOf(filename)]);
+        res.end(bundle);
         return;
       }
       const type = mime.lookup(pathname);
@@ -112,23 +68,80 @@ export function httpServe(
       res.end();
     }
   };
-  return {
-    handler: (req: IncomingMessage, res: ServerResponse) => {
-      handler(req, res);
-    },
-  };
+  return handler;
 }
 
-export async function createClient(
-  options: ServeOptions,
-  router: Router,
+
+export function createSsr(
+  options: Pick<GlobalAppServeOptions, 'title' | 'windowDimensions' | 'additionalComponents'>,
+  staticsBase: string,
+  socket: SocketConnection,
   ssrFunction: (views: Record<string, React.ComponentType>) => JSX.Element
 ) {
-  if (true) {
-    return (await httpServe(options, router, ssrFunction)).handler;
-  }
-  const { startViteServer } = await import("./vite");
-  return await (
-    await startViteServer(options, router)
-  ).handle;
+  const { additionalComponents } = options;
+  const { ssrViews } = additionalComponents || {};
+  const globals = getClientsGlobals(options, socket);
+  const handler: HTTPRequestHandler<Promise<void>> = async (req, res) => {
+    try {
+      res.writeHead(200, { "Content-Type": "text/html" });
+      const index = renderToString(
+        <html>
+          <head>
+            <meta charSet="UTF-8" />
+            <meta
+              name="viewport"
+              content="width=device-width, initial-scale=1.0"
+            />
+            <script
+              dangerouslySetInnerHTML={{
+                __html: `
+                const toInject = ${JSON.stringify({
+                  ...globals,
+                  bundles: makeBundles(options.additionalComponents?.bundles || []).additionalJsBundle,
+                })};
+                for (const key in toInject) {
+                  window[key] = toInject[key];
+                }
+                window.process = { env: { NODE_ENV: "${
+                  process.env.NODE_ENV
+                }" } };
+              `,
+              }}
+            ></script>
+            <script type="module" crossOrigin="" src={path.join(staticsBase, "./freeact.mjs")}></script>
+            <link rel="stylesheet" href={path.join(staticsBase, "./freeact.css")} />
+            {ssrFunction ? ssrFunction(withFallbackComp(SSRHeadViews)) : null}
+            <title>{options.title}</title>
+          </head>
+          <body>
+            <div id="root">
+              <BaseWrapper>
+                {ssrFunction ? ssrFunction({ ...Views, ...ssrViews }) : null}
+              </BaseWrapper>
+            </div>
+          </body>
+        </html>
+      );
+      res.end(index);
+      return;
+    } catch (e) {
+      res.writeHead(404);
+      res.end();
+    }
+  };
+  return handler;
 }
+
+// export async function createClient(
+//   options: GlobalAppServeOptions,
+//   socket: SocketConnection,
+//   ssrFunction: (views: Record<string, React.ComponentType>) => JSX.Element
+// ) {
+//   if (true) {
+//     return (await createSsr(options, socket, ssrFunction)).handler;
+//   }
+//   const { startViteServer } = await import("./vite");
+//   return await (
+//     await startViteServer(options, socket)
+//   ).handle;
+// }

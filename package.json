@@ -8,6 +8,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "test:calc": "tsx watch ./test/calculator.tsx",
+    "test:form": "tsx watch ./test/sessions/form.tsx",
     "test:counter": "tsx watch ./test/counter.tsx",
     "test:customLocalServer": "tsx watch ./test/customLocalServer.tsx",
     "prepublish": "pnpm run build",
@@ -17,7 +18,8 @@
     "eiows": "^4.1.2",
     "esbuild": "0.15.16",
     "node-pty": "^0.10.1",
-    "tsx": "3.12.1"
+    "tsx": "3.12.1",
+    "uuid": "^9.0.0"
   },
   "bin": "./bin/index.js",
   "devDependencies": {
@@ -34,6 +36,7 @@
     "@types/node": "^16",
     "@types/react": "^18.0.22",
     "@types/react-dom": "^18.0.7",
+    "@types/uuid": "^9.0.0",
     "@vitejs/plugin-react": "^2.2.0",
     "chrome-paths": "^1.0.1",
     "get-port": "5.1.1",

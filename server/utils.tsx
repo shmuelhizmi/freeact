@@ -4,8 +4,8 @@ import chromePaths from "chrome-paths";
 import os from "os";
 import React from "react";
 import { Components } from "../types";
-import { Router } from "./http";
-import { ServeOptions } from "./types";
+import { Router, SocketConnection } from "./http";
+import { GlobalAppServeOptions } from "./types";
 
 const appendQuery = (url: string, query: Record<string, string>) => {
   const urlObj = new URL(url);
@@ -75,7 +75,7 @@ export function openBrowserOnHost(
   }
 }
 
-export function getClientsGlobals(options: ServeOptions, router: Router) {
+export function getClientsGlobals(options: Pick<GlobalAppServeOptions, "title" | "windowDimensions">, socket: SocketConnection) {
   return {
     winTitle: options.title,
     winSize: options.windowDimensions && [
@@ -84,8 +84,8 @@ export function getClientsGlobals(options: ServeOptions, router: Router) {
     ],
     server: {
       type: "SOCKET",
-      path: router.socket.path,
-      namespace: router.socket.namespace,
+      path: socket.path,
+      namespace: socket.namespace,
     },
   };
 }

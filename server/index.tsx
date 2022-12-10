@@ -1,10 +1,13 @@
-import { serve } from "./server";
+import { serve, createSessionHandler } from "./server";
 import { createViewProxy } from "./view";
 import { buildAdditionalComponents, createCompiler } from "./compiler";
+import { hostClientBundles } from "./http";
 
 export default createViewProxy({
   serve,
   createCompiler,
+  hostClientBundles,
+  createSessionHandler,
 });
 
 export {

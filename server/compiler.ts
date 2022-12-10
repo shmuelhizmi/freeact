@@ -1,9 +1,11 @@
 import esbuild from "esbuild";
 import React from "react";
 import { AdditionalComponentsExportBase } from "../types/additionalComponents";
-import { serve } from "./server";
+import { serve, createSessionHandler } from "./server";
+import { hostClientBundles } from "./http";
+import { Server as HTTPServer } from "http";
 import { createViewProxy } from "./view";
-import { Base } from "../views/ui/Base"
+import { Base } from "../views/ui/Base";
 
 export type OmitClassNames<T extends AdditionalComponentsExportBase> = {
   [K in keyof T]: T[K] extends React.FunctionComponent<infer P>
@@ -48,7 +50,17 @@ function createCompilerBase<TBase extends AdditionalComponentsExportBase>(
       });
     },
     compile() {
-      return createViewProxy<{ serve: typeof serve }, TBase>({
+      return createViewProxy<
+        {
+          serve: typeof serve;
+          createSessionHandler: typeof createSessionHandler;
+          hostStatics: (
+            server: HTTPServer,
+            mountPath?: string
+          ) => Promise<ReturnType<typeof hostClientBundles>>
+        },
+        TBase
+      >({
         serve: async (render, options) => {
           const additionalComponents = await Promise.all(bundles);
           return serve(render, {
@@ -64,6 +76,33 @@ function createCompilerBase<TBase extends AdditionalComponentsExportBase>(
               ],
             },
           });
+        },
+        createSessionHandler: <T>(options) => {
+          return {
+            handle: (render, configuration) => {
+              return async (req, res) => {
+                const additionalComponents = await Promise.all(bundles);
+                return createSessionHandler({
+                  ...options,
+                  additionalComponents: {
+                    ssrViews: {
+                      ...ssrViewsBase,
+                      ...(options?.additionalComponents?.ssrViews ?? {}),
+                    },
+                    bundles: [
+                      ...additionalComponents,
+                      ...(options?.additionalComponents?.bundles ?? []),
+                    ],
+                  },
+                }).handle(render as any, configuration)(req, res) as Promise<T>;
+              };
+            },
+          };
+        },
+        hostStatics(server, mountPath) {
+          return Promise.all(bundles).then((bundles) =>
+            hostClientBundles(server, mountPath, bundles)
+          );
         },
       });
     },

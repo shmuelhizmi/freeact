@@ -22,7 +22,7 @@ function App() {
 console.time("initial serve");
 for (let i = 0; i < 1000; i++) {
   React.serve(() => <App />, {
-    customConnection: {
+    connection: {
       basePath: `/app${i}/`,
       httpServer: server,
       socket: {
