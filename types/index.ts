@@ -11,3 +11,5 @@ export type Components =  UIViews & {
     Terminal: View<TerminalViewProps>;
     Favicon: View<FaviconViewProps>;
 }
+
+export * as API from "./api"

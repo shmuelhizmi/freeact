@@ -15,6 +15,11 @@ export interface GlobalAppServeOptions extends ServeOptionsBase {
 
 export interface RequestServeOptions extends ServeOptionsBase {
   staticsBasePath: string;
+  connection?: ServeOptionsBase["connection"] & {
+    socket?: NonNullable<ServeOptionsBase["connection"]>["socket"] & {
+      maxTimeForClientToInitConnection?: number;
+    };
+  };
 }
 
 export interface ServeOptionsBase {
@@ -22,6 +27,7 @@ export interface ServeOptionsBase {
   connection?: {
     httpServer?: HTTPServer;
     port?: number;
+    timeout?: number;
     socket?: {
       io?: SocketServer;
       /**

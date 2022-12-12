@@ -3,8 +3,20 @@ import ReactDOM from "react-dom/client";
 import App from "./App";
 import "./index.css";
 
-ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>
-);
+const root = document.createElement("div") as HTMLDivElement;
+root.id = "root__temp";
+document.body.appendChild(root);
+root.style.display = "none";
+
+new Promise<void>((resolve) => {
+  ReactDOM.createRoot(root).render(
+    <React.StrictMode>
+      <App onLoad={() => resolve()} />
+    </React.StrictMode>
+  );
+}).then(() => {
+  document.body.removeChild(document.getElementById("root")!);
+  root.id = "root";
+  root.style.display = "block";
+  document.body.appendChild(root);
+});

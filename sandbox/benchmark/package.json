@@ -10,6 +10,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@types/express": "^4.17.14",
+    "express": "^4.18.2",
     "freeact": "link:../..",
     "socket.io": "^4.5.4"
   }

@@ -2,7 +2,7 @@ import esbuild from "esbuild";
 import React from "react";
 import { AdditionalComponentsExportBase } from "../types/additionalComponents";
 import { serve, createSessionHandler } from "./server";
-import { hostClientBundles } from "./http";
+import { hostClientBundles, createHostClientBundlesMiddleware } from "./http";
 import { Server as HTTPServer } from "http";
 import { createViewProxy } from "./view";
 import { Base } from "../views/ui/Base";
@@ -57,7 +57,10 @@ function createCompilerBase<TBase extends AdditionalComponentsExportBase>(
           hostStatics: (
             server: HTTPServer,
             mountPath?: string
-          ) => Promise<ReturnType<typeof hostClientBundles>>
+          ) => Promise<ReturnType<typeof hostClientBundles>>;
+          createHostClientBundlesMiddleware: (
+            mountPath?: string
+          ) => Promise<ReturnType<typeof createHostClientBundlesMiddleware>>;
         },
         TBase
       >({
@@ -104,6 +107,11 @@ function createCompilerBase<TBase extends AdditionalComponentsExportBase>(
             hostClientBundles(server, mountPath, bundles)
           );
         },
+        createHostClientBundlesMiddleware(mountPath) {
+          return Promise.all(bundles).then((bundles) =>
+            createHostClientBundlesMiddleware(mountPath, bundles)
+          );
+        }
       });
     },
   };

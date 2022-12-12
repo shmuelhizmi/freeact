@@ -4,7 +4,6 @@ import getPort from "get-port";
 import {
   GlobalAppServeOptions,
   RequestServeOptions,
-  ServeOptionsBase,
   ServerTransport,
 } from "./types";
 import {
@@ -14,13 +13,9 @@ import {
 import { Server as SocketIOserver } from "socket.io";
 import { openBrowserOnHost, runChromeApp } from "./utils";
 import { createSsr, hostStatics } from "./client";
-import {
-  createRequestHandler,
-  createRouter,
-  getServers,
-  HTTPRequestHandler,
-} from "./http";
-import path from "path";
+import { createRequestHandler, createRouter, getServers } from "./http";
+import { API } from "../types";
+import { createAPI } from "./api";
 
 export function socketIoToTransport(io: SocketIOserver): ServerTransport {
   return {
@@ -103,11 +98,15 @@ export async function serve<T>(
 export function createSessionHandler(options: RequestServeOptions) {
   const servers = getServers(options);
   function handle<T>(
-    render: (resolve: (value: T) => void) => JSX.Element,
-    configuration: Pick<GlobalAppServeOptions, "title" | "windowDimensions">
+    render: (
+      api: API.API,
+      resolve: (value: T) => void,
+      reject: (error: any) => void
+    ) => JSX.Element,
+    configuration?: Pick<GlobalAppServeOptions, "title" | "windowDimensions">
   ) {
-    const { title, windowDimensions } = configuration;
-    const handleHttp = async (req, res): Promise<T> => {
+    const { title, windowDimensions } = configuration || {};
+    const handleHttp = async (req, res): Promise<T | undefined> => {
       const url = new URL(req.url || "/", `http://${req.headers.host}`);
       if (!url.pathname.endsWith("/")) {
         throw new Error(
@@ -116,21 +115,39 @@ export function createSessionHandler(options: RequestServeOptions) {
       }
       const router = createRequestHandler({ servers });
       const ssrHandler = createInstanceRenderHandler();
-      const result = new Promise((resolve) => {
+      const api = createAPI(router.transport);
+      const result = new Promise((resolve, reject) => {
+        let resolvedOrRejected = false;
         const { stop } = Render(
           <Server
             singleInstance
             instanceRenderHandler={ssrHandler}
             transport={router.transport}
           >
-            {() =>
-              render((value) => {
-                resolve(value);
-                stop();
-              })
+            {() => render(
+                api,
+                (value) => {
+                  if (resolvedOrRejected) return;
+                  resolve(value);
+                  stop();
+                  resolvedOrRejected = true;
+                },
+                (error) => {
+                  if (resolvedOrRejected) return;
+                  reject(error);
+                  stop();
+                  resolvedOrRejected = true;
+                }
+              )
             }
           </Server>
         );
+        router.awaitDisconnection.then(() => {
+          if (resolvedOrRejected) return;
+          resolve(undefined);
+          stop();
+          resolvedOrRejected = true;
+        });
       });
       const ssr = createSsr(
         {

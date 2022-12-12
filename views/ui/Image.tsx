@@ -3,10 +3,10 @@ import { ImageProps } from "../../types/ui/image";
 import { Base } from "./Base";
 
 const Image = (props: ImageProps & StyleEnabled) => {
-  const { className, ...rest } = props;
+  const { className } = props;
 
   return (
-    <img className={className} {...rest} />
+    <img className={className} src={props.url} alt={props.alt} />
   );
 };
 

@@ -1,9 +1,4 @@
-export type ClientConnection =
-  | {
-      type: "URL";
-      url: string;
-    }
-  | {
+export type ClientConnection = {
       type: "SOCKET" | "HTTP-SOCKET";
       host?: string;
       port?: number;

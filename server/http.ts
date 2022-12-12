@@ -1,33 +1,42 @@
 import http from "http";
 import path from "path";
-import { Server as Socket, Namespace } from "socket.io";
+import { Server as SocketServer, Namespace, Socket } from "socket.io";
 import { EventEmitter } from "stream";
 import {
   GlobalAppServeOptions,
+  RequestServeOptions,
   ServeOptionsBase,
   ServerTransport,
 } from "./types";
 import { v4 } from "uuid";
 import { hostStatics } from "./client";
 
-export function getServers(options: ServeOptionsBase | GlobalAppServeOptions) {
+export function getServers(options: ServeOptionsBase | GlobalAppServeOptions | RequestServeOptions) {
   const { connection } = options;
-  const { httpServer, socket, basePath } = {
+  const {
+    httpServer,
+    socket,
+    basePath,
+    timeout: initialTimeout,
+  } = {
     basePath: "/",
     ...(connection || {}),
   };
   let server = httpServer!;
+  let timeout = initialTimeout || httpServer?.timeout || 30 * 1000;
   if (!httpServer) {
     server = http.createServer();
-    server.keepAliveTimeout = 30 * 1000;
-    server.headersTimeout = 30 * 1000;
-    server.setTimeout(90 * 1000);
+    server.keepAliveTimeout = timeout || 30 * 1000;
+    server.headersTimeout = timeout || 30 * 1000;
+    server.setTimeout(timeout || 30 * 1000);
   }
+
   let serverPath = socket?.path;
   let io = socket?.io;
+  const maxTimeForClientToInitConnection = (options as RequestServeOptions).connection?.socket?.maxTimeForClientToInitConnection || 90 * 1000;
   if (!io) {
     serverPath ||= path.join(basePath, v4());
-    io = new Socket({
+    io = new SocketServer({
       path: serverPath,
       transports: ["websocket"],
     });
@@ -39,6 +48,8 @@ export function getServers(options: ServeOptionsBase | GlobalAppServeOptions) {
     server,
     serverPath,
     io,
+    maxTimeForClientToInitConnection,
+    timeout,
     makeNamespace: () => path.join(basePath, v4()),
     basePath,
     destry: () => {
@@ -59,15 +70,18 @@ export function createNamespaceTransport(namespace: Namespace) {
     on: (event, callback) => {
       if (event === "connection") {
         namespace.on(event, callback);
+      } else {
+        namespace.sockets.forEach((socket) => socket.on(event, callback));
       }
     },
     emit: (event, ...args) => {
-      namespace.emit(event, ...args);
+      namespace.sockets.forEach((socket) => socket.emit(event, ...args));
     },
     off: (event, callback) => {
-      namespace.removeListener(event, callback);
       if (event === "connection") {
         namespace.off(event, callback);
+      } else {
+        namespace.sockets.forEach((socket) => socket.off(event, callback));
       }
     },
   };
@@ -77,7 +91,11 @@ export type RouterOptions = {
   serveOptions: ServeOptionsBase;
   servers?: Servers;
 };
-export type SocketConnection = { namespace: string; path: string; io: Socket };
+export type SocketConnection = {
+  namespace: string;
+  path: string;
+  io: SocketServer;
+};
 export type HTTPRequestHandler<T = void> = (
   req: http.IncomingMessage,
   res: http.ServerResponse
@@ -153,15 +171,26 @@ export type RequestHandlerOptions = { servers: Servers };
 export function createRequestHandler({
   servers,
 }: RequestHandlerOptions): RequestHandler {
-  const { io, makeNamespace, serverPath } = servers;
+  const { io, makeNamespace, serverPath, maxTimeForClientToInitConnection } = servers;
   const namespace = makeNamespace();
   const namespaceSocket = io.of(namespace);
   const transport = createNamespaceTransport(namespaceSocket);
-  const awaitDisconnection = new Promise<void>((resolve) => {
-    namespaceSocket.on("connection", (socket) => {
-      socket.on("disconnect", () => {
-        resolve();
+  const awaitDisconnection = new Promise<void>(async (resolve) => {
+    const connection = new Promise<Socket>((resolve) => {
+      namespaceSocket.on("connection", (socket) => {
+        resolve(socket);
       });
+    });
+    const timeout = new Promise<void>((resolve) => {
+      setTimeout(resolve, maxTimeForClientToInitConnection);
+    });
+    const socket = await Promise.race([connection, timeout]);
+    if (!socket) {
+      resolve();
+      return;
+    }
+    socket.on("disconnect", () => {
+      resolve();
     });
   });
   const destroy = () => {
@@ -169,6 +198,7 @@ export function createRequestHandler({
     namespaceSocket.removeAllListeners();
     delete io._nsps[namespace];
   };
+  awaitDisconnection.then(destroy);
   return {
     socket: {
       namespace,
@@ -190,22 +220,41 @@ export function hostClientBundles(
   bundles: string[] = []
 ) {
   const handlerBase = hostStatics(bundles);
-  const path = basePath || "/" + v4();
+  const path = basePath || "/" + v4() + "/";
   const handler = (req: http.IncomingMessage, res: http.ServerResponse) => {
     const url = new URL(req.url! || "", "http://localhost");
     if (url.pathname.startsWith(path)) {
-      req.url = url.pathname.slice(path.length);
+      req.url = url.pathname.slice(path.length - 1);
       handlerBase(req, res);
     }
   };
-  server.on(
-    "request",
-    handler
-  );
+  server.on("request", handler);
   return {
     path,
     destroy: () => {
       server.off("request", handler);
     },
-  }
+  };
+}
+
+export function createHostClientBundlesMiddleware(
+  basePath?: string,
+  bundles: string[] = []
+) {
+  const handlerBase = hostStatics(bundles);
+  const path = basePath || "/" + v4() + "/";
+  const middleware = (
+    req: http.IncomingMessage,
+    res: http.ServerResponse,
+    next: () => void
+  ) => {
+    const url = new URL(req.url! || "", "http://localhost");
+    if (url.pathname.startsWith(path)) {
+      req.url = url.pathname.slice(path.length - 1);
+      handlerBase(req, res);
+    } else {
+      next();
+    }
+  };
+  return { middleware, path };
 }

@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from "react";
-import { Client } from "@react-fullstack/fullstack-socket-client";
 import { Components } from "../types";
 import { ClientConnection } from "../types/connection";
-import { ViewsToComponents } from "@react-fullstack/fullstack/client";
+import { ViewsToComponents, Client } from "@react-fullstack/fullstack/client";
+import { Events } from "@react-fullstack/fullstack/shared";
 import AppWrapper from "./baseWrapper";
 import { Base } from "./ui/Base";
 import { StyleEnabled } from "../types/ui/base";
 import { Views } from "./views";
+import { io } from "socket.io-client";
+import { registerAPI } from "./api";
 
 declare global {
   interface Window {
@@ -22,15 +24,12 @@ try {
   window.resizeTo(...window.winSize);
 } catch (e) {}
 
-const SERVER_HOST =
-  window.server.type === "SOCKET" || window.server.type === "HTTP-SOCKET"
-    ? {
-        host: window.server.host || window.location.hostname,
-        port: window.server.port || Number(window.location.port),
-        path: window.server.path,
-        namespace: window.server.namespace,
-      }
-    : undefined;
+const SERVER_HOST = {
+  host: window.server.host || window.location.hostname,
+  port: window.server.port || Number(window.location.port),
+  path: window.server.path,
+  namespace: window.server.namespace,
+};
 
 function useLoadAdditionalBundles() {
   const [comps, setComps] = useState<Record<string, any>>({});
@@ -59,8 +58,23 @@ function useLoadAdditionalBundles() {
   return loaded ? comps : undefined;
 }
 
-function App() {
+const socket = io(
+  `http://${SERVER_HOST.host}:${SERVER_HOST.port}${
+    SERVER_HOST?.namespace ?? ""
+  }`,
+  {
+    transports: window.server.type === "SOCKET" ? ["websocket"] : undefined,
+    path: SERVER_HOST.path,
+  }
+);
+
+registerAPI(socket);
+
+function App({ onLoad }: { onLoad(): void }) {
   const comps = useLoadAdditionalBundles();
+  useEffect(() => {
+    socket.on(String(Events.UpdateViewsTree), onLoad);
+  }, [comps]);
   if (!comps) return null;
   if (!SERVER_HOST) {
     document.body.innerHTML = "No server host found";
@@ -69,16 +83,8 @@ function App() {
   return (
     <AppWrapper>
       <Client<Components>
-        host={SERVER_HOST.host}
-        port={
-          (SERVER_HOST.port +
-            (SERVER_HOST.namespace ?? "")) as unknown as number
-        }
-        socketOptions={{
-          transports:
-            window.server.type === "SOCKET" ? ["websocket"] : undefined,
-          path: SERVER_HOST.path,
-        }}
+        transport={socket as any}
+        requestViewTreeOnMount
         views={{
           ...(Views as unknown as ViewsToComponents<Components>),
           ...comps,

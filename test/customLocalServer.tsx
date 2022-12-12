@@ -53,7 +53,7 @@ function App() {
 }
 
 React.serve(() => <App />, {
-  customConnection: {
+  connection: {
     basePath: "/dev/",
     httpServer: server,
   },
