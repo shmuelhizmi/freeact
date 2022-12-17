@@ -1,5 +1,5 @@
 # Freeact - extremely easy GUI in react
-## the fastest way to create slick nodejs GUI applications
+allegedly the fastest way to create slick nodejs GUI applications
 
 * ### zero config
 * ### zero css/html/dom
@@ -7,7 +7,10 @@
 * ### out of the box typescript
 * ### transparent server to client communication you wont need to even think about.
 * ### create web/gui apps with just as easily as you would create node cli apps
-* ### great for ML applications and dev tools
+* ### great for - ML applications | dev tools | dashboards
+
+because we believe that whenever you are not writing logic, you are writing configuration, and configuration is boring trash, and the 
+![gwag](./lost-time.webp)
 
 # Quick Example
 the following application is created by only a single code typescript
@@ -44,7 +47,14 @@ function App() {
 React.serve(() => <App />);
 
 ```
-### to run it you need to install freeact with npm `npm i freeact` and then execute your file using `npm exec freeact ./index.tsx` or just create an npm script like the following
+now the only thing needed in order to run the application is to install freeact using your preferred package manager
+
+>for example `npm i freeact`  
+
+and run it with
+> `npm exec freeact ./index.tsx`
+
+or alternatively you can define it in a `package.json`
 ```json
 // package.json
 {
