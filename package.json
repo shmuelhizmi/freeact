@@ -12,9 +12,10 @@
     "test:counter": "tsx watch ./test/counter.tsx",
     "test:customLocalServer": "tsx watch ./test/customLocalServer.tsx",
     "prepublish": "pnpm run build",
-    "build": "tsx ./build.ts && tsc --emitDeclarationOnly --noEmit false --outDir dist/types --project tsconfig.server.json"
+    "build": "tsx ./compiler/main.ts && tsc --emitDeclarationOnly --noEmit false --outDir dist/types --project tsconfig.server.json"
   },
   "dependencies": {
+    "@fal-works/esbuild-plugin-global-externals": "^2.1.2",
     "eiows": "^4.1.2",
     "esbuild": "0.15.16",
     "node-pty": "^0.10.1",
@@ -52,6 +53,20 @@
     "xterm": "^5.0.0",
     "xterm-addon-fit": "^0.6.0"
   },
+  "clientDependencies": [
+    "react/jsx-runtime",
+    "react",
+    "react-dom",
+    "react-resize-detector",
+    "xterm",
+    "xterm-addon-fit",
+    "@emotion/react",
+    "@emotion/styled",
+    "@mui/joy",
+    "@react-fullstack/fullstack-socket-client",
+    "@react-fullstack/fullstack",
+    "socket.io-client"
+  ],
   "files": [
     "dist",
     "**/*.d.ts"

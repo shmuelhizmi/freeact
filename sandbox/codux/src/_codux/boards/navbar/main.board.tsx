@@ -4,9 +4,9 @@ import Navbar_module from '../../../components/navbar/navbar.module.scss';
 
 export default createBoard({
     name: 'Main',
-    Board: () => <Navbar className={Navbar_module.root} username="shmuel"></Navbar>,
+    Board: () => <Navbar navigate={() => { }} className={`${Navbar_module.root} `} username="shmuel"></Navbar>,
     environmentProps: {
-        canvasWidth: 566,
+        canvasWidth: 596,
         canvasHeight: 870
     }
 });

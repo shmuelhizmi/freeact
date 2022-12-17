@@ -3,6 +3,7 @@ lockfileVersion: 5.4
 specifiers:
   '@emotion/react': ^11.10.5
   '@emotion/styled': ^11.10.5
+  '@fal-works/esbuild-plugin-global-externals': ^2.1.2
   '@mui/joy': 5.0.0-alpha.51
   '@mui/types': 7.2.0
   '@react-fullstack/fullstack': 0.3.1-alpha.8
@@ -36,6 +37,7 @@ specifiers:
   xterm-addon-fit: ^0.6.0
 
 dependencies:
+  '@fal-works/esbuild-plugin-global-externals': 2.1.2
   eiows: 4.1.2
   esbuild: 0.15.16
   node-pty: 0.10.1
@@ -518,6 +520,10 @@ packages:
     os: [linux]
     requiresBuild: true
     optional: true
+
+  /@fal-works/esbuild-plugin-global-externals/2.1.2:
+    resolution: {integrity: sha512-cEee/Z+I12mZcFJshKcCqC8tuX5hG3s+d+9nZ3LabqKF1vKdF41B92pJVCBggjAGORAeOzyyDDKrZwIkLffeOQ==}
+    dev: false
 
   /@jridgewell/gen-mapping/0.1.1:
     resolution: {integrity: sha512-sQXCasFk+U8lWYEe66WxRDOE9PjVz4vSM51fTu3Hw+ClTpUSQb718772vH3pyS5pShp6lvQM7SxgIDXXXmOX7w==}

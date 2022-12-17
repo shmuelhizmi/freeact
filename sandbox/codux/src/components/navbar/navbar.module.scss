@@ -5,11 +5,42 @@
     align-self: end;
     display: flex;
     align-content: center;
-    gap: 5px;
-    border: 1px solid black;
+    gap: 5px 5px;
+    border: 0px solid black;
     align-items: start;
     justify-content: space-between;
     flex-direction: row;
+    border-bottom: 3px solid black;
 }
 
 .root {}
+
+.home {
+    align-self: center;
+    padding: 3px;
+    margin: 0px 25px 0px -7px;
+    position: static;
+    right: 15px;
+    display: flex;
+    background-color: #FFFBFB;
+    border-radius: 0px;
+    text-decoration-style: initial;
+    outline: revert;
+    border: 1px solid black;
+}
+
+.username {
+    font-weight: 600;
+    text-align: start;
+    direction: ltr;
+    text-transform: uppercase;
+    font-family: Arial Black, sans-serif;
+    margin: 0px;
+    align-self: center;
+    padding: 0px 0px 0px 25px;
+}
+
+.username-value {
+    text-decoration-style: solid;
+    text-decoration-line: underline;
+}

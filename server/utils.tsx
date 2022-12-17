@@ -5,7 +5,7 @@ import os from "os";
 import React from "react";
 import { Components } from "../types";
 import { Router, SocketConnection } from "./http";
-import { GlobalAppServeOptions } from "./types";
+import { GlobalAppServeOptions, ServeOptionsBase } from "./types";
 
 const appendQuery = (url: string, query: Record<string, string>) => {
   const urlObj = new URL(url);
@@ -75,7 +75,10 @@ export function openBrowserOnHost(
   }
 }
 
-export function getClientsGlobals(options: Pick<GlobalAppServeOptions, "title" | "windowDimensions">, socket: SocketConnection) {
+export function getClientsGlobals(
+  options: Pick<GlobalAppServeOptions, "title" | "windowDimensions">,
+  socket: SocketConnection
+) {
   return {
     winTitle: options.title,
     winSize: options.windowDimensions && [
@@ -102,4 +105,13 @@ export function replaceTextWithTypography<T>(node: T, i: number = 0) {
     return node.map(replaceTextWithTypography);
   }
   return node;
+}
+
+export function log(
+  option: Pick<ServeOptionsBase, "logger"> | undefined,
+  type: "info" | "warn" | "error",
+  msg: string
+) {
+  const logger = option?.logger || console[type];
+  logger(`[${type.toUpperCase()}] ${msg}`);
 }

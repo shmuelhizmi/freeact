@@ -1,4 +1,4 @@
-import React, { useState, socketIoToTransport } from "../server";
+import React, { useState } from "../server";
 import http from "http";
 
 const server = http.createServer((req, res) => {

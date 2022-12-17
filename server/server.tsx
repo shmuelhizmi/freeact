@@ -4,41 +4,27 @@ import getPort from "get-port";
 import {
   GlobalAppServeOptions,
   RequestServeOptions,
-  ServerTransport,
 } from "./types";
 import {
   Server,
   createInstanceRenderHandler,
 } from "@react-fullstack/fullstack/server";
 import { Server as SocketIOserver } from "socket.io";
-import { openBrowserOnHost, runChromeApp } from "./utils";
+import { log, openBrowserOnHost, runChromeApp } from "./utils";
 import { createSsr, hostStatics } from "./client";
-import { createRequestHandler, createRouter, getServers } from "./http";
+import {
+  createRequestHandler,
+  createRouter,
+  getServers,
+  Servers,
+} from "./http";
 import { API } from "../types";
 import { createAPI } from "./api";
 
-export function socketIoToTransport(io: SocketIOserver): ServerTransport {
-  return {
-    on: (event: string, callback: (...args: any[]) => void) => {
-      if (event === "connection") {
-        io.on(event, callback);
-      }
-    },
-    emit: (event: string, ...args: any[]) => {
-      io.sockets.emit(event, ...args);
-    },
-    off: (event: string, callback: (...args: any[]) => void) => {
-      io.sockets.removeListener(event, callback);
-      if (event === "connection") {
-        io.off(event, callback);
-      }
-    },
-  } as ServerTransport;
-}
 
 export async function serve<T>(
   render: (resolve?: (value: T) => void) => JSX.Element,
-  options: GlobalAppServeOptions = {}
+  options: Partial<GlobalAppServeOptions & RequestServeOptions> = {}
 ) {
   const logger = options.logger || console.log;
   const { basePath = "/", httpServer } = options.connection || {};
@@ -103,57 +89,34 @@ export function createSessionHandler(options: RequestServeOptions) {
       resolve: (value: T) => void,
       reject: (error: any) => void
     ) => JSX.Element,
-    configuration?: Pick<GlobalAppServeOptions, "title" | "windowDimensions">
+    configuration?: Pick<
+      GlobalAppServeOptions,
+      "title" | "windowDimensions" | "logger"
+    >
   ) {
     const { title, windowDimensions } = configuration || {};
     const handleHttp = async (req, res): Promise<T | undefined> => {
       const url = new URL(req.url || "/", `http://${req.headers.host}`);
       if (!url.pathname.endsWith("/")) {
+        log(
+          configuration,
+          "error",
+          'can only handle requests with a path that ends with a slash. e.g. "/sessions/"'
+        );
         throw new Error(
           'can only handle requests with a path that ends with a slash. e.g. "/sessions/'
         );
       }
-      const router = createRequestHandler({ servers });
-      const ssrHandler = createInstanceRenderHandler();
-      const api = createAPI(router.transport);
-      const result = new Promise((resolve, reject) => {
-        let resolvedOrRejected = false;
-        const { stop } = Render(
-          <Server
-            singleInstance
-            instanceRenderHandler={ssrHandler}
-            transport={router.transport}
-          >
-            {() => render(
-                api,
-                (value) => {
-                  if (resolvedOrRejected) return;
-                  resolve(value);
-                  stop();
-                  resolvedOrRejected = true;
-                },
-                (error) => {
-                  if (resolvedOrRejected) return;
-                  reject(error);
-                  stop();
-                  resolvedOrRejected = true;
-                }
-              )
-            }
-          </Server>
-        );
-        router.awaitDisconnection.then(() => {
-          if (resolvedOrRejected) return;
-          resolve(undefined);
-          stop();
-          resolvedOrRejected = true;
-        });
-      });
+      const { result, router, ssrHandler } = createConnection<T>(
+        render,
+        servers
+      );
       const ssr = createSsr(
         {
           title,
           windowDimensions,
           additionalComponents: options.additionalComponents,
+          staticsBasePath: options.staticsBasePath,
         },
         options.staticsBasePath,
         router.socket,
@@ -162,12 +125,75 @@ export function createSessionHandler(options: RequestServeOptions) {
       // wait for initial render to complete
       await new Promise<void>((resolve) => setTimeout(resolve));
       ssr(req, res);
-      result.then(() => router.destroy());
       return result as Promise<T>;
     };
-    return handleHttp;
+
+    const createSocketConnection = () => {
+      const { router, result } = createConnection(render, servers);
+      return {
+        result: result as Promise<T>,
+        socket: router.socket,
+      };
+    };
+    return {
+      http: handleHttp,
+      createSocketConnection,
+    };
   }
   return {
     handle,
+  };
+}
+
+function createConnection<T>(
+  render: (
+    api: API.API,
+    resolve: (value: T) => void,
+    reject: (error: any) => void
+  ) => JSX.Element,
+  servers: Servers
+) {
+  const router = createRequestHandler({ servers });
+  const ssrHandler = createInstanceRenderHandler();
+  const api = createAPI(router.transport);
+  const result = new Promise((resolve, reject) => {
+    let resolvedOrRejected = false;
+    const { stop } = Render(
+      <Server
+        singleInstance
+        instanceRenderHandler={ssrHandler}
+        transport={router.transport}
+      >
+        {() =>
+          render(
+            api,
+            (value) => {
+              if (resolvedOrRejected) return;
+              resolve(value);
+              stop();
+              resolvedOrRejected = true;
+            },
+            (error) => {
+              if (resolvedOrRejected) return;
+              reject(error);
+              stop();
+              resolvedOrRejected = true;
+            }
+          )
+        }
+      </Server>
+    );
+    router.awaitDisconnection.then(() => {
+      if (resolvedOrRejected) return;
+      resolve(undefined);
+      stop();
+      resolvedOrRejected = true;
+    });
+  });
+  result.then(() => router.destroy());
+  return {
+    result,
+    router,
+    ssrHandler,
   };
 }

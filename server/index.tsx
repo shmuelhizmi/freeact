@@ -37,7 +37,6 @@ export {
   version,
 } from "react";
 
-export { socketIoToTransport } from "./server";
 export {
   buildAdditionalComponents,
   createCompiler,

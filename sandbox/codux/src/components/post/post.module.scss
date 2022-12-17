@@ -1,0 +1,39 @@
+.root {
+    width: 100%;
+    height: 100%;
+    border: solid 1px black;
+    background: #ffc;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.note-fold {
+    position: absolute;
+    width: 22px;
+    height: 1px;
+    border: 1px solid;
+    top: 0px;
+    display: block;
+    border-width: 10px 2px 2px;
+    border-left: 22px solid black;
+    border-bottom: 22px solid transparent;
+    border-top: 0 solid transparent;
+    border-right: 0 solid transparent;
+    align-self: start;
+}
+
+.heading {
+    font-family: Arial Black, sans-serif;
+    font-weight: 600;
+    font-size: 17px;
+}
+
+.body {
+    display: inline;
+    align-self: center;
+    width: 80%;
+    font-style: italic;
+    text-overflow: ellipsis;
+    text-align: center;
+}

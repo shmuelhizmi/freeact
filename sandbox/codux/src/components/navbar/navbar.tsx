@@ -8,7 +8,7 @@ export interface NavbarProps {
 
 export const Navbar = ({ className, navigate, username }: NavbarProps) => {
     return (<div className={`${styles.root} ${className}`}>
-        <p>Hello {username}</p>
-        <button />
+        <p className={styles.username}>Hello <span className={styles['username-value']}>{username}</span></p>
+        <button className={styles.home}>Home</button>
     </div>);
 };

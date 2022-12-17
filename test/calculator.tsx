@@ -89,6 +89,5 @@ function Calculator() {
 React.serve(() => <Calculator />, {
   runFrom: "browser",
   title: "Calculator",
-  enableSSR: true,
   windowDimensions: { width: 500, height: 750 },
 });

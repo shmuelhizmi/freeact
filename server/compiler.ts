@@ -1,4 +1,3 @@
-import esbuild from "esbuild";
 import React from "react";
 import { AdditionalComponentsExportBase } from "../types/additionalComponents";
 import { serve, createSessionHandler } from "./server";
@@ -6,6 +5,8 @@ import { hostClientBundles, createHostClientBundlesMiddleware } from "./http";
 import { Server as HTTPServer } from "http";
 import { createViewProxy } from "./view";
 import { Base } from "../views/ui/Base";
+import { createAwaitProxy } from "./awaitProxy";
+import * as build from "../compiler/build";
 
 export type OmitClassNames<T extends AdditionalComponentsExportBase> = {
   [K in keyof T]: T[K] extends React.FunctionComponent<infer P>
@@ -14,18 +15,7 @@ export type OmitClassNames<T extends AdditionalComponentsExportBase> = {
 };
 
 export async function buildAdditionalComponents(path: string) {
-  const outPut = await esbuild.build({
-    entryPoints: [path],
-    bundle: true,
-    write: false,
-    format: "esm",
-    platform: "browser",
-  });
-  if (outPut.errors.length) {
-    throw new Error(outPut.errors[0].text);
-  }
-  const code = outPut.outputFiles?.[0].text;
-  return code;
+  return build.components(path);
 }
 
 function createCompilerBase<TBase extends AdditionalComponentsExportBase>(
@@ -58,9 +48,7 @@ function createCompilerBase<TBase extends AdditionalComponentsExportBase>(
             server: HTTPServer,
             mountPath?: string
           ) => Promise<ReturnType<typeof hostClientBundles>>;
-          createHostClientBundlesMiddleware: (
-            mountPath?: string
-          ) => Promise<ReturnType<typeof createHostClientBundlesMiddleware>>;
+          createHostClientBundlesMiddleware: typeof createHostClientBundlesMiddleware;
         },
         TBase
       >({
@@ -81,26 +69,21 @@ function createCompilerBase<TBase extends AdditionalComponentsExportBase>(
           });
         },
         createSessionHandler: <T>(options) => {
-          return {
-            handle: (render, configuration) => {
-              return async (req, res) => {
-                const additionalComponents = await Promise.all(bundles);
-                return createSessionHandler({
-                  ...options,
-                  additionalComponents: {
-                    ssrViews: {
-                      ...ssrViewsBase,
-                      ...(options?.additionalComponents?.ssrViews ?? {}),
-                    },
-                    bundles: [
-                      ...additionalComponents,
-                      ...(options?.additionalComponents?.bundles ?? []),
-                    ],
-                  },
-                }).handle(render as any, configuration)(req, res) as Promise<T>;
-              };
-            },
-          };
+          return createAwaitProxy(async () => {
+            return createSessionHandler({
+              ...options,
+              additionalComponents: {
+                ssrViews: {
+                  ...ssrViewsBase,
+                  ...(options?.additionalComponents?.ssrViews ?? {}),
+                },
+                bundles: [
+                  ...(await Promise.all(bundles)),
+                  ...(options?.additionalComponents?.bundles ?? []),
+                ],
+              },
+            });
+          });
         },
         hostStatics(server, mountPath) {
           return Promise.all(bundles).then((bundles) =>
@@ -108,10 +91,27 @@ function createCompilerBase<TBase extends AdditionalComponentsExportBase>(
           );
         },
         createHostClientBundlesMiddleware(mountPath) {
-          return Promise.all(bundles).then((bundles) =>
-            createHostClientBundlesMiddleware(mountPath, bundles)
+          const initialMiddleware = createHostClientBundlesMiddleware(
+            mountPath,
+            []
           );
-        }
+          let middleware: typeof initialMiddleware.middleware;
+          Promise.all(bundles).then((bundles) => {
+            middleware = createHostClientBundlesMiddleware(
+              initialMiddleware.path,
+              bundles
+            ).middleware;
+          });
+          return {
+            path: initialMiddleware.path,
+            middleware: (req, res, next) => {
+              if (middleware) {
+                return middleware(req, res, next);
+              }
+              return next();
+            },
+          };
+        },
       });
     },
   };

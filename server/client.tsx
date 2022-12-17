@@ -1,6 +1,5 @@
-import { IncomingMessage, ServerResponse } from "http";
 import path from "path";
-import { GlobalAppServeOptions, ServeOptionsBase } from "./types";
+import { GlobalAppServeOptions, RequestServeOptions } from "./types";
 import fs from "fs/promises";
 import { getClientsGlobals } from "./utils";
 import mime from "mime-types";
@@ -23,14 +22,16 @@ const withFallbackComp = <T extends Record<string, any>>(obj: T): T => {
   });
 };
 
-const makeBundles = (bundles: string[]) => {
+const makeBundles = (bundles: string[], staticsBasePath?: string) => {
   const additionalJsBundle = Array(bundles.length || 0)
     .fill("")
     .map((_, i) => {
       return `additional-${i}.js`;
     });
   return {
-    additionalJsBundle,
+    additionalJsBundlePath: additionalJsBundle.map((filename) =>
+      path.join(staticsBasePath || '/', filename)
+    ),
     getBundle(filename: string) {
       return bundles[additionalJsBundle.indexOf(filename)];
     },
@@ -71,14 +72,19 @@ export function hostStatics(additionalComponentsBundles: string[]) {
   return handler;
 }
 
-
 export function createSsr(
-  options: Pick<GlobalAppServeOptions, 'title' | 'windowDimensions' | 'additionalComponents'>,
+  options: Partial<
+    Pick<
+      GlobalAppServeOptions,
+      "title" | "windowDimensions" | "additionalComponents"
+    > &
+      Pick<RequestServeOptions, "staticsBasePath">
+  >,
   staticsBase: string,
   socket: SocketConnection,
   ssrFunction: (views: Record<string, React.ComponentType>) => JSX.Element
 ) {
-  const { additionalComponents } = options;
+  const { additionalComponents, staticsBasePath } = options;
   const { ssrViews } = additionalComponents || {};
   const globals = getClientsGlobals(options, socket);
   const handler: HTTPRequestHandler<Promise<void>> = async (req, res) => {
@@ -97,7 +103,10 @@ export function createSsr(
                 __html: `
                 const toInject = ${JSON.stringify({
                   ...globals,
-                  bundles: makeBundles(options.additionalComponents?.bundles || []).additionalJsBundle,
+                  bundles: makeBundles(
+                    options.additionalComponents?.bundles || [],
+                    staticsBasePath
+                  ).additionalJsBundlePath,
                 })};
                 for (const key in toInject) {
                   window[key] = toInject[key];
@@ -108,8 +117,15 @@ export function createSsr(
               `,
               }}
             ></script>
-            <script type="module" crossOrigin="" src={path.join(staticsBase, "./freeact.mjs")}></script>
-            <link rel="stylesheet" href={path.join(staticsBase, "./freeact.css")} />
+            <script
+              type="module"
+              crossOrigin=""
+              src={path.join(staticsBase, "./freeact.mjs")}
+            ></script>
+            <link
+              rel="stylesheet"
+              href={path.join(staticsBase, "./freeact.css")}
+            />
             {ssrFunction ? ssrFunction(withFallbackComp(SSRHeadViews)) : null}
             <title>{options.title}</title>
           </head>
@@ -131,17 +147,3 @@ export function createSsr(
   };
   return handler;
 }
-
-// export async function createClient(
-//   options: GlobalAppServeOptions,
-//   socket: SocketConnection,
-//   ssrFunction: (views: Record<string, React.ComponentType>) => JSX.Element
-// ) {
-//   if (true) {
-//     return (await createSsr(options, socket, ssrFunction)).handler;
-//   }
-//   const { startViteServer } = await import("./vite");
-//   return await (
-//     await startViteServer(options, socket)
-//   ).handle;
-// }
