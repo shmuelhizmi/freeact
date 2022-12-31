@@ -38,7 +38,7 @@ export function runChromeApp(
     const app = exec(
       [
         `"${chromePath}"`,
-        `--user-data-dir=${os.tmpdir()}`,
+        `--incognito`,
         `--app=${appendDimensions(client, dimensions)}`,
         `--window-size=${dimensionsStr(dimensions)}`,
       ].join(" ")

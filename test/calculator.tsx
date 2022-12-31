@@ -2,12 +2,15 @@ import React, { useState } from "../server";
 
 function Calculator() {
   const [expression, setExpression] = useState("");
+  const buttonBaseProps = {
+    variant: "solid" as const,
+    size: "lg" as const,
+  };
   const button = (num: number | string) => {
     return (
       <React.Button
         onClick={() => setExpression(expression + num)}
-        variant="solid"
-        size="lg"
+        {...buttonBaseProps}
         color={typeof num === "number" ? "primary" : "info"}
         label={num.toString()}
       />
@@ -27,6 +30,7 @@ function Calculator() {
       setExpression("WTF?");
     }
   };
+
   return (
     <>
       <React.Favicon
@@ -67,16 +71,14 @@ function Calculator() {
           {button("*")}
           <React.Button
             onClick={() => setExpression("")}
-            variant="solid"
-            size="lg"
+            {...buttonBaseProps}
             color="danger"
             label="clear"
           />
           {button(0)}
           <React.Button
             onClick={() => calc()}
-            variant="solid"
-            size="lg"
+            {...buttonBaseProps}
             color="success"
             label="="
           />
@@ -87,7 +89,7 @@ function Calculator() {
 }
 
 React.serve(() => <Calculator />, {
-  runFrom: "browser",
+  runFrom: "chrome-app",
   title: "Calculator",
-  windowDimensions: { width: 500, height: 750 },
+  windowDimensions: { width: 550, height: 750 },
 });

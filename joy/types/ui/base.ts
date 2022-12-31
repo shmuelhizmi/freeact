@@ -1,4 +1,4 @@
-import { ColorPaletteProp, VariantProp } from "../mui"
+import { ColorPaletteProp, VariantProp } from "./mui"
 
 export type Size = `${number}px` | `${number}%` | `${number}rem` | `${number}em` | `${number}vw` | `${number}vh` | `${number}vmin` | `${number}vmax` | `${number}fr`;
 type MinMax = `minmax(${Size}, ${Size})` | `min(${Size}, ${Size})` | `max(${Size}, ${Size})`

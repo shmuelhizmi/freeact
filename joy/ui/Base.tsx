@@ -3,7 +3,7 @@ import {
   GridTemplate,
   Size,
   StyleEnabled,
-} from "../../types/ui/base";
+} from "../types/ui/base";
 import { styled } from "@mui/joy";
 
 

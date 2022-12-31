@@ -1,59 +1,84 @@
-import { API } from "../types";
-import type { Namespace, Server } from "socket.io";
-import { Transport } from "@react-fullstack/fullstack/shared";
+import { Transport, randomId } from "@react-fullstack/fullstack/shared";
+import {
+  APIEventsMapBase,
+  APIServerImplementation,
+  API_PREFIX,
+  API_REJECT,
+} from "../types/api";
 
-export function createAPI(transport: Transport<any>): API.API {
-  return {
-    io: {
-      camera: {
-        takePicture(camera) {
-          return API.emit(
-            transport,
-            "IOAPI_CameraAPI_TakePicture",
-            camera === "front"
-              ? API.APIEventData.IOAPI_CameraAPI_CameraFront
-              : API.APIEventData.IOAPI_CameraAPI_CameraBack
-          );
-        },
-      },
-      clipboard: {
-        readText() {
-          return API.emit(transport, "IOAPI_ClipboardAPI_ReadText");
-        },
-        writeText(text) {
-          return API.emit(transport, "IOAPI_ClipboardAPI_WriteText", text);
-        },
-      },
-      storage: {
-        getItem(key) {
-          return API.emit(transport, "IOAPI_StorageAPI_GetItem", key);
-        },
-        setItem(key, value) {
-          return API.emit(transport, "IOAPI_StorageAPI_SetItem", key, value);
-        },
-      },
-    },
-    navigation: {
-      navigate(url) {
-        return API.emit(transport, "NavigationAPI_Navigate", url);
-      },
-      replaceState(path) {
-        return API.emit(transport, "NavigationAPI_ReplaceState", path);
-      },
-      pushState(path) {
-        return API.emit(transport, "NavigationAPI_PushState", path);
-      },
-      reload() {
-        return API.emit(transport, "NavigationAPI_Reload");
-      },
-    },
-    window: {
-      open(url) {
-        return API.emit(transport, "WindowAPI_Open", url);
-      },
-      resize(width, height) {
-        return API.emit(transport, "WindowAPI_Resize", width, height);
-      },
-    },
-  };
+export function createApiServerInterface<APIEventsMap extends APIEventsMapBase, T>(
+  implementor: (connection: {
+    on: <T extends keyof APIEventsMap>(
+      event: T,
+      handler: APIEventsMap[T]
+    ) => void;
+    emit: <T extends keyof APIEventsMap>(
+      event: T,
+      ...args: Parameters<APIEventsMap[T]>
+    ) => Promise<ReturnType<APIEventsMap[T]>>;
+  }) => T
+) {
+  return ((socket: Transport<any>, apiId: string): T =>
+    implementor({
+      on: on.bind(null, socket, apiId) as any,
+      emit: emit.bind(null, socket, apiId) as any,
+    })) as APIServerImplementation<T>;
+}
+
+export function emit<
+  APIEventsMap extends APIEventsMapBase,
+  T extends keyof APIEventsMap
+>(
+  socket: Transport<any>,
+  apiId: string,
+  event: T,
+  ...args: Parameters<APIEventsMap[T]>
+): Promise<ReturnType<APIEventsMap[T]>> {
+  const uid = randomId();
+  socket.emit(`${API_PREFIX}_${apiId}`, [event, uid, args]);
+  return new Promise((resolve, reject) => {
+    socket.on(
+      `${API_PREFIX}_${apiId}`,
+      ([eventIn, uidIn, args]: [T, string, any]) => {
+        if (event !== eventIn || uid !== uidIn) return;
+        resolve(args);
+      }
+    );
+    socket.on(`${API_REJECT}_${apiId}`, ([eventIn, uidIn, error]) => {
+      if (event !== eventIn || uid !== uidIn) return;
+      reject(error);
+    });
+  });
+}
+
+export function on<
+  APIEventsMap extends APIEventsMapBase,
+  T extends keyof APIEventsMap
+>(
+  socket: Transport<any>,
+  apiId: string,
+  event: T,
+  listener: (
+    ...args: Parameters<APIEventsMap[T]>
+  ) => ReturnType<APIEventsMap[T]> | Promise<ReturnType<APIEventsMap[T]>>
+): void {
+  socket.on(API_PREFIX, ([eventIn, uid, args]: [T, string, any]) => {
+    if (event !== eventIn) return;
+    try {
+      const out = listener(...args);
+      if (out instanceof Promise) {
+        out
+          .then((result) => {
+            socket.emit(`${API_PREFIX}_${apiId}`, [event, uid, result]);
+          })
+          .catch((error) => {
+            socket.emit(`${API_REJECT}_${apiId}`, [event, uid, error]);
+          });
+        return;
+      }
+      socket.emit(`${API_PREFIX}_${apiId}`, [event, uid, out]);
+    } catch (error) {
+      socket.emit(`${API_REJECT}_${apiId}`, [event, uid, error]);
+    }
+  });
 }

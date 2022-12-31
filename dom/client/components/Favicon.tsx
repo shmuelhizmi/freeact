@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { FaviconViewProps } from "../../types/favicon";
+import { FaviconViewProps } from "../../favicon";
 
 
 export default function Favicon(props: FaviconViewProps) {
