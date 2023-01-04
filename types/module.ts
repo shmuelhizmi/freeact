@@ -2,7 +2,7 @@ import { APIClientImplementation, APIServerImplementation } from "./api";
 import { MaybePromise } from "./utils";
 
 export interface UIModule<Comps extends CompNameCompPropsMap> {
-  api: APIClientImplementation;
+  api?: APIClientImplementation;
   components: ComponentImplementor<Comps>;
 //   wrappedExternalComponent: WrappedExternalComponent<GlobalProps>;
 }

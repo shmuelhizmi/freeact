@@ -7,22 +7,21 @@ import type { MDProps } from "./md"
 import type { SliderProps } from "./slider"
 import type { UploadProps } from "./upload"
 import type { ImageProps } from "./image"
-import { View } from "@react-fullstack/fullstack/shared"
 import React from "react"
 
-export type UIViews = {
-    Typography: View<TypographyViewProps>;
-    Button: View<ButtonProps>;
-    Input: View<InputProps>;
-    Box: View<BoxProps>;
-    Select: View<SelectProps<any>>;
-    MD: View<MDProps>;
-    Slider: View<SliderProps>;
-    Upload: View<UploadProps>;
-    Image: View<ImageProps>;
+export type ClientComponents = {
+    Typography: TypographyViewProps;
+    Button: ButtonProps;
+    Input: InputProps;
+    Box: BoxProps;
+    Select: SelectProps<any>;
+    MD: MDProps;
+    Slider: SliderProps;
+    Upload: UploadProps;
+    Image: ImageProps;
 }
 
-export type UIComponents = {
+export type ServerComponents = {
     Typography: React.FC<TypographyProps>;
     Button: React.FC<ButtonProps>;
     Input: React.FC<InputProps>;

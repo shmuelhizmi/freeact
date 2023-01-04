@@ -1,7 +1,7 @@
 import fs from "fs/promises";
 import mime from "mime-types";
-import { FaviconProps } from "../../favicon";
-import { DomComponents } from "../../types";
+import { FaviconProps } from "../favicon";
+import { DomComponents } from "../types";
 import { useEffect, useState } from "react";
 import React from "react";
 import { Components } from "../../../types/module";

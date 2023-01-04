@@ -1,7 +1,7 @@
 import React from "react";
-import { APIServerImplementation } from "../../types/api";
-import { CompNameCompPropsMap, Components, ServerModule, UIModule } from "../../types/module";
-import { MaybePromise } from "../../types/utils";
+import { APIServerImplementation } from "../types/api";
+import { CompNameCompPropsMap, Components, ServerModule, UIModule } from "../types/module";
+import { MaybePromise } from "../types/utils";
 import { ViewsProvider } from "@react-fullstack/fullstack/server";
 
 /**
@@ -56,7 +56,7 @@ function createServerModuleBase<
       );
       return withServerComponents;
     },
-    overrideWithSsrComponents<SsrOverrides extends Record<keyof Comps, any>>(
+    overrideWithSsrComponents<SsrOverrides extends Partial<Components<Comps>>>(
       override: () => MaybePromise<Omit<Comps, keyof SsrOverrides> & SsrOverrides>
     ) {
       const withSsrComponents = createServerModuleBase(

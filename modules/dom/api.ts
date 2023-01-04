@@ -1,5 +1,5 @@
 import { createApiServerInterface } from "../../server/api";
-import { APIEventData, APIEventsMap, APIEvents, API } from "../types";
+import { APIEventData, APIEventsMap, APIEvents, API } from "./types";
 
 export const api = createApiServerInterface<APIEventsMap, API>(({ emit }) => {
   return {
