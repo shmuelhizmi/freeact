@@ -1,19 +1,17 @@
 import lazy from "../gen/globals";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { ClientConnection } from "../types/connection";
-import { ViewsToComponents, Client } from "@react-fullstack/fullstack/client";
+import { Client } from "@react-fullstack/fullstack/client";
 import { emit, Events } from "@react-fullstack/fullstack/shared";
-import AppWrapper from "./baseWrapper";
-import { Views } from "./views";
 import { io, Socket } from "socket.io-client";
-import { UIModule } from "../types/ui";
+import { UIModule } from "../types/module";
 
 declare global {
   interface Window {
     server: ClientConnection;
     winSize: [number, number];
     winTitle: string;
-    bundles: string[];
+    modules: Record<string, string>;
   }
 }
 
@@ -34,19 +32,24 @@ function useLoadAdditionalBundles(socket: Socket) {
   const [loaded, setLoaded] = useState(false);
   useEffect(() => {
     if (loaded) return;
-    const promises = (window.bundles || []).map(
-      (bundle) => import(bundle)
-    ) as Promise<UIModule<any, any, any>>[];
+    const promises = Object.entries(window.modules || {}).map(
+      ([name, modulePath]) =>
+        import(modulePath).then((mod) =>
+          Promise.resolve((mod as UIModule<any>).components()).then(
+            (comps) => ({ name, module: mod, comps })
+          )
+        )
+    );
     lazy.then(() => {
       Promise.all(promises).then((modules) => {
         const comps = modules.reduce((acc, mod) => {
-          mod.registerAPI(socket);
+          // mod.api?.(socket);
           return {
             ...acc,
-            ...Object.entries(mod).reduce((acc, [k, v]) => {
+            ...Object.entries(mod.comps).reduce((acc, [name, comp]) => {
               return {
                 ...acc,
-                [k]: v,
+                [`${mod.name}_${name}`]: comp,
               };
             }, {}),
           };
@@ -69,9 +72,8 @@ const socket = io(
   }
 );
 
-
 function App({ onLoad }: { onLoad(): void }) {
-  const comps = useLoadAdditionalBundles();
+  const comps = useLoadAdditionalBundles(socket);
   useEffect(() => {
     socket.on(String(Events.UpdateViewsTree), onLoad);
     emit.request_views_tree(socket as any);
@@ -82,16 +84,13 @@ function App({ onLoad }: { onLoad(): void }) {
     throw new Error("Server host not found");
   }
   return (
-    <AppWrapper>
-      <Client<Components>
-        transport={socket as any}
-        requestViewTreeOnMount
-        views={{
-          ...(Views as unknown as ViewsToComponents<Components>),
-          ...comps,
-        }}
-      />
-    </AppWrapper>
+    <Client<any>
+      transport={socket as any}
+      requestViewTreeOnMount
+      views={{
+        ...comps,
+      }}
+    />
   );
 }
 

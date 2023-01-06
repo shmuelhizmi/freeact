@@ -1,13 +1,14 @@
 import esbuild from "esbuild";
 import path from "path";
 import { externals, injectGlobals } from "./globals";
+import fs from "fs/promises";
 
 
 export async function views() {
   await injectGlobals();
   return esbuild
     .build({
-      entryPoints: [path.join(__dirname, "../views/main.tsx")],
+      entryPoints: [path.join(__dirname, "../views-core/main.tsx")],
       // outdir: "",
       bundle: true,
       sourcemap: true,

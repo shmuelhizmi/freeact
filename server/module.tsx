@@ -11,6 +11,37 @@ import { MaybePromise } from "../types/utils";
 import { ViewsProvider } from "@react-fullstack/fullstack/server";
 import { createApiServerInterface } from "./api";
 
+export type Compiler<
+  Comps extends CompNameCompPropsMap,
+  APIInterface,
+  ServerComps extends CompNameCompPropsMap
+> = {
+  implementApi<APIInterface>(
+    api: createAPIServerImplementation<APIInterface>
+  ): Compiler<Comps, APIInterface, ServerComps>;
+  overrideWithServerComponents<
+    ServerOverrides extends Partial<Record<keyof Comps, any>>
+  >(
+    override: (clientComponents: Components<Comps>) => MaybePromise<{
+      [K in keyof ServerOverrides]: React.ComponentType<
+        React.PropsWithChildren<ServerOverrides[K]>
+      >;
+    }>
+  ): Compiler<
+    Comps,
+    APIInterface,
+    Omit<Comps, keyof ServerOverrides> & ServerOverrides
+  >;
+  overrideWithSsrComponents<SsrOverrides extends Partial<Components<Comps>>>(
+    override: () => MaybePromise<SsrOverrides>
+  ): Compiler<Comps, APIInterface, ServerComps>;
+  done<Namespace extends string>(): ServerModule<
+    Namespace,
+    ServerComps,
+    APIInterface
+  >;
+};
+
 /**
  *
  * @example
@@ -22,8 +53,8 @@ import { createApiServerInterface } from "./api";
 export function createServerModule<Comps extends CompNameCompPropsMap>(
   client: MaybePromise<UIModule<Comps>>,
   clientPath: string
-) {
-  return createServerModuleBase(
+): Compiler<Comps, {}, Comps> {
+  return createServerModuleBase<Comps, {}, Comps>(
     client,
     clientPath,
     createApiServerInterface(() => ({})),
@@ -34,19 +65,20 @@ export function createServerModule<Comps extends CompNameCompPropsMap>(
 
 function createServerModuleBase<
   Comps extends CompNameCompPropsMap,
-  APIInterface
+  APIInterface,
+  ServerComps extends CompNameCompPropsMap
 >(
   client: MaybePromise<UIModule<Comps>>,
   clientPath: string,
   _api: createAPIServerImplementation<APIInterface>,
   _serverOverrides: Array<(comps: any) => MaybePromise<any>>,
   _ssrOverrides: Array<() => MaybePromise<any>>
-) {
+): Compiler<Comps, APIInterface, ServerComps> {
   return {
     implementApi<APIInterface>(
       api: createAPIServerImplementation<APIInterface>
     ) {
-      const withApi = createServerModuleBase(
+      const withApi = createServerModuleBase<Comps, APIInterface, ServerComps>(
         client,
         clientPath,
         api,
@@ -56,13 +88,19 @@ function createServerModuleBase<
       return withApi;
     },
     overrideWithServerComponents<
-      ServerOverrides extends Record<keyof Comps, any>
+      ServerOverrides extends Partial<Record<keyof Comps, any>>
     >(
-      override: (
-        clientComponents: Components<Comps>
-      ) => MaybePromise<Omit<Comps, keyof ServerOverrides> & ServerOverrides>
+      override: (clientComponents: Components<Comps>) => MaybePromise<{
+        [K in keyof ServerOverrides]: React.ComponentType<
+          React.PropsWithChildren<ServerOverrides[K]>
+        >;
+      }>
     ) {
-      const withServerComponents = createServerModuleBase(
+      const withServerComponents = createServerModuleBase<
+        Comps,
+        APIInterface,
+        Omit<Comps, keyof ServerOverrides> & ServerOverrides
+      >(
         client,
         clientPath,
         _api,
@@ -76,16 +114,17 @@ function createServerModuleBase<
         Omit<Comps, keyof SsrOverrides> & SsrOverrides
       >
     ) {
-      const withSsrComponents = createServerModuleBase(
-        client,
-        clientPath,
-        _api,
-        _serverOverrides,
-        [..._ssrOverrides, override]
-      );
+      const withSsrComponents = createServerModuleBase<
+        Comps,
+        APIInterface,
+        ServerComps
+      >(client, clientPath, _api, _serverOverrides, [
+        ..._ssrOverrides,
+        override,
+      ]);
       return withSsrComponents;
     },
-    done<Namespace extends string>(namespace: Namespace) {
+    done: ((namespace) => {
       const getComponents = async () => {
         const { components: unwaitedClientComponents } = await client;
         const clientComponents = Object.keys(
@@ -130,8 +169,8 @@ function createServerModuleBase<
           getComponents().then(({ ssrComponents }) => ssrComponents),
         namespace,
         clientPath,
-      } as ServerModule<Namespace, Comps, APIInterface>;
-    },
+      } as any;
+    }) as any,
   };
 }
 

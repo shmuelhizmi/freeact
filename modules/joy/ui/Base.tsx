@@ -5,7 +5,7 @@ import {
   StyleEnabled,
 } from "../types/ui/base";
 import { styled } from "@mui/joy";
-
+import { withBaseline } from "./Baseline";
 
 const makeGridTemplate = (template?: GridTemplate) => {
   if (Array.isArray(template)) {
@@ -54,5 +54,5 @@ export const Base = <P extends BaseProps & StyleEnabled>(
       gridColumnStart: columnStart,
     })
   );
-  return StyledComp as any;
+  return withBaseline(StyledComp as any);
 };

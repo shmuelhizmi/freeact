@@ -15,17 +15,23 @@ const makeBundles = (
   modules: CompiledServerModules,
   staticsBasePath: string
 ) => {
-  return Object.values(modules)
-    .map((module) => ({
-      file: `${staticsBasePath}/modules/${module.namespace}.js`,
-      async getBundle() {
-        return module.clientBundle;
-      },
-    }))
-    .reduce((acc, cur) => {
+  const files = Object.values(modules).map((module) => ({
+    file: `${staticsBasePath}/modules/${module.namespace}.js`,
+    async getBundle() {
+      return module.clientBundle;
+    },
+    namespace: module.namespace,
+  }));
+  return {
+    filesMap: files.reduce((acc, cur) => {
       acc[cur.file] = cur;
       return acc;
-    }, {} as Record<string, { file: string; getBundle: () => Promise<string> }>);
+    }, {} as Record<string, { file: string; getBundle: () => Promise<string> }>),
+    nameMap: files.reduce((acc, cur) => {
+      acc[cur.namespace] = cur.file;
+      return acc;
+    }, {} as Record<string, string>),
+  };
 };
 
 export function hostStatics(modules: CompiledServerModules) {
@@ -33,7 +39,7 @@ export function hostStatics(modules: CompiledServerModules) {
     ? path.join(__dirname, "..", "client")
     : path.join(__dirname, "..", "dist", "client");
 
-  const bundles = makeBundles(modules, "");
+  const bundles = makeBundles(modules, "").filesMap;
   const handler: HTTPRequestHandler<Promise<void>> = async (req, res) => {
     try {
       const url = new URL(req.url || "", `http://${req.headers.host}`);
@@ -90,9 +96,7 @@ export function createSsr(
                 __html: `
                 const toInject = ${JSON.stringify({
                   ...globals,
-                  bundles: Object.keys(
-                    makeBundles(modules, staticsBasePath || "")
-                  ),
+                  modules: makeBundles(modules, staticsBasePath || "").nameMap,
                 })};
                 for (const key in toInject) {
                   window[key] = toInject[key];
@@ -117,9 +121,7 @@ export function createSsr(
             <title>{options.title}</title>
           </head>
           <body>
-            <div id="root">
-                {ssrFunction ? ssrFunction(ssrViews) : null}
-            </div>
+            <div id="root">{ssrFunction ? ssrFunction(ssrViews) : null}</div>
           </body>
         </html>
       );

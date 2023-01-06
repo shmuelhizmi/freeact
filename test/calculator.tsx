@@ -1,4 +1,4 @@
-import React, { useState } from "../server";
+import React, { useState } from "../modules/joy/react";
 
 function Calculator() {
   const [expression, setExpression] = useState("");
@@ -8,7 +8,7 @@ function Calculator() {
   };
   const button = (num: number | string) => {
     return (
-      <React.Button
+      <React.JOY.Button
         onClick={() => setExpression(expression + num)}
         {...buttonBaseProps}
         color={typeof num === "number" ? "primary" : "info"}
@@ -33,24 +33,24 @@ function Calculator() {
 
   return (
     <>
-      <React.Favicon
+      <React.DOM.Favicon
         type="path"
         absolutePath={__dirname + "/assets/circle.svg"}
       />
-      <React.Box
+      <React.JOY.Box
         columns={"min(100vw, 500px)"}
         rows={["80px", "calc(95% - 80px)"]}
         gap={10}
         padding={"3%"}
       >
-        <React.Input
+        <React.JOY.Input
           onChange={(text) => setExpression(text)}
           value={expression}
           placeholder="expression"
           type="text"
           fontSize={60}
         />
-        <React.Box
+        <React.JOY.Box
           rows={["25%", "25%", "25%", "25%"]}
           columns={["25%", "25%", "25%", "25%"]}
           gap={"2%"}
@@ -69,27 +69,27 @@ function Calculator() {
           {button(8)}
           {button(9)}
           {button("*")}
-          <React.Button
+          <React.JOY.Button
             onClick={() => setExpression("")}
             {...buttonBaseProps}
             color="danger"
             label="clear"
           />
           {button(0)}
-          <React.Button
+          <React.JOY.Button
             onClick={() => calc()}
             {...buttonBaseProps}
             color="success"
             label="="
           />
-        </React.Box>
-      </React.Box>
+        </React.JOY.Box>
+      </React.JOY.Box>
     </>
   );
 }
 
 React.serve(() => <Calculator />, {
-  runFrom: "chrome-app",
+  runFrom: "browser",
   title: "Calculator",
   windowDimensions: { width: 550, height: 750 },
 });

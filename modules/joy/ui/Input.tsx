@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect } from "react";
 import { InputProps } from "../types/ui/input";
 import { TextField, Textarea } from "@mui/joy";
-import { useDebounce } from '../../utils/debounce'
+import { useDebounce } from '../../../utils/debounce'
 import { Base } from "./Base";
 import { StyleEnabled } from "../types/ui/base";
 
