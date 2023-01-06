@@ -1,7 +1,6 @@
 import type { Server } from "@react-fullstack/fullstack/server";
 import type { Server as HTTPServer } from "http";
 import { Server as SocketServer } from "socket.io";
-import React from "react";
 
 export type ServerTransport = Parameters<typeof Server>[0]["transport"];
 export interface GlobalAppServeOptions extends ServeOptionsBase {
@@ -36,9 +35,5 @@ export interface ServeOptionsBase {
        */
       path?: string;
     };
-  };
-  additionalComponents?: {
-    bundles?: string[];
-    ssrViews: Record<string, React.ComponentType>;
   };
 }

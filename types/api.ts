@@ -1,3 +1,5 @@
+import { Transport } from "@react-fullstack/fullstack/shared";
+
 export const API_PREFIX: number = 0xfade;
 export const API_REJECT: number = 0xfade + 0xdead;
 
@@ -18,3 +20,4 @@ export type AllowSync<T> = T extends Promise<infer U> ? (U | Promise<U>) : (T | 
 
 export type APIClientImplementation = (connection: ConnectionUnTyped) => any;
 export type APIServerImplementation <Interface>= (connection: ConnectionUnTyped, apiId: string) => Interface;
+export type createAPIServerImplementation <Interface>= (connection: Transport<any>, apiId: string) => APIServerImplementation<Interface>;

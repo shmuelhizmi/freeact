@@ -1,3 +1,4 @@
+import React from "react";
 import { CssBaseline, CssVarsProvider } from "@mui/joy";
 
 export default ({ children }: { children: any }) => (

@@ -1,122 +1,102 @@
-import React from "react";
-import { AdditionalComponentsExportBase } from "../types/additionalComponents";
 import { serve, createSessionHandler } from "./server";
 import { hostClientBundles, createHostClientBundlesMiddleware } from "./http";
 import { Server as HTTPServer } from "http";
-import { createViewProxy } from "./view";
-import { Base } from "../views/ui/Base";
-import { createAwaitProxy } from "./awaitProxy";
 import * as build from "../compiler/build";
+import {
+  CompiledServerModules,
+  ServerModule,
+  ServerModules,
+} from "../types/module";
+import { GlobalAppServeOptions, RequestServeOptions } from "./types";
+import * as React from "react";
+import { getServerComponentMap } from "./module";
+import { PRIVATE_FREEACT_SET_MODULES, createFreeactProxy } from "./freeactProxy";
 
-export type OmitClassNames<T extends AdditionalComponentsExportBase> = {
-  [K in keyof T]: T[K] extends React.FunctionComponent<infer P>
-    ? React.FunctionComponent<Omit<P, "className">>
-    : never;
-};
-
-export async function buildAdditionalComponents(path: string) {
-  return build.components(path);
+export function createCompiler() {
+  return createCompilerBase({});
 }
-
-function createCompilerBase<TBase extends AdditionalComponentsExportBase>(
-  bundles: Promise<string>[] = [],
-  ssrViewsBase: TBase = {} as TBase
-) {
+function createCompilerBase<Modules extends ServerModules>(modules: Modules) {
   return {
-    withComponents<T extends AdditionalComponentsExportBase>(
-      entryPoint: string,
-      ssrViews: T
-    ) {
-      bundles.push(buildAdditionalComponents(entryPoint));
-      return createCompilerBase<TBase & OmitClassNames<T>>(bundles, {
-        ...ssrViewsBase,
-        ...Object.entries(ssrViews).reduce(
-          (acc, [key, value]) => ({
-            ...acc,
-            [key]: Base(value),
-          }),
-          {} as TBase & OmitClassNames<T>
-        ),
+    addModule<
+      Name extends string,
+      Comps extends Record<string, any>,
+      APIInterface
+    >(module: ServerModule<Name, Comps, APIInterface>) {
+      return createCompilerBase<
+        Modules & {
+          [key in Name]: ServerModule<Name, Comps, APIInterface>;
+        }
+      >({
+        ...modules,
+        [module.namespace]: module,
       });
     },
     compile() {
-      return createViewProxy<
-        {
-          serve: typeof serve;
-          createSessionHandler: typeof createSessionHandler;
-          hostStatics: (
-            server: HTTPServer,
-            mountPath?: string
-          ) => Promise<ReturnType<typeof hostClientBundles>>;
-          createHostClientBundlesMiddleware: typeof createHostClientBundlesMiddleware;
-        },
-        TBase
-      >({
-        serve: async (render, options) => {
-          const additionalComponents = await Promise.all(bundles);
-          return serve(render, {
-            ...options,
-            additionalComponents: {
-              ssrViews: {
-                ...ssrViewsBase,
-                ...(options?.additionalComponents?.ssrViews ?? {}),
-              },
-              bundles: [
-                ...additionalComponents,
-                ...(options?.additionalComponents?.bundles ?? []),
-              ],
-            },
-          });
-        },
-        createSessionHandler: <T>(options) => {
-          return createAwaitProxy(async () => {
-            return createSessionHandler({
-              ...options,
-              additionalComponents: {
-                ssrViews: {
-                  ...ssrViewsBase,
-                  ...(options?.additionalComponents?.ssrViews ?? {}),
-                },
-                bundles: [
-                  ...(await Promise.all(bundles)),
-                  ...(options?.additionalComponents?.bundles ?? []),
-                ],
-              },
-            });
-          });
-        },
-        hostStatics(server, mountPath) {
-          return Promise.all(bundles).then((bundles) =>
-            hostClientBundles(server, mountPath, bundles)
-          );
-        },
-        createHostClientBundlesMiddleware(mountPath) {
-          const initialMiddleware = createHostClientBundlesMiddleware(
-            mountPath,
-            []
-          );
-          let middleware: typeof initialMiddleware.middleware;
-          Promise.all(bundles).then((bundles) => {
-            middleware = createHostClientBundlesMiddleware(
-              initialMiddleware.path,
-              bundles
-            ).middleware;
-          });
-          return {
-            path: initialMiddleware.path,
-            middleware: (req, res, next) => {
-              if (middleware) {
-                return middleware(req, res, next);
-              }
-              return next();
-            },
-          };
-        },
-      });
+      const compiledModules = compileModules(modules);
+      const api = apiWithModules(compiledModules);
+      return withReact<Modules, typeof api>(
+        api,
+        compiledModules
+      )
     },
   };
 }
 
-export function createCompiler() {
-  return createCompilerBase();
+export function apiWithModules<Modules extends ServerModules>(
+  modules: Promise<CompiledServerModules>
+) {
+  return {
+    serve<T>(render: (resolve?: (value: T) => void) => JSX.Element,
+    options: Partial<GlobalAppServeOptions & RequestServeOptions> = {}
+    ) {
+      return serve(render, modules, options);
+    },
+    createSessionHandler(options: RequestServeOptions) {
+      return createSessionHandler<Modules>(options, modules);
+    },
+    hostStatics(server: HTTPServer, mountPath?: string) {
+      return hostClientBundles(server,  modules, mountPath);
+    },
+    createHostClientBundlesMiddleware(mountPath?: string) {
+      return createHostClientBundlesMiddleware(modules, mountPath);
+    }
+  }
+}
+
+export async function compileModules<Modules extends ServerModules>(
+  modules: Modules
+): Promise<CompiledServerModules> {
+  return Object.entries(modules).reduce(async (acc, [key, module]) => {
+    const [compiledServerModule, components, ssrComponents] = await Promise.all(
+      [
+        build.module(module.clientPath),
+        module.components(),
+        module.ssrComponents(),
+      ]
+    );
+    return {
+      ...(await acc),
+      [key]: {
+        components,
+        ssrComponents,
+        namespace: module.namespace,
+        clientBundle: compiledServerModule,
+        api: module.api,
+      },
+    };
+  }, Promise.resolve({}) as Promise<CompiledServerModules>);
+}
+
+export function withReact<Modules extends ServerModules, T extends Record<string, any>>(
+  base: T,
+  modules: Promise<CompiledServerModules>
+) {
+  const freeact = createFreeactProxy<Modules, T & typeof React>({
+    ...React,
+    ...base,
+  });
+  modules.then((modules) => {
+    (freeact as any)[PRIVATE_FREEACT_SET_MODULES](getServerComponentMap(modules));
+  });
+  return freeact;
 }

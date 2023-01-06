@@ -1,15 +1,11 @@
 import React from "react";
 import { Render } from "@react-fullstack/render";
 import getPort from "get-port";
-import {
-  GlobalAppServeOptions,
-  RequestServeOptions,
-} from "./types";
+import { GlobalAppServeOptions, RequestServeOptions, ServerTransport } from "./types";
 import {
   Server,
   createInstanceRenderHandler,
 } from "@react-fullstack/fullstack/server";
-import { Server as SocketIOserver } from "socket.io";
 import { log, openBrowserOnHost, runChromeApp } from "./utils";
 import { createSsr, hostStatics } from "./client";
 import {
@@ -18,12 +14,12 @@ import {
   getServers,
   Servers,
 } from "./http";
-import { API } from "../types";
-import { createAPI } from "./api";
-
+import { CompiledServerModules, ModulesApi, ServerModules } from "../types/module";
+import { createModulesApi } from "./api";
 
 export async function serve<T>(
   render: (resolve?: (value: T) => void) => JSX.Element,
+  modules: Promise<CompiledServerModules>,
   options: Partial<GlobalAppServeOptions & RequestServeOptions> = {}
 ) {
   const logger = options.logger || console.log;
@@ -35,9 +31,16 @@ export async function serve<T>(
   }
   const router = createRouter({ serveOptions: options });
   const ssrHandler = createInstanceRenderHandler();
-  const ssr = createSsr(options, basePath, router.socket, ssrHandler.render);
+  const awaitedModules = await modules;
+  const ssr = createSsr(
+    options,
+    awaitedModules,
+    basePath,
+    router.socket,
+    ssrHandler.render
+  );
   router.handle(ssr, ["/index.html", "/"]);
-  const statics = hostStatics(options.additionalComponents?.bundles || []);
+  const statics = hostStatics(awaitedModules);
   router.handle(statics);
   const result = new Promise<T>((resolve) => {
     const { stop } = Render(
@@ -81,11 +84,11 @@ export async function serve<T>(
   };
 }
 
-export function createSessionHandler(options: RequestServeOptions) {
+export function createSessionHandler<Modules extends ServerModules>(options: RequestServeOptions, modules: Promise<CompiledServerModules>) {
   const servers = getServers(options);
   function handle<T>(
     render: (
-      api: API.API,
+      api: ModulesApi<Modules>,
       resolve: (value: T) => void,
       reject: (error: any) => void
     ) => JSX.Element,
@@ -107,17 +110,19 @@ export function createSessionHandler(options: RequestServeOptions) {
           'can only handle requests with a path that ends with a slash. e.g. "/sessions/'
         );
       }
-      const { result, router, ssrHandler } = createConnection<T>(
+      const awaitedModules = await modules;
+      const { result, router, ssrHandler } = createConnection<T, Modules>(
         render,
-        servers
+        servers,
+        modules
       );
       const ssr = createSsr(
         {
           title,
           windowDimensions,
-          additionalComponents: options.additionalComponents,
           staticsBasePath: options.staticsBasePath,
         },
+        awaitedModules,
         options.staticsBasePath,
         router.socket,
         ssrHandler.render
@@ -129,7 +134,7 @@ export function createSessionHandler(options: RequestServeOptions) {
     };
 
     const createSocketConnection = () => {
-      const { router, result } = createConnection(render, servers);
+      const { router, result } = createConnection(render, servers, modules);
       return {
         result: result as Promise<T>,
         socket: router.socket,
@@ -145,19 +150,20 @@ export function createSessionHandler(options: RequestServeOptions) {
   };
 }
 
-function createConnection<T>(
+function createConnection<T, Modules extends ServerModules>(
   render: (
-    api: API.API,
+    api: ModulesApi<Modules>,
     resolve: (value: T) => void,
     reject: (error: any) => void
   ) => JSX.Element,
-  servers: Servers
+  servers: Servers,
+  modules: Promise<CompiledServerModules>
 ) {
   const router = createRequestHandler({ servers });
   const ssrHandler = createInstanceRenderHandler();
-  const api = createAPI(router.transport);
-  const result = new Promise((resolve, reject) => {
+  const result = new Promise(async (resolve, reject) => {
     let resolvedOrRejected = false;
+    const awaitedModules = await modules;
     const { stop } = Render(
       <Server
         singleInstance
@@ -166,7 +172,7 @@ function createConnection<T>(
       >
         {() =>
           render(
-            api,
+            createModulesApi<Modules>(router.socket.io, awaitedModules),
             (value) => {
               if (resolvedOrRejected) return;
               resolve(value);

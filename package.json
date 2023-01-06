@@ -57,12 +57,6 @@
     "react/jsx-runtime",
     "react",
     "react-dom",
-    "react-resize-detector",
-    "xterm",
-    "xterm-addon-fit",
-    "@emotion/react",
-    "@emotion/styled",
-    "@mui/joy",
     "@react-fullstack/fullstack-socket-client",
     "@react-fullstack/fullstack",
     "socket.io-client"

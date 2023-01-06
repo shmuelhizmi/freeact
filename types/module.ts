@@ -1,4 +1,4 @@
-import { APIClientImplementation, APIServerImplementation } from "./api";
+import { APIClientImplementation, createAPIServerImplementation } from "./api";
 import { MaybePromise } from "./utils";
 
 export interface UIModule<Comps extends CompNameCompPropsMap> {
@@ -17,6 +17,29 @@ export type ComponentImplementor<Comps extends CompNameCompPropsMap> = () => May
 export interface ServerModule<Namespace extends string, Comps extends CompNameCompPropsMap, APIInterface> {
   components: ComponentImplementor<Comps>;
   ssrComponents: ComponentImplementor<Partial<Comps>>;
-  api: APIServerImplementation<APIInterface>;
+  api: createAPIServerImplementation<APIInterface>;
   namespace: Namespace;
+  clientPath: string;
 }
+export type ModuleApi <Module extends ServerModule<any, any, any>> = Module extends ServerModule<any, any, infer APIInterface> ? APIInterface : never;
+export type ServerModules = Record<string, ServerModule<any, any, any>>;
+
+export type ModulesApi<Modules extends ServerModules> = {
+  [key in keyof Modules]: ModuleApi<Modules[key]>;
+};
+
+export type ModuleComponents<Module extends ServerModule<any, any, any>> = Module extends ServerModule<any, infer Comps, any> ? Comps : never;
+
+export interface ServerModuleWithClientCompiled {
+  components: Record<string, React.ComponentType<any>>;
+  ssrComponents: Record<string, React.ComponentType<any>>;
+  api: createAPIServerImplementation<any>;
+  namespace: string;
+  clientBundle: string;
+}
+
+export type CompiledServerModules = Record<string, ServerModuleWithClientCompiled>;
+
+export type ModulesComponents<Modules extends ServerModules> = {
+  [key in keyof Modules]: ModuleComponents<Modules[key]>;
+};

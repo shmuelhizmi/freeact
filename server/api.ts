@@ -1,10 +1,14 @@
 import { Transport, randomId } from "@react-fullstack/fullstack/shared";
 import {
   APIEventsMapBase,
-  APIServerImplementation,
+  createAPIServerImplementation,
   API_PREFIX,
   API_REJECT,
 } from "../types/api";
+import { ServerTransport } from "./types";
+import { CompiledServerModules, ModulesApi, ServerModules } from "../types/module";
+import { socketToGlobalTransport } from "./transport";
+import { Server as SocketServer } from "socket.io";
 
 export function createApiServerInterface<APIEventsMap extends APIEventsMapBase, T>(
   implementor: (connection: {
@@ -22,7 +26,7 @@ export function createApiServerInterface<APIEventsMap extends APIEventsMapBase, 
     implementor({
       on: on.bind(null, socket, apiId) as any,
       emit: emit.bind(null, socket, apiId) as any,
-    })) as APIServerImplementation<T>;
+    })) as createAPIServerImplementation<T>;
 }
 
 export function emit<
@@ -81,4 +85,24 @@ export function on<
       socket.emit(`${API_REJECT}_${apiId}`, [event, uid, error]);
     }
   });
+}
+
+
+
+export function createModulesApi<Modules extends ServerModules>(
+  transport: SocketServer,
+  compiledServerModules: CompiledServerModules
+): ModulesApi<Modules> {
+  return Object.entries(compiledServerModules).reduce(
+    (prev, [namespace, module]) => {
+      return {
+        ...prev,
+        [namespace]: module.api(
+          socketToGlobalTransport(transport),
+          namespace
+        ),
+      };
+    },
+    {} as ModulesApi<Modules> 
+  );
 }

@@ -19,6 +19,7 @@ export type ClientComponents = {
     Slider: SliderProps;
     Upload: UploadProps;
     Image: ImageProps;
+    Baseline: {};
 }
 
 export type ServerComponents = {
@@ -31,4 +32,5 @@ export type ServerComponents = {
     Slider: React.FC<SliderProps>;
     Upload: React.FC<UploadProps>;
     Image: React.FC<ImageProps>;
+    Baseline: React.FC<{}>;
 }

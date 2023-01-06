@@ -39,7 +39,7 @@ export function server() {
   });
 }
 
-export async function components(path: string) {
+export async function module(path: string) {
   const outPut = await esbuild.build({
     entryPoints: [path],
     bundle: true,

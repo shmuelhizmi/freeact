@@ -3,7 +3,6 @@ import { exec } from "child_process";
 import chromePaths from "chrome-paths";
 import os from "os";
 import React from "react";
-import { Components } from "../types";
 import { Router, SocketConnection } from "./http";
 import { GlobalAppServeOptions, ServeOptionsBase } from "./types";
 
@@ -93,19 +92,19 @@ export function getClientsGlobals(
   };
 }
 
-export function replaceTextWithTypography<T>(node: T, i: number = 0) {
-  if (typeof node === "string") {
-    return (
-      <ViewsProvider<Components> key={i + node}>
-        {({ Typography }) => <Typography type="none" txt={node} />}
-      </ViewsProvider>
-    );
-  }
-  if (Array.isArray(node)) {
-    return node.map(replaceTextWithTypography);
-  }
-  return node;
-}
+// export function replaceTextWithTypography<T>(node: T, i: number = 0) {
+//   if (typeof node === "string") {
+//     return (
+//       <ViewsProvider<Components> key={i + node}>
+//         {({ Typography }) => <Typography type="none" txt={node} />}
+//       </ViewsProvider>
+//     );
+//   }
+//   if (Array.isArray(node)) {
+//     return node.map(replaceTextWithTypography);
+//   }
+//   return node;
+// }
 
 export function log(
   option: Pick<ServeOptionsBase, "logger"> | undefined,

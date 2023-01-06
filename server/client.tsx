@@ -5,45 +5,35 @@ import { getClientsGlobals } from "./utils";
 import mime from "mime-types";
 import { renderToString } from "react-dom/server";
 import React from "react";
-import { SSRHeadViews, Views, BaseWrapper } from "../views/views";
 import { HTTPRequestHandler, SocketConnection } from "./http";
+import { CompiledServerModules } from "../types/module";
+import { getSsrComponentMap } from "./module";
 
 const isProd = __filename.endsWith("dist/server/index.js");
 
-const withFallbackComp = <T extends Record<string, any>>(obj: T): T => {
-  const fallback = ({ children }: { children: any }) => children;
-  return new Proxy(obj, {
-    get: (target, prop) => {
-      if (prop in target) {
-        return target[prop as keyof T];
-      }
-      return fallback;
-    },
-  });
+const makeBundles = (
+  modules: CompiledServerModules,
+  staticsBasePath: string
+) => {
+  return Object.values(modules)
+    .map((module) => ({
+      file: `${staticsBasePath}/modules/${module.namespace}.js`,
+      async getBundle() {
+        return module.clientBundle;
+      },
+    }))
+    .reduce((acc, cur) => {
+      acc[cur.file] = cur;
+      return acc;
+    }, {} as Record<string, { file: string; getBundle: () => Promise<string> }>);
 };
 
-const makeBundles = (bundles: string[], staticsBasePath?: string) => {
-  const additionalJsBundle = Array(bundles.length || 0)
-    .fill("")
-    .map((_, i) => {
-      return `additional-${i}.js`;
-    });
-  return {
-    additionalJsBundlePath: additionalJsBundle.map((filename) =>
-      path.join(staticsBasePath || '/', filename)
-    ),
-    getBundle(filename: string) {
-      return bundles[additionalJsBundle.indexOf(filename)];
-    },
-  };
-};
-
-export function hostStatics(additionalComponentsBundles: string[]) {
+export function hostStatics(modules: CompiledServerModules) {
   const statics = isProd
     ? path.join(__dirname, "..", "client")
     : path.join(__dirname, "..", "dist", "client");
 
-  const { getBundle } = makeBundles(additionalComponentsBundles);
+  const bundles = makeBundles(modules, "");
   const handler: HTTPRequestHandler<Promise<void>> = async (req, res) => {
     try {
       const url = new URL(req.url || "", `http://${req.headers.host}`);
@@ -51,8 +41,7 @@ export function hostStatics(additionalComponentsBundles: string[]) {
       if (pathname === "/" || pathname === "/index.html") {
         return;
       }
-      const filename = pathname.slice(1);
-      const bundle = getBundle(filename);
+      const bundle = await bundles[pathname]?.getBundle();
       if (bundle) {
         res.writeHead(200, { "Content-Type": "text/javascript" });
         res.end(bundle);
@@ -74,18 +63,16 @@ export function hostStatics(additionalComponentsBundles: string[]) {
 
 export function createSsr(
   options: Partial<
-    Pick<
-      GlobalAppServeOptions,
-      "title" | "windowDimensions" | "additionalComponents"
-    > &
+    Pick<GlobalAppServeOptions, "title" | "windowDimensions"> &
       Pick<RequestServeOptions, "staticsBasePath">
   >,
+  modules: CompiledServerModules,
   staticsBase: string,
   socket: SocketConnection,
   ssrFunction: (views: Record<string, React.ComponentType>) => JSX.Element
 ) {
-  const { additionalComponents, staticsBasePath } = options;
-  const { ssrViews } = additionalComponents || {};
+  const { staticsBasePath } = options;
+  const ssrViews = getSsrComponentMap(modules);
   const globals = getClientsGlobals(options, socket);
   const handler: HTTPRequestHandler<Promise<void>> = async (req, res) => {
     try {
@@ -103,10 +90,9 @@ export function createSsr(
                 __html: `
                 const toInject = ${JSON.stringify({
                   ...globals,
-                  bundles: makeBundles(
-                    options.additionalComponents?.bundles || [],
-                    staticsBasePath
-                  ).additionalJsBundlePath,
+                  bundles: Object.keys(
+                    makeBundles(modules, staticsBasePath || "")
+                  ),
                 })};
                 for (const key in toInject) {
                   window[key] = toInject[key];
@@ -126,14 +112,13 @@ export function createSsr(
               rel="stylesheet"
               href={path.join(staticsBase, "./freeact.css")}
             />
-            {ssrFunction ? ssrFunction(withFallbackComp(SSRHeadViews)) : null}
+            {/* {ssrFunction ? ssrFunction(ssrViews) : null} */}
+            {/* implement later */}
             <title>{options.title}</title>
           </head>
           <body>
             <div id="root">
-              <BaseWrapper>
-                {ssrFunction ? ssrFunction({ ...Views, ...ssrViews }) : null}
-              </BaseWrapper>
+                {ssrFunction ? ssrFunction(ssrViews) : null}
             </div>
           </body>
         </html>

@@ -10,6 +10,7 @@ import {
 } from "./types";
 import { v4 } from "uuid";
 import { hostStatics } from "./client";
+import { CompiledServerModules } from "../types/module";
 
 export function getServers(options: ServeOptionsBase | GlobalAppServeOptions | RequestServeOptions) {
   const { connection } = options;
@@ -216,16 +217,16 @@ export function hostClientBundles(
   /**
    * The base path to host static bundles from, defaults to random long generated path
    */
+  modules: Promise<CompiledServerModules>,
   basePath?: string,
-  bundles: string[] = []
 ) {
-  const handlerBase = hostStatics(bundles);
+  const handlerBase = modules.then((modules) => hostStatics(modules));
   const path = basePath || "/" + v4() + "/";
   const handler = (req: http.IncomingMessage, res: http.ServerResponse) => {
     const url = new URL(req.url! || "", "http://localhost");
     if (url.pathname.startsWith(path)) {
       req.url = url.pathname.slice(path.length - 1);
-      handlerBase(req, res);
+      handlerBase.then((handler) => handler(req, res));
     }
   };
   server.on("request", handler);
@@ -238,10 +239,10 @@ export function hostClientBundles(
 }
 
 export function createHostClientBundlesMiddleware(
+  modules: Promise<CompiledServerModules>,
   basePath?: string,
-  bundles: string[] = []
 ) {
-  const handlerBase = hostStatics(bundles);
+  const handlerBase = modules.then((modules) => hostStatics(modules));
   const path = basePath || "/" + v4() + "/";
   const middleware = (
     req: http.IncomingMessage,
@@ -251,7 +252,7 @@ export function createHostClientBundlesMiddleware(
     const url = new URL(req.url! || "", "http://localhost");
     if (url.pathname.startsWith(path)) {
       req.url = url.pathname.slice(path.length - 1);
-      handlerBase(req, res);
+      handlerBase.then((handler) => handler(req, res));
     } else {
       next();
     }

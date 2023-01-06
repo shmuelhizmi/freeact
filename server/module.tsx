@@ -1,8 +1,15 @@
 import React from "react";
-import { APIServerImplementation } from "../types/api";
-import { CompNameCompPropsMap, Components, ServerModule, UIModule } from "../types/module";
+import { createAPIServerImplementation } from "../types/api";
+import {
+  CompNameCompPropsMap,
+  CompiledServerModules,
+  Components,
+  ServerModule,
+  UIModule,
+} from "../types/module";
 import { MaybePromise } from "../types/utils";
 import { ViewsProvider } from "@react-fullstack/fullstack/server";
+import { createApiServerInterface } from "./api";
 
 /**
  *
@@ -16,7 +23,13 @@ export function createServerModule<Comps extends CompNameCompPropsMap>(
   client: MaybePromise<UIModule<Comps>>,
   clientPath: string
 ) {
-  return createServerModuleBase(client, clientPath, () => ({}), [], []);
+  return createServerModuleBase(
+    client,
+    clientPath,
+    createApiServerInterface(() => ({})),
+    [],
+    []
+  );
 }
 
 function createServerModuleBase<
@@ -25,12 +38,14 @@ function createServerModuleBase<
 >(
   client: MaybePromise<UIModule<Comps>>,
   clientPath: string,
-  _api: APIServerImplementation<APIInterface>,
+  _api: createAPIServerImplementation<APIInterface>,
   _serverOverrides: Array<(comps: any) => MaybePromise<any>>,
   _ssrOverrides: Array<() => MaybePromise<any>>
 ) {
   return {
-    implementApi<APIInterface>(api: APIServerImplementation<APIInterface>) {
+    implementApi<APIInterface>(
+      api: createAPIServerImplementation<APIInterface>
+    ) {
       const withApi = createServerModuleBase(
         client,
         clientPath,
@@ -57,7 +72,9 @@ function createServerModuleBase<
       return withServerComponents;
     },
     overrideWithSsrComponents<SsrOverrides extends Partial<Components<Comps>>>(
-      override: () => MaybePromise<Omit<Comps, keyof SsrOverrides> & SsrOverrides>
+      override: () => MaybePromise<
+        Omit<Comps, keyof SsrOverrides> & SsrOverrides
+      >
     ) {
       const withSsrComponents = createServerModuleBase(
         client,
@@ -76,7 +93,10 @@ function createServerModuleBase<
         ).reduce((prev, key) => {
           const curr = (props: any) => (
             <ViewsProvider<Record<string, any>>>
-              {({ [key]: Comp }) => <Comp {...props} />}
+              {({ [`${namespace}_${key}`]: Comp }) => {
+                // const children = replaceTextWithTypography(props.children);
+                return <Comp {...props} />;
+              }}
             </ViewsProvider>
           );
           return { ...prev, [key]: curr };
@@ -86,7 +106,7 @@ function createServerModuleBase<
             return {
               ...(await prev),
               ...(await override(await prev)),
-            }
+            };
           },
           Promise.resolve(clientComponents)
         );
@@ -96,18 +116,43 @@ function createServerModuleBase<
             return {
               ...comps,
               ...(await override()),
-            }
+            };
           },
-          Promise.resolve({})
+          Promise.resolve(unwaitedClientComponents())
         );
         return { serverComponents, ssrComponents };
       };
       return {
         api: _api,
-        components: () => getComponents().then(({ serverComponents }) => serverComponents),
-        ssrComponents: () => getComponents().then(({ ssrComponents }) => ssrComponents),
+        components: () =>
+          getComponents().then(({ serverComponents }) => serverComponents),
+        ssrComponents: () =>
+          getComponents().then(({ ssrComponents }) => ssrComponents),
         namespace,
+        clientPath,
       } as ServerModule<Namespace, Comps, APIInterface>;
     },
   };
+}
+
+export function getSsrComponentMap(compiledModules: CompiledServerModules) {
+  return Object.entries(compiledModules).reduce((prev, [namespace, module]) => {
+    return {
+      ...prev,
+      ...Object.entries(module.ssrComponents).reduce((prev, [key, Comp]) => {
+        return {
+          ...prev,
+          [`${namespace}_${key}`]: Comp,
+        };
+      }, {}),
+    };
+  }, {} as Record<string, React.ComponentType<any>>);
+}
+export function getServerComponentMap(compiledModules: CompiledServerModules) {
+  return Object.entries(compiledModules).reduce((prev, [namespace, module]) => {
+    return {
+      ...prev,
+      [namespace]: module.components,
+    };
+  }, {} as Record<string, Record<string, React.ComponentType<any>>>);
 }
