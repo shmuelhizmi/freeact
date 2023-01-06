@@ -1,0 +1,19 @@
+{
+    "name": "@freeact/joy",
+    "dependencies": {
+        "@emotion/react": "^11.10.5",
+        "@emotion/styled": "^11.10.5",
+        "@mui/joy": "5.0.0-alpha.51",
+        "@mui/types": "7.2.0",
+        "freeact": "workspace:*",
+        "react": "^18.2.0",
+        "@types/react": "^18.0.22"
+    },
+    "devDependencies": {
+        "@freeact/cli": "workspace:*"
+    },
+    "scripts": {
+        "build": "freeact build",
+        "start": "freeact start"
+    }
+}

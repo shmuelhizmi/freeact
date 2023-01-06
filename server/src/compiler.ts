@@ -1,16 +1,19 @@
 import { serve, createSessionHandler } from "./server";
 import { hostClientBundles, createHostClientBundlesMiddleware } from "./http";
 import { Server as HTTPServer } from "http";
-import * as build from "../compiler/build";
 import {
   CompiledServerModules,
   ServerModule,
   ServerModules,
-} from "../types/module";
+} from "@freeact/types";
 import { GlobalAppServeOptions, RequestServeOptions } from "./types";
 import * as React from "react";
 import { getServerComponentMap } from "./module";
-import { PRIVATE_FREEACT_SET_MODULES, createFreeactProxy } from "./freeactProxy";
+import {
+  PRIVATE_FREEACT_SET_MODULES,
+  createFreeactProxy,
+} from "./freeactProxy";
+import * as build from "./esbuild";
 
 export function createCompiler() {
   return createCompilerBase({});
@@ -34,10 +37,7 @@ function createCompilerBase<Modules extends ServerModules>(modules: Modules) {
     compile() {
       const compiledModules = compileModules(modules);
       const api = apiWithModules(compiledModules);
-      return withReact<Modules, typeof api>(
-        api,
-        compiledModules
-      )
+      return withReact<Modules, typeof api>(api, compiledModules);
     },
   };
 }
@@ -46,8 +46,9 @@ export function apiWithModules<Modules extends ServerModules>(
   modules: Promise<CompiledServerModules>
 ) {
   return {
-    serve<T>(render: (resolve?: (value: T) => void) => JSX.Element,
-    options: Partial<GlobalAppServeOptions & RequestServeOptions> = {}
+    serve<T>(
+      render: (resolve?: (value: T) => void) => JSX.Element,
+      options: Partial<GlobalAppServeOptions & RequestServeOptions> = {}
     ) {
       return serve(render, modules, options);
     },
@@ -55,12 +56,12 @@ export function apiWithModules<Modules extends ServerModules>(
       return createSessionHandler<Modules>(options, modules);
     },
     hostStatics(server: HTTPServer, mountPath?: string) {
-      return hostClientBundles(server,  modules, mountPath);
+      return hostClientBundles(server, modules, mountPath);
     },
     createHostClientBundlesMiddleware(mountPath?: string) {
       return createHostClientBundlesMiddleware(modules, mountPath);
-    }
-  }
+    },
+  };
 }
 
 export async function compileModules<Modules extends ServerModules>(
@@ -80,23 +81,25 @@ export async function compileModules<Modules extends ServerModules>(
         components,
         ssrComponents,
         namespace: module.namespace,
-        clientBundle: compiledServerModule,
+        clientBundle: compiledServerModule!,
         api: module.api,
       },
     };
   }, Promise.resolve({}) as Promise<CompiledServerModules>);
 }
 
-export function withReact<Modules extends ServerModules, T extends Record<string, any>>(
-  base: T,
-  modules: Promise<CompiledServerModules>
-) {
+export function withReact<
+  Modules extends ServerModules,
+  T extends Record<string, any>
+>(base: T, modules: Promise<CompiledServerModules>) {
   const freeact = createFreeactProxy<Modules, T & typeof React>({
     ...React,
     ...base,
   });
   modules.then((modules) => {
-    (freeact as any)[PRIVATE_FREEACT_SET_MODULES](getServerComponentMap(modules));
+    (freeact as any)[PRIVATE_FREEACT_SET_MODULES](
+      getServerComponentMap(modules)
+    );
   });
   return freeact;
 }

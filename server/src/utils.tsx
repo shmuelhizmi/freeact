@@ -1,9 +1,7 @@
-import { ViewsProvider } from "@react-fullstack/fullstack/server";
+import os from "os";
 import { exec } from "child_process";
 import chromePaths from "chrome-paths";
-import os from "os";
-import React from "react";
-import { Router, SocketConnection } from "./http";
+import { SocketConnection } from "./http";
 import { GlobalAppServeOptions, ServeOptionsBase } from "./types";
 
 const appendQuery = (url: string, query: Record<string, string>) => {

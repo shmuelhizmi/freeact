@@ -1,0 +1,26 @@
+import { implementApi, implementClientComponents } from "freeact/views";
+import { APIEventsMap, ClientButtonProps } from "../types";
+
+
+export const api = implementApi<APIEventsMap>((connection) => {
+    connection.on("alert", (message) => {
+        alert(message);
+    });
+});
+
+
+function Button({ message, onClick }: ClientButtonProps) {
+  return (
+    <button
+      onClick={() => {
+        onClick();
+      }}
+    >
+      {message}
+    </button>
+  );
+}
+
+export const components = implementClientComponents(() => ({
+  Button,
+}));

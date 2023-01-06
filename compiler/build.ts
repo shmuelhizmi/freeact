@@ -1,8 +1,6 @@
 import esbuild from "esbuild";
 import path from "path";
-import { externals, injectGlobals } from "./globals";
-import fs from "fs/promises";
-
+import { injectGlobals } from "./globals";
 
 export async function views() {
   await injectGlobals();
@@ -26,33 +24,30 @@ export async function views() {
 }
 
 export function server() {
-  return esbuild.build({
-    entryPoints: ["./server/index.tsx"],
+  const cjs = esbuild.build({
+    entryPoints: [path.join(__dirname, "../server/src/index.tsx")],
     outdir: "dist/server",
     bundle: true,
     sourcemap: true,
     minify: true,
     format: "cjs",
     platform: "node",
-    external: ["fsevents", "node-pty", "esbuild", "eiows", "vite", "@vitejs/*"],
-    tsconfig: "./tsconfig.server.json",
+    external: ["fsevents", "esbuild", "vite", "@vitejs/*"],
+    tsconfig: "./tsconfig.json",
     target: "node14",
   });
-}
-
-export async function module(path: string) {
-  const outPut = await esbuild.build({
-    entryPoints: [path],
+  const esm = esbuild.build({
+    entryPoints: [path.join(__dirname, "../server/src/index.tsx")],
     bundle: true,
-    write: false,
+    minify: true,
     format: "esm",
-    platform: "browser",
-    plugins: [externals],
-    target: "es2019",
+    platform: "node",
+    external: ["fsevents", "esbuild", "vite", "@vitejs/*"],
+    tsconfig: "./tsconfig.json",
+    target: "node14",
+    outExtension: { ".js": ".mjs" },
+    sourcemap: true,
+    outfile: "dist/server/index.mjs",
   });
-  if (outPut.errors.length) {
-    throw new Error(outPut.errors[0].text);
-  }
-  const code = outPut.outputFiles?.[0].text;
-  return code;
+  return Promise.all([cjs, esm]);
 }

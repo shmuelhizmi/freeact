@@ -10,7 +10,7 @@ import {
 } from "./types";
 import { v4 } from "uuid";
 import { hostStatics } from "./client";
-import { CompiledServerModules } from "../types/module";
+import { CompiledServerModules } from "@freeact/types";
 
 export function getServers(options: ServeOptionsBase | GlobalAppServeOptions | RequestServeOptions) {
   const { connection } = options;

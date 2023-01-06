@@ -6,8 +6,9 @@ import mime from "mime-types";
 import { renderToString } from "react-dom/server";
 import React from "react";
 import { HTTPRequestHandler, SocketConnection } from "./http";
-import { CompiledServerModules } from "../types/module";
+import { CompiledServerModules } from "@freeact/types";
 import { getSsrComponentMap } from "./module";
+import { URL } from "url";
 
 const isProd = __filename.endsWith("dist/server/index.js");
 
@@ -34,10 +35,19 @@ const makeBundles = (
   };
 };
 
+export function dirname() {
+  // if commonjs
+  if (typeof __dirname === "string") {
+    return __dirname;
+  }
+  // if esm
+  return path.dirname(new URL(import.meta.url).pathname);
+}
+
 export function hostStatics(modules: CompiledServerModules) {
   const statics = isProd
-    ? path.join(__dirname, "..", "client")
-    : path.join(__dirname, "..", "dist", "client");
+    ? path.join(dirname(), "..", "client")
+    : path.join(dirname(), "..", "dist", "client");
 
   const bundles = makeBundles(modules, "").filesMap;
   const handler: HTTPRequestHandler<Promise<void>> = async (req, res) => {

@@ -1,0 +1,15 @@
+{
+    "name": "@freeact/cli",
+    "version": "0.0.1",
+    "dependencies": {
+        "esbuild": "0.15.16",
+        "tsx": "3.12.1",
+        "typescript": "^4.6.4",
+        "freeact": "workspace:*"
+    },
+    "bin": {
+        "build": "./bin/build.ts",
+        "init": "./bin/init.ts",
+        "start": "./bin/start.ts"
+    }
+}

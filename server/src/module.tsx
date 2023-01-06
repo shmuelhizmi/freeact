@@ -1,13 +1,13 @@
 import React from "react";
-import { createAPIServerImplementation } from "../types/api";
+import { createAPIServerImplementation } from "@freeact/types";
 import {
   CompNameCompPropsMap,
   CompiledServerModules,
   Components,
   ServerModule,
   UIModule,
-} from "../types/module";
-import { MaybePromise } from "../types/utils";
+  MaybePromise,
+} from "@freeact/types";
 import { ViewsProvider } from "@react-fullstack/fullstack/server";
 import { createApiServerInterface } from "./api";
 
@@ -35,7 +35,7 @@ export type Compiler<
   overrideWithSsrComponents<SsrOverrides extends Partial<Components<Comps>>>(
     override: () => MaybePromise<SsrOverrides>
   ): Compiler<Comps, APIInterface, ServerComps>;
-  done<Namespace extends string>(): ServerModule<
+  done<Namespace extends string>(name: Namespace): ServerModule<
     Namespace,
     ServerComps,
     APIInterface

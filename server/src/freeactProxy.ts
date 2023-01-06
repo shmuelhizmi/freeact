@@ -1,5 +1,5 @@
 import React from "react";
-import { ModulesComponents, ServerModules } from "../types/module";
+import { ModulesComponents, ServerModules } from "@freeact/types";
 
 
 export const PRIVATE_FREEACT_SET_MODULES = Symbol("FREEACT_SETMODULES");

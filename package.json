@@ -1,66 +1,36 @@
 {
-  "name": "freeact",
-  "version": "0.0.9",
-  "private": false,
-  "description": "",
-  "main": "dist/server/index.js",
-  "types": "dist/types/server/index.d.ts",
+  "name": "root",
+  "version": "1.0.0",
+  "private": true,
+  "description": "freeact monorepo root",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
     "test:calc": "tsx watch ./test/calculator.tsx",
     "test:form": "tsx watch ./test/sessions/form.tsx",
     "test:counter": "tsx watch ./test/counter.tsx",
-    "test:customLocalServer": "tsx watch ./test/customLocalServer.tsx",
-    "prepublish": "pnpm run build",
-    "build": "tsx ./compiler/main.ts && tsc --emitDeclarationOnly --noEmit false --outDir dist/types --project tsconfig.server.json"
+    "test:customLocalServer": "tsx watch ./test/customLocalServer.tsx"
   },
   "dependencies": {
     "@fal-works/esbuild-plugin-global-externals": "^2.1.2",
-    "eiows": "^4.1.2",
     "esbuild": "0.15.16",
-    "node-pty": "^0.10.1",
     "tsx": "3.12.1",
     "uuid": "^9.0.0"
   },
   "bin": "./bin/index.js",
   "devDependencies": {
-    "@emotion/react": "^11.10.5",
-    "@emotion/styled": "^11.10.5",
-    "@mui/joy": "5.0.0-alpha.51",
-    "@mui/types": "7.2.0",
     "@react-fullstack/fullstack": "0.3.1-alpha.8",
     "@react-fullstack/fullstack-socket-client": "0.3.1-alpha.8",
-    "@react-fullstack/fullstack-socket-server": "0.3.1-alpha.8",
     "@react-fullstack/render": "^0.3.0",
-    "@types/http-proxy": "^1.17.9",
-    "@types/mime-types": "^2.1.1",
     "@types/node": "^16",
     "@types/react": "^18.0.22",
     "@types/react-dom": "^18.0.7",
     "@types/uuid": "^9.0.0",
     "@vitejs/plugin-react": "^2.2.0",
-    "chrome-paths": "^1.0.1",
-    "get-port": "5.1.1",
-    "http-proxy": "^1.18.1",
-    "mime-types": "^2.1.35",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "react-resize-detector": "^7.1.2",
-    "socket.io": "4.5.4",
     "socket.io-client": "4.5.4",
     "typescript": "^4.6.4",
-    "vite": "^3.2.0",
-    "xterm": "^5.0.0",
-    "xterm-addon-fit": "^0.6.0"
+    "vite": "^3.2.0"
   },
-  "clientDependencies": [
-    "react/jsx-runtime",
-    "react",
-    "react-dom",
-    "@react-fullstack/fullstack-socket-client",
-    "@react-fullstack/fullstack",
-    "socket.io-client"
-  ],
   "files": [
     "dist",
     "**/*.d.ts"

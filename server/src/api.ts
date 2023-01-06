@@ -4,9 +4,8 @@ import {
   createAPIServerImplementation,
   API_PREFIX,
   API_REJECT,
-} from "../types/api";
-import { ServerTransport } from "./types";
-import { CompiledServerModules, ModulesApi, ServerModules } from "../types/module";
+} from "@freeact/types";
+import { CompiledServerModules, ModulesApi, ServerModules } from "@freeact/types";
 import { socketToGlobalTransport } from "./transport";
 import { Server as SocketServer } from "socket.io";
 

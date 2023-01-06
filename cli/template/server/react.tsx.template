@@ -1,0 +1,4 @@
+import { createCompiler } from "freeact";
+import $packageName$ from ".";
+
+export default createCompiler().addModule($packageName$).compile();

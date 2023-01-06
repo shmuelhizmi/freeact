@@ -14,7 +14,7 @@ import {
   getServers,
   Servers,
 } from "./http";
-import { CompiledServerModules, ModulesApi, ServerModules } from "../types/module";
+import { CompiledServerModules, ModulesApi, ServerModules } from "@freeact/types";
 import { createModulesApi } from "./api";
 
 export async function serve<T>(
