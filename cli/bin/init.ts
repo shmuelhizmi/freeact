@@ -1,7 +1,7 @@
-#!/usr/bin/env tsx
 import cliJSON from "../package.json";
 import fs from "fs/promises";
 import path from "path";
+import freeactPackageJSON from "freeact/package.json";
 
 const freeactVersion = cliJSON.dependencies.freeact;
 const typescriptVersion = cliJSON.dependencies.typescript;
@@ -24,10 +24,10 @@ const tsconfig = {
     moduleResolution: "Node",
     resolveJsonModule: true,
     isolatedModules: true,
-    noEmit: true,
+    declarationOnly: true,
     noImplicitAny: false,
     jsx: "react-jsx",
-    rootDir: "server",
+    target: "ESNext",
   },
   include: ["server/**/*", "types/**/*", "client/**/*"],
 };
@@ -41,6 +41,7 @@ if (!packageName) {
   shouldCreateDirectory = false;
 }
 
+
 const packageJson = {
   name: packageName,
   version: "0.0.1",
@@ -50,7 +51,7 @@ const packageJson = {
       require: "./dist/server/index.js",
       types: "./dist/types/server/index.d.ts",
     },
-    "react": {
+    react: {
       import: "./dist/server/react.mjs",
       require: "./dist/server/react.js",
       types: "./dist/types/server/react.d.ts",
@@ -63,16 +64,18 @@ const packageJson = {
     typescript: typescriptVersion,
     "@types/node": `^${nodeMainVersion}`,
     "@freeact/cli": cliJSON.version,
+    "react": freeactPackageJSON.devDependencies.react,
+    "@types/react": freeactPackageJSON.devDependencies["@types/react"],
   },
   scripts: {
     build: "freeact build",
     start: "freeact start",
   },
   freeact: {
-    server: './server/index.tsx',
-    react: './server/react.tsx',
-    client: './client/index.tsx',
-  }
+    server: "./server/index.tsx",
+    react: "./server/react.tsx",
+    client: "./client/index.tsx",
+  },
 };
 
 const camelCase = (str: string) =>

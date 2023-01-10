@@ -4,26 +4,22 @@ importers:
 
   .:
     specifiers:
-      '@fal-works/esbuild-plugin-global-externals': ^2.1.2
       '@react-fullstack/fullstack': 0.3.1-alpha.8
       '@react-fullstack/fullstack-socket-client': 0.3.1-alpha.8
       '@react-fullstack/render': ^0.3.0
       '@types/node': ^16
-      '@types/react': ^18.0.22
+      '@types/react': ^18.0.24
       '@types/react-dom': ^18.0.7
       '@types/uuid': ^9.0.0
       '@vitejs/plugin-react': ^2.2.0
-      esbuild: 0.15.16
       react: ^18.2.0
       react-dom: ^18.2.0
       socket.io-client: 4.5.4
       tsx: 3.12.1
-      typescript: ^4.6.4
+      typescript: 4.9.4
       uuid: ^9.0.0
       vite: ^3.2.0
     dependencies:
-      '@fal-works/esbuild-plugin-global-externals': 2.1.2
-      esbuild: 0.15.16
       tsx: 3.12.1
       uuid: 9.0.0
     devDependencies:
@@ -38,44 +34,77 @@ importers:
       react: 18.2.0
       react-dom: 18.2.0_react@18.2.0
       socket.io-client: 4.5.4
-      typescript: 4.8.4
+      typescript: 4.9.4
       vite: 3.2.1
 
   cli:
     specifiers:
-      esbuild: 0.15.16
+      '@freeact/compiler': workspace:*
       freeact: workspace:*
       tsx: 3.12.1
-      typescript: ^4.6.4
+      typescript: 4.9.4
     dependencies:
-      esbuild: 0.15.16
+      '@freeact/compiler': link:../compiler
       freeact: link:../server
       tsx: 3.12.1
-      typescript: 4.8.4
+      typescript: 4.9.4
+
+  compiler:
+    specifiers:
+      esbuild: 0.15.16
+      typescript: 4.9.4
+    dependencies:
+      esbuild: 0.15.16
+    devDependencies:
+      typescript: 4.9.4
+
+  modules/dom:
+    specifiers:
+      '@freeact/cli': workspace:*
+      '@types/mime-types': 2.1.1
+      '@types/react': ^18.0.24
+      freeact: workspace:*
+      mime-types: 2.1.35
+      react: ^18.2.0
+    dependencies:
+      freeact: link:../../server
+      mime-types: 2.1.35
+    devDependencies:
+      '@freeact/cli': link:../../cli
+      '@types/mime-types': 2.1.1
+      '@types/react': 18.0.24
+      react: 18.2.0
 
   modules/joy:
     specifiers:
-      '@emotion/react': ^11.10.5
-      '@emotion/styled': ^11.10.5
+      '@emotion/react': 11.10.5
+      '@emotion/styled': 11.10.5
       '@freeact/cli': workspace:*
-      '@mui/joy': 5.0.0-alpha.51
-      '@mui/types': 7.2.0
-      '@types/react': ^18.0.22
+      '@freeact/dom': workspace:*
+      '@freeact/types': workspace:*
+      '@mui/joy': 5.0.0-alpha.61
+      '@mui/types': 7.2.3
+      '@types/react': ^18.0.24
       freeact: workspace:*
       react: ^18.2.0
+      typescript: 4.9.4
     dependencies:
       '@emotion/react': 11.10.5_bbvjflvjoibwhtpmedigb26h6y
       '@emotion/styled': 11.10.5_wm6ohc3abj5yburmg6pjdgzp24
-      '@mui/joy': 5.0.0-alpha.51_3ccit3vaizg4wqqen3724viway
-      '@mui/types': 7.2.0_@types+react@18.0.24
+      '@freeact/dom': link:../dom
+      '@freeact/types': link:../../types
+      '@mui/joy': 5.0.0-alpha.61_3ccit3vaizg4wqqen3724viway
+      '@mui/types': 7.2.3_@types+react@18.0.24
       '@types/react': 18.0.24
       freeact: link:../../server
       react: 18.2.0
     devDependencies:
       '@freeact/cli': link:../../cli
+      typescript: 4.9.4
 
   server:
     specifiers:
+      '@freeact/compiler': workspace:*
       '@freeact/types': workspace:*
       '@react-fullstack/fullstack': 0.3.1-alpha.8
       '@react-fullstack/fullstack-socket-client': 0.3.1-alpha.8
@@ -83,22 +112,21 @@ importers:
       '@react-fullstack/render': ^0.3.0
       '@types/mime-types': ^2.1.1
       '@types/node': ^16
-      '@types/react': ^18.0.22
+      '@types/react': ^18.0.24
       '@types/react-dom': ^18.0.7
       '@types/uuid': ^9.0.0
       chrome-paths: ^1.0.1
-      esbuild: 0.15.16
       get-port: 5.1.1
       mime-types: ^2.1.35
       react: ^18.2.0
       socket.io: 4.5.4
       socket.io-client: 4.5.4
       tsx: 3.12.1
-      typescript: ^4.6.4
+      typescript: 4.9.4
       uuid: ^9.0.0
     dependencies:
+      '@freeact/compiler': link:../compiler
       '@freeact/types': link:../types
-      esbuild: 0.15.16
       tsx: 3.12.1
       uuid: 9.0.0
     devDependencies:
@@ -117,16 +145,16 @@ importers:
       react: 18.2.0
       socket.io: 4.5.4
       socket.io-client: 4.5.4
-      typescript: 4.8.4
+      typescript: 4.9.4
 
   types:
     specifiers:
       '@react-fullstack/fullstack': 0.3.1-alpha.8
-      typescript: 4.6.4
+      typescript: 4.9.4
     dependencies:
       '@react-fullstack/fullstack': 0.3.1-alpha.8
     devDependencies:
-      typescript: 4.6.4
+      typescript: 4.9.4
 
 packages:
 
@@ -568,10 +596,6 @@ packages:
     requiresBuild: true
     optional: true
 
-  /@fal-works/esbuild-plugin-global-externals/2.1.2:
-    resolution: {integrity: sha512-cEee/Z+I12mZcFJshKcCqC8tuX5hG3s+d+9nZ3LabqKF1vKdF41B92pJVCBggjAGORAeOzyyDDKrZwIkLffeOQ==}
-    dev: false
-
   /@jridgewell/gen-mapping/0.1.1:
     resolution: {integrity: sha512-sQXCasFk+U8lWYEe66WxRDOE9PjVz4vSM51fTu3Hw+ClTpUSQb718772vH3pyS5pShp6lvQM7SxgIDXXXmOX7w==}
     engines: {node: '>=6.0.0'}
@@ -610,8 +634,8 @@ packages:
       '@jridgewell/sourcemap-codec': 1.4.14
     dev: true
 
-  /@mui/base/5.0.0-alpha.103_bbvjflvjoibwhtpmedigb26h6y:
-    resolution: {integrity: sha512-fJIyB2df3CHn7D26WHnutnY7vew6aytTlhmRJz6GX7ag19zU2GcOUhJAzY5qwWcrXKnlYgzimhEjaEnuiUWU4g==}
+  /@mui/base/5.0.0-alpha.112_bbvjflvjoibwhtpmedigb26h6y:
+    resolution: {integrity: sha512-KPwb1iYPXsV/P8uu0SNQrj7v7YU6wdN4Eccc2lZQyRDW+f6PJYjHBuFUTYKc408B98Jvs1XbC/z5MN45a2DWrQ==}
     engines: {node: '>=12.0.0'}
     peerDependencies:
       '@types/react': ^17.0.0 || ^18.0.0
@@ -623,7 +647,7 @@ packages:
     dependencies:
       '@babel/runtime': 7.20.7
       '@emotion/is-prop-valid': 1.2.0
-      '@mui/types': 7.2.0_@types+react@18.0.24
+      '@mui/types': 7.2.3_@types+react@18.0.24
       '@mui/utils': 5.11.2_react@18.2.0
       '@popperjs/core': 2.11.6
       '@types/react': 18.0.24
@@ -637,8 +661,8 @@ packages:
     resolution: {integrity: sha512-Bgb6//KtxY7IC7M5Pa5RKFX1wttc213mqpKqydnz3wn4BGDXfA5c0vf5nTu5zqsJeB4T3ysAJTRJhQ/E1GsZDQ==}
     dev: false
 
-  /@mui/joy/5.0.0-alpha.51_3ccit3vaizg4wqqen3724viway:
-    resolution: {integrity: sha512-7PKsa1XPH8lMVKIxGMhANsviIZfxbnpLvYuizryW/LzdV8Pe2mSsjwEhhIwr5oE17uUTdJTHTw4TPebDBSbeEg==}
+  /@mui/joy/5.0.0-alpha.61_3ccit3vaizg4wqqen3724viway:
+    resolution: {integrity: sha512-juPWupDM9MwTwJKHmUWQMhXz+xBPSyKqkSfjCRxiwdoQGoMfGV5bkEQDCmn4TL1wGU2b00ON+brhbmTXLmIFcQ==}
     engines: {node: '>=12.0.0'}
     peerDependencies:
       '@emotion/react': ^11.5.0
@@ -657,10 +681,10 @@ packages:
       '@babel/runtime': 7.20.7
       '@emotion/react': 11.10.5_bbvjflvjoibwhtpmedigb26h6y
       '@emotion/styled': 11.10.5_wm6ohc3abj5yburmg6pjdgzp24
-      '@mui/base': 5.0.0-alpha.103_bbvjflvjoibwhtpmedigb26h6y
+      '@mui/base': 5.0.0-alpha.112_bbvjflvjoibwhtpmedigb26h6y
       '@mui/core-downloads-tracker': 5.11.3
       '@mui/system': 5.11.2_3ccit3vaizg4wqqen3724viway
-      '@mui/types': 7.2.0_@types+react@18.0.24
+      '@mui/types': 7.2.3_@types+react@18.0.24
       '@mui/utils': 5.11.2_react@18.2.0
       '@types/react': 18.0.24
       clsx: 1.2.1
@@ -737,17 +761,6 @@ packages:
       csstype: 3.1.1
       prop-types: 15.8.1
       react: 18.2.0
-    dev: false
-
-  /@mui/types/7.2.0_@types+react@18.0.24:
-    resolution: {integrity: sha512-lGXtFKe5lp3UxTBGqKI1l7G8sE2xBik8qCfrLHD5olwP/YU0/ReWoWT7Lp1//ri32dK39oPMrJN8TgbkCSbsNA==}
-    peerDependencies:
-      '@types/react': '*'
-    peerDependenciesMeta:
-      '@types/react':
-        optional: true
-    dependencies:
-      '@types/react': 18.0.24
     dev: false
 
   /@mui/types/7.2.3_@types+react@18.0.24:
@@ -1460,14 +1473,12 @@ packages:
   /mime-db/1.52.0:
     resolution: {integrity: sha512-sPU4uV7dYlvtWJxwwxHD0PuihVNiE7TyAbQ5SWxDCB9mUYvOgroQOwYQQOKPJ8CIbE+1ETVlOoK1UC2nU3gYvg==}
     engines: {node: '>= 0.6'}
-    dev: true
 
   /mime-types/2.1.35:
     resolution: {integrity: sha512-ZDY+bPm5zTTF+YpCrAU9nK0UgICYPT0QtT1NZWFv4s++TNkcgVaT0g6+4R2uI4MjQjzysHB1zxuWL50hzaeXiw==}
     engines: {node: '>= 0.6'}
     dependencies:
       mime-db: 1.52.0
-    dev: true
 
   /ms/2.1.2:
     resolution: {integrity: sha512-sGkPx+VjMtmA6MX27oA4FBFELFCZZ4S4XqeGOXCv68tT+jb3vk/RyaKWP0PTKyWtmLSM0b+adUTEvbs1PEaH2w==}
@@ -1778,14 +1789,8 @@ packages:
     resolution: {integrity: sha512-RAH822pAdBgcNMAfWnCBU3CFZcfZ/i1eZjwFU/dsLKumyuuP3niueg2UAukXYF0E2AAoc82ZSSf9J0WQBinzHA==}
     engines: {node: '>=12.20'}
 
-  /typescript/4.6.4:
-    resolution: {integrity: sha512-9ia/jWHIEbo49HfjrLGfKbZSuWo9iTMwXO+Ca3pRsSpbsMbc7/IU8NKdCZVRRBafVPGnoJeFL76ZOAA84I9fEg==}
-    engines: {node: '>=4.2.0'}
-    hasBin: true
-    dev: true
-
-  /typescript/4.8.4:
-    resolution: {integrity: sha512-QCh+85mCy+h0IGff8r5XWzOVSbBO+KfeYrMQh7NJ58QujwcE22u+NUSmUxqF+un70P9GXKxa2HCNiTTMJknyjQ==}
+  /typescript/4.9.4:
+    resolution: {integrity: sha512-Uz+dTXYzxXXbsFpM86Wh3dKCxrQqUcVMxwU54orwlJjOpO3ao8L7j5lH+dWfTwgCwIuM9GQ2kvVotzYJMXTBZg==}
     engines: {node: '>=4.2.0'}
     hasBin: true
 

@@ -1,6 +1,6 @@
 import React from "react";
 import { createAPIServerImplementation } from "@freeact/types";
-import {
+import type {
   CompNameCompPropsMap,
   CompiledServerModules,
   Components,
@@ -35,11 +35,9 @@ export type Compiler<
   overrideWithSsrComponents<SsrOverrides extends Partial<Components<Comps>>>(
     override: () => MaybePromise<SsrOverrides>
   ): Compiler<Comps, APIInterface, ServerComps>;
-  done<Namespace extends string>(name: Namespace): ServerModule<
-    Namespace,
-    ServerComps,
-    APIInterface
-  >;
+  done<Namespace extends string>(
+    name: Namespace
+  ): ServerModule<Namespace, ServerComps, APIInterface>;
 };
 
 /**
@@ -51,25 +49,21 @@ export type Compiler<
  * )
  */
 export function createServerModule<Comps extends CompNameCompPropsMap>(
-  client: MaybePromise<UIModule<Comps>>,
-  clientPath: string
+  client: MaybePromise<UIModule<Comps>>
 ): Compiler<Comps, {}, Comps> {
   return createServerModuleBase<Comps, {}, Comps>(
     client,
-    clientPath,
     createApiServerInterface(() => ({})),
     [],
     []
   );
 }
-
 function createServerModuleBase<
   Comps extends CompNameCompPropsMap,
   APIInterface,
   ServerComps extends CompNameCompPropsMap
 >(
   client: MaybePromise<UIModule<Comps>>,
-  clientPath: string,
   _api: createAPIServerImplementation<APIInterface>,
   _serverOverrides: Array<(comps: any) => MaybePromise<any>>,
   _ssrOverrides: Array<() => MaybePromise<any>>
@@ -80,7 +74,6 @@ function createServerModuleBase<
     ) {
       const withApi = createServerModuleBase<Comps, APIInterface, ServerComps>(
         client,
-        clientPath,
         api,
         _serverOverrides,
         _ssrOverrides
@@ -100,13 +93,7 @@ function createServerModuleBase<
         Comps,
         APIInterface,
         Omit<Comps, keyof ServerOverrides> & ServerOverrides
-      >(
-        client,
-        clientPath,
-        _api,
-        [..._serverOverrides, override],
-        _ssrOverrides
-      );
+      >(client, _api, [..._serverOverrides, override], _ssrOverrides);
       return withServerComponents;
     },
     overrideWithSsrComponents<SsrOverrides extends Partial<Components<Comps>>>(
@@ -118,10 +105,7 @@ function createServerModuleBase<
         Comps,
         APIInterface,
         ServerComps
-      >(client, clientPath, _api, _serverOverrides, [
-        ..._ssrOverrides,
-        override,
-      ]);
+      >(client, _api, _serverOverrides, [..._ssrOverrides, override]);
       return withSsrComponents;
     },
     done: ((namespace) => {
@@ -168,9 +152,13 @@ function createServerModuleBase<
         ssrComponents: () =>
           getComponents().then(({ ssrComponents }) => ssrComponents),
         namespace,
-        clientPath,
-      } as any;
-    }) as any,
+        getClientPath: () => {
+          return Promise.resolve(
+            client
+          ).then((client) => client.filename);
+        }
+      } as ServerModule<any, ServerComps, APIInterface>;
+    }),
   };
 }
 

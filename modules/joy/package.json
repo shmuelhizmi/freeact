@@ -1,19 +1,42 @@
 {
     "name": "@freeact/joy",
-    "dependencies": {
-        "@emotion/react": "^11.10.5",
-        "@emotion/styled": "^11.10.5",
-        "@mui/joy": "5.0.0-alpha.51",
-        "@mui/types": "7.2.0",
-        "freeact": "workspace:*",
-        "react": "^18.2.0",
-        "@types/react": "^18.0.22"
+    "exports": {
+        ".": {
+            "import": "./dist/server/index.mjs",
+            "require": "./dist/server/index.js",
+            "types": "./dist/types/server/index.d.ts"
+        },
+        "./react": {
+            "import": "./dist/server/react.mjs",
+            "require": "./dist/server/react.js",
+            "types": "./dist/types/server/react.d.ts"
+        }
     },
+    "files": [
+        "dist"
+    ],
+    "dependencies": {
+        "@emotion/react": "11.10.5",
+        "@emotion/styled": "11.10.5",
+        "@mui/joy": "5.0.0-alpha.61",
+        "@mui/types": "7.2.3",
+        "freeact": "workspace:*",
+        "@freeact/dom": "workspace:*",
+        "react": "^18.2.0",
+        "@types/react": "^18.0.24",
+        "@freeact/types": "workspace:*"
+    },  
     "devDependencies": {
-        "@freeact/cli": "workspace:*"
+        "@freeact/cli": "workspace:*",
+        "typescript": "4.9.4"
     },
     "scripts": {
-        "build": "freeact build",
-        "start": "freeact start"
+        "build": "freeact-cli build",
+        "start": "freeact-cli start"
+    },
+    "freeact": {
+        "server": "./server/index.ts",
+        "react": "./server/react.ts",
+        "client": "./client/index.ts"
     }
 }

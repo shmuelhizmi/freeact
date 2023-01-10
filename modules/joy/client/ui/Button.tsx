@@ -1,0 +1,20 @@
+import React from "react";
+import { ButtonProps } from "../../types/ui/button";
+import {  Base } from "./Base";
+import { Button as JoyButton } from "@mui/joy";
+import { useCallback } from "react";
+import { StyleEnabled } from "../../types/ui/base";
+
+const Button = (props: ButtonProps & StyleEnabled) => {
+  const { className, ...rest } = props;
+  const onClick = useCallback(() => {
+    props.onClick();
+  }, [props.onClick]);
+  return (
+    <JoyButton className={className} {...rest} onClick={onClick}>
+      {props.label}
+    </JoyButton>
+  );
+};
+
+export default Base(Button);

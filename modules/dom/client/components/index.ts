@@ -1,7 +1,7 @@
 import Favicon from "./Favicon";
-import { implementClientComponents } from "../../../../views/components";
+import { implementComponents } from "freeact/client"
 import { DomComponents } from "../../types";
 
-export const components = implementClientComponents<DomComponents>(() => ({
+export const components = implementComponents<DomComponents>(() => ({
   Favicon,
 }));

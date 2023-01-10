@@ -10,7 +10,6 @@ import { CompiledServerModules } from "@freeact/types";
 import { getSsrComponentMap } from "./module";
 import { URL } from "url";
 
-const isProd = __filename.endsWith("dist/server/index.js");
 
 const makeBundles = (
   modules: CompiledServerModules,
@@ -41,13 +40,13 @@ export function dirname() {
     return __dirname;
   }
   // if esm
+  // @ts-ignore
   return path.dirname(new URL(import.meta.url).pathname);
 }
 
+
 export function hostStatics(modules: CompiledServerModules) {
-  const statics = isProd
-    ? path.join(dirname(), "..", "client")
-    : path.join(dirname(), "..", "dist", "client");
+  const statics = path.join(dirname(), "../../", "views");
 
   const bundles = makeBundles(modules, "").filesMap;
   const handler: HTTPRequestHandler<Promise<void>> = async (req, res) => {

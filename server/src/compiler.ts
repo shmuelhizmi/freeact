@@ -13,7 +13,7 @@ import {
   PRIVATE_FREEACT_SET_MODULES,
   createFreeactProxy,
 } from "./freeactProxy";
-import * as build from "./esbuild";
+import { parsePath } from "./utils/parsePath";
 
 export function createCompiler() {
   return createCompilerBase({});
@@ -70,7 +70,12 @@ export async function compileModules<Modules extends ServerModules>(
   return Object.entries(modules).reduce(async (acc, [key, module]) => {
     const [compiledServerModule, components, ssrComponents] = await Promise.all(
       [
-        build.module(module.clientPath),
+        Promise.resolve(module.getClientPath()).then(async (path) => {
+          const { runtimeBundle } = await import("@freeact/compiler");
+          return runtimeBundle(parsePath(
+            path
+          ));
+        }),
         module.components(),
         module.ssrComponents(),
       ]

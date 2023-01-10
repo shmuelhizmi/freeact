@@ -3,3 +3,4 @@ packages:
   - types
   - cli
   - modules/*
+  - compiler

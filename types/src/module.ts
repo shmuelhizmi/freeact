@@ -6,6 +6,7 @@ export interface UIModule<Comps extends CompNameCompPropsMap> {
   api?: APIClientImplementation;
   components: ComponentImplementor<Comps>;
   //   wrappedExternalComponent: WrappedExternalComponent<GlobalProps>;
+  filename: string;
 }
 
 export type CompNameCompPropsMap = Record<string, any>;
@@ -27,7 +28,7 @@ export interface ServerModule<
   ssrComponents: ComponentImplementor<Partial<Comps>>;
   api: createAPIServerImplementation<APIInterface>;
   namespace: Namespace;
-  clientPath: string;
+  getClientPath: () => MaybePromise<string>;
 }
 export type ModuleApi<Module extends ServerModule<any, any, any>> =
   Module extends ServerModule<any, any, infer APIInterface>
@@ -60,3 +61,4 @@ export type CompiledServerModules = Record<
 export type ModulesComponents<Modules extends ServerModules> = {
   [key in keyof Modules]: ModuleComponents<Modules[key]>;
 };
+

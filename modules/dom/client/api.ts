@@ -1,4 +1,4 @@
-import { implementApi } from "../../../views/api";
+import { implementApi } from "freeact/client";
 import { APIEventData, APIEvents, APIEventsMap } from "../types";
 
 export const api = implementApi<APIEventsMap>((connection) => {

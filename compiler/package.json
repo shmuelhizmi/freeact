@@ -1,0 +1,23 @@
+{
+    "name": "@freeact/compiler",
+    "private": false,
+    "main": "./dist/index.js",
+    "types": "./dist/index.d.ts",
+    "author": {
+        "name": "shmuelhizmi",
+        "url": "https://github.com/shmuelhizmi"
+    },
+    "dependencies": {
+        "esbuild": "0.15.16"
+    },
+    "devDependencies": {
+        "typescript": "4.9.4"
+    },
+    "scripts": {
+        "build": "tsc"
+    },
+    "files": [
+        "dist",
+        "inject"
+    ]
+}

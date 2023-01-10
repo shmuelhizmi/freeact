@@ -1,4 +1,4 @@
-import React, { useState } from "../modules/joy/react";
+import React, { useState } from "../modules/joy/server/react";
 
 function Calculator() {
   const [expression, setExpression] = useState("");
