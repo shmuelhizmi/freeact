@@ -1,5 +1,5 @@
 import React from "react";
-import { APIClientImplementation, createAPIServerImplementation } from "./api";
+import { APIClientImplementation, CreateAPIServerImplementation } from "./api";
 import { MaybePromise } from "./utils";
 
 export interface UIModule<Comps extends CompNameCompPropsMap> {
@@ -26,7 +26,7 @@ export interface ServerModule<
 > {
   components: ComponentImplementor<Comps>;
   ssrComponents: ComponentImplementor<Partial<Comps>>;
-  api: createAPIServerImplementation<APIInterface>;
+  api: CreateAPIServerImplementation<APIInterface>;
   namespace: Namespace;
   getClientPath: () => MaybePromise<string>;
 }
@@ -48,7 +48,7 @@ export type ModuleComponents<Module extends ServerModule<any, any, any>> =
 export interface ServerModuleWithClientCompiled {
   components: Record<string, React.ComponentType<any>>;
   ssrComponents: Record<string, React.ComponentType<any>>;
-  api: createAPIServerImplementation<any>;
+  api: CreateAPIServerImplementation<any>;
   namespace: string;
   clientBundle: string;
 }

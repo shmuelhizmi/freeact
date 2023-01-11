@@ -3,6 +3,7 @@ import { ClientConnection, UIModule } from "../../types/dist";
 import { Client } from "@react-fullstack/fullstack/client";
 import { emit, Events } from "@react-fullstack/fullstack/shared";
 import { io, Socket } from "socket.io-client";
+import { apiTransport } from "../src/shared/api"
 
 declare global {
   interface Window {
@@ -32,11 +33,12 @@ function useLoadAdditionalBundles(socket: Socket) {
     if (loaded) return;
     const promises = Object.entries(window.modules || {}).map(
       ([name, modulePath]) =>
-        import(modulePath).then((mod) =>
-          Promise.resolve((mod as UIModule<any>).components()).then(
+        import(modulePath).then((mod) => {
+          (mod as UIModule<any>).api?.(apiTransport(name, socket as any) as any);
+          return Promise.resolve((mod as UIModule<any>).components()).then(
             (comps) => ({ name, module: mod, comps })
-          )
-        )
+          );
+        })
     );
     Promise.all(promises).then((modules) => {
       const comps = modules.reduce((acc, mod) => {

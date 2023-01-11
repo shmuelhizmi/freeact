@@ -172,7 +172,7 @@ function createConnection<T, Modules extends ServerModules>(
       >
         {() =>
           render(
-            createModulesApi<Modules>(router.socket.io, awaitedModules),
+            createModulesApi<Modules>(router.transport, awaitedModules),
             (value) => {
               if (resolvedOrRejected) return;
               resolve(value);

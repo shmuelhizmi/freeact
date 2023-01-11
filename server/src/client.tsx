@@ -13,10 +13,10 @@ import { URL } from "url";
 
 const makeBundles = (
   modules: CompiledServerModules,
-  staticsBasePath: string
+  staticsBasePath?: string
 ) => {
   const files = Object.values(modules).map((module) => ({
-    file: `${staticsBasePath}/modules/${module.namespace}.js`,
+    file: `${staticsBasePath || '/'}modules/${module.namespace}.js`,
     async getBundle() {
       return module.clientBundle;
     },
@@ -48,7 +48,7 @@ export function dirname() {
 export function hostStatics(modules: CompiledServerModules) {
   const statics = path.join(dirname(), "../../", "views");
 
-  const bundles = makeBundles(modules, "").filesMap;
+  const bundles = makeBundles(modules).filesMap;
   const handler: HTTPRequestHandler<Promise<void>> = async (req, res) => {
     try {
       const url = new URL(req.url || "", `http://${req.headers.host}`);
@@ -105,7 +105,7 @@ export function createSsr(
                 __html: `
                 const toInject = ${JSON.stringify({
                   ...globals,
-                  modules: makeBundles(modules, staticsBasePath || "").nameMap,
+                  modules: makeBundles(modules, staticsBasePath).nameMap,
                 })};
                 for (const key in toInject) {
                   window[key] = toInject[key];

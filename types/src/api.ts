@@ -20,4 +20,4 @@ export type AllowSync<T> = T extends Promise<infer U> ? (U | Promise<U>) : (T | 
 
 export type APIClientImplementation = (connection: ConnectionUnTyped) => any;
 export type APIServerImplementation <Interface>= (connection: ConnectionUnTyped, apiId: string) => Interface;
-export type createAPIServerImplementation <Interface>= (connection: Transport<any>, apiId: string) => APIServerImplementation<Interface>;
+export type CreateAPIServerImplementation <Interface>= (connection: Transport<any>, apiId: string) => APIServerImplementation<Interface>;

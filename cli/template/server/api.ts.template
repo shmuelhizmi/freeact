@@ -1,7 +1,7 @@
-import { createApiServerInterface } from "freeact";
+import { implementApi } from "freeact";
 import { APIEventsMap, API } from "../types";
 
-export const api = createApiServerInterface<APIEventsMap, API>(({ emit }) => {
+export const api = implementApi<APIEventsMap, API>(({ emit }) => {
   return {
     alert(message: string) {
       emit("alert", message);

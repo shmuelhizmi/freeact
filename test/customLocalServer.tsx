@@ -1,4 +1,4 @@
-import React, { useState } from "../server";
+import React, { useState } from "../modules/joy/server/react";
 import http from "http";
 
 const server = http.createServer((req, res) => {
@@ -25,30 +25,30 @@ server.listen(4433);
 function App() {
   const [count, setCount] = useState(69);
   return (
-    <React.Box rows={["45px", "25%", "30%"]} columns="70%" gap={35}>
-      <React.Typography variant="solid" type="h1">
+    <React.JOY.Box rows={["45px", "25%", "30%"]} columns="70%" gap={35}>
+      <React.JOY.Typography variant="solid" type="h1">
         The Terminal Output Counter
-      </React.Typography>
-      <React.Box
+      </React.JOY.Typography>
+      <React.JOY.Box
         variant="soft"
         columns={"100%"}
         rows={["25%", "65%"]}
         gap={"5%"}
         padding={"5%"}
       >
-        <React.Typography type="h2">Count: {count}</React.Typography>
-        <React.Button
+        <React.JOY.Typography type="h2">Count: {count}</React.JOY.Typography>
+        <React.JOY.Button
           onClick={() => setCount(count + 1)}
           variant="outlined"
           color="primary"
           label="increment"
         />
-      </React.Box>
-      <React.Terminal
+      </React.JOY.Box>
+      {/* <React.JOY.Terminal
         initialExecution={{ shell: "zsh", args: ["-c", 'echo "freeact";zsh'] }}
         onData={() => setCount((c) => c + 1)}
-      />
-    </React.Box>
+      /> */}
+    </React.JOY.Box>
   );
 }
 

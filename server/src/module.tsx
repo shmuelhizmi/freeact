@@ -1,5 +1,5 @@
 import React from "react";
-import { createAPIServerImplementation } from "@freeact/types";
+import { CreateAPIServerImplementation } from "@freeact/types";
 import type {
   CompNameCompPropsMap,
   CompiledServerModules,
@@ -17,7 +17,7 @@ export type Compiler<
   ServerComps extends CompNameCompPropsMap
 > = {
   implementApi<APIInterface>(
-    api: createAPIServerImplementation<APIInterface>
+    api: CreateAPIServerImplementation<APIInterface>
   ): Compiler<Comps, APIInterface, ServerComps>;
   overrideWithServerComponents<
     ServerOverrides extends Partial<Record<keyof Comps, any>>
@@ -64,13 +64,13 @@ function createServerModuleBase<
   ServerComps extends CompNameCompPropsMap
 >(
   client: MaybePromise<UIModule<Comps>>,
-  _api: createAPIServerImplementation<APIInterface>,
+  _api: CreateAPIServerImplementation<APIInterface>,
   _serverOverrides: Array<(comps: any) => MaybePromise<any>>,
   _ssrOverrides: Array<() => MaybePromise<any>>
 ): Compiler<Comps, APIInterface, ServerComps> {
   return {
     implementApi<APIInterface>(
-      api: createAPIServerImplementation<APIInterface>
+      api: CreateAPIServerImplementation<APIInterface>
     ) {
       const withApi = createServerModuleBase<Comps, APIInterface, ServerComps>(
         client,

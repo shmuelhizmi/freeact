@@ -36,7 +36,7 @@ function createCompilerBase<Modules extends ServerModules>(modules: Modules) {
     },
     compile() {
       const compiledModules = compileModules(modules);
-      const api = apiWithModules(compiledModules);
+      const api = apiWithModules<Modules>(compiledModules);
       return withReact<Modules, typeof api>(api, compiledModules);
     },
   };
