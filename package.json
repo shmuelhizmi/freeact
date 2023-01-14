@@ -3,38 +3,14 @@
   "version": "1.0.0",
   "private": true,
   "description": "freeact monorepo root",
-  "scripts": {
-    "test:calc": "tsx watch ./test/calculator.tsx",
-    "test:form": "tsx watch ./test/sessions/form.tsx",
-    "test:counter": "tsx watch ./test/counter.tsx",
-    "test:customLocalServer": "tsx watch ./test/customLocalServer.tsx"
-  },
-  "dependencies": {
-    "tsx": "3.12.1",
-    "uuid": "^9.0.0"
-  },
-  "bin": "./bin/index.js",
-  "devDependencies": {
-    "@react-fullstack/fullstack": "0.3.1-alpha.8",
-    "socket.io": "4.5.4",
-    "@react-fullstack/fullstack-socket-client": "0.3.1-alpha.8",
-    "@react-fullstack/render": "^0.3.0",
-    "@types/node": "^16",
-    "@types/react": "^18.0.24",
-    "@types/react-dom": "^18.0.7",
-    "@types/uuid": "^9.0.0",
-    "@vitejs/plugin-react": "^2.2.0",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "socket.io-client": "4.5.4",
-    "typescript": "4.9.4",
-    "vite": "^3.2.0"
-  },
-  "files": [
-    "dist",
-    "**/*.d.ts"
-  ],
-  "keywords": [],
-  "author": "",
-  "license": "MIT"
+  "workspaces": {
+    "packages": [
+      "server",
+      "test",
+      "types",
+      "modules/*",
+      "cli",
+      "compiler"
+    ]
+  }
 }

@@ -18,14 +18,14 @@
     "dependencies": {
         "@emotion/react": "11.10.5",
         "@emotion/styled": "11.10.5",
+        "@freeact/dom": "workspace:*",
+        "@freeact/types": "workspace:*",
         "@mui/joy": "5.0.0-alpha.61",
         "@mui/types": "7.2.3",
-        "freeact": "workspace:*",
-        "@freeact/dom": "workspace:*",
-        "react": "^18.2.0",
         "@types/react": "^18.0.24",
-        "@freeact/types": "workspace:*"
-    },  
+        "freeact": "workspace:*",
+        "react": "^18.2.0"
+    },
     "devDependencies": {
         "@freeact/cli": "workspace:*",
         "typescript": "4.9.4"

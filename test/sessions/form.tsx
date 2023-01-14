@@ -1,7 +1,7 @@
 // express js + socket io
-import React, { useState } from "../../modules/joy/server/react";
+import React, { useState } from "@freeact/joy/react";
 import http from "http";
-import socketIO from "socket.io";
+import * as socketIO from "socket.io";
 
 const server = http.createServer();
 const io = new socketIO.Server(server);

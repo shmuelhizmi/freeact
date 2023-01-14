@@ -4,3 +4,4 @@ packages:
   - cli
   - modules/*
   - compiler
+  - test

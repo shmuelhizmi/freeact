@@ -18,12 +18,12 @@
     "dependencies": {
         "freeact": "workspace:*",
         "mime-types": "2.1.35"
-    },  
+    },
     "devDependencies": {
-        "react": "^18.2.0",
-        "@types/react": "^18.0.24",
         "@freeact/cli": "workspace:*",
-        "@types/mime-types": "2.1.1"
+        "@types/mime-types": "2.1.1",
+        "@types/react": "^18.0.24",
+        "react": "^18.2.0"
     },
     "scripts": {
         "build": "freeact-cli build",

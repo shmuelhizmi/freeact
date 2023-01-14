@@ -1,4 +1,4 @@
-#!/usr/bin/env tsx
+#!/usr/bin/env freeact
 
 const command = process.argv[2];
 

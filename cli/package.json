@@ -2,10 +2,11 @@
     "name": "@freeact/cli",
     "version": "0.0.1",
     "dependencies": {
-        "tsx": "3.12.1",
-        "typescript": "4.9.4",
+        "@freeact/compiler": "workspace:*",
+        "@types/node": "^16",
         "freeact": "workspace:*",
-        "@freeact/compiler": "workspace:*"
+        "tsx": "3.12.1",
+        "typescript": "4.9.4"
     },
     "bin": {
         "freeact-cli": "./bin/index.ts"
