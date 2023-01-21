@@ -33,6 +33,7 @@ importers:
   modules/dom:
     specifiers:
       '@freeact/cli': workspace:*
+      '@freeact/tsconfig': workspace:*
       '@types/mime-types': 2.1.1
       '@types/node': ^16
       '@types/react': ^18.0.24
@@ -44,6 +45,7 @@ importers:
       mime-types: 2.1.35
     devDependencies:
       '@freeact/cli': link:../../cli
+      '@freeact/tsconfig': link:../../tsconfig
       '@types/mime-types': 2.1.1
       '@types/node': 16.18.3
       '@types/react': 18.0.24
@@ -55,6 +57,7 @@ importers:
       '@emotion/styled': 11.10.5
       '@freeact/cli': workspace:*
       '@freeact/dom': workspace:*
+      '@freeact/tsconfig': workspace:*
       '@freeact/types': workspace:*
       '@mui/joy': 5.0.0-alpha.61
       '@mui/types': 7.2.3
@@ -75,6 +78,7 @@ importers:
       react: 18.2.0
     devDependencies:
       '@freeact/cli': link:../../cli
+      '@freeact/tsconfig': link:../../tsconfig
       '@types/node': 16.18.3
       typescript: 4.9.4
 
