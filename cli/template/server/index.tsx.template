@@ -1,11 +1,9 @@
 import { createServerModule } from "freeact";
 import { api } from "./api";
 import { createButton } from "./components/Button";
-import { clientDir } from "./config";
 
 export default createServerModule(
   import("../client"),
-  clientDir(),
 )
   .implementApi(api)
   .overrideWithServerComponents((comps) => ({

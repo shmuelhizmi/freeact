@@ -3,16 +3,13 @@ import { hostClientBundles, createHostClientBundlesMiddleware } from "./http";
 import { Server as HTTPServer } from "http";
 import {
   CompiledServerModules,
+  ModulesComponents,
   ServerModule,
   ServerModules,
 } from "@freeact/types";
 import { GlobalAppServeOptions, RequestServeOptions } from "./types";
 import * as React from "react";
 import { getServerComponentMap } from "./module";
-import {
-  PRIVATE_FREEACT_SET_MODULES,
-  createFreeactProxy,
-} from "./freeactProxy";
 import { parsePath } from "./utils/parsePath";
 
 export function createCompiler() {
@@ -37,7 +34,7 @@ function createCompilerBase<Modules extends ServerModules>(modules: Modules) {
     compile() {
       const compiledModules = compileModules(modules);
       const api = apiWithModules<Modules>(compiledModules);
-      return withReact<Modules, typeof api>(api, compiledModules);
+      return withReact<Modules, typeof api>(api, compiledModules, Object.keys(modules));
     },
   };
 }
@@ -93,18 +90,39 @@ export async function compileModules<Modules extends ServerModules>(
   }, Promise.resolve({}) as Promise<CompiledServerModules>);
 }
 
+function dummyModules<Modules extends ServerModules>(names: string[]) {
+  return names.reduce((acc, key) => {
+    return {
+      ...acc,
+      [key]: new Proxy(
+        {},
+        {
+          get() {
+            return () => {
+              throw new Error(
+                `Module ${key} has not been compiled yet. Use the compiler to compile your modules.`
+              );
+            };
+          }
+        }
+      ),
+    };
+  }, {} as ModulesComponents<Modules>);
+}
+
 export function withReact<
   Modules extends ServerModules,
   T extends Record<string, any>
->(base: T, modules: Promise<CompiledServerModules>) {
-  const freeact = createFreeactProxy<Modules, T & typeof React>({
-    ...React,
+>(base: T, modules: Promise<CompiledServerModules>, moduleNames: string[]) {
+  const freeact = {
     ...base,
-  });
+    createElement: React.createElement,
+    Fragment: React.Fragment,
+    ...dummyModules<Modules>(moduleNames),
+  };
   modules.then((modules) => {
-    (freeact as any)[PRIVATE_FREEACT_SET_MODULES](
-      getServerComponentMap(modules)
-    );
+    const componentMap = getServerComponentMap(modules);
+    Object.assign(freeact, componentMap);
   });
   return freeact;
 }

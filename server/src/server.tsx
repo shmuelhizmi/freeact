@@ -1,4 +1,4 @@
-import React from "react";
+import * as React from "react";
 import { Render } from "@react-fullstack/render";
 import getPort from "get-port";
 import { GlobalAppServeOptions, RequestServeOptions, ServerTransport } from "./types";
@@ -12,10 +12,12 @@ import {
   createRequestHandler,
   createRouter,
   getServers,
+  HTTPRequestHandler,
   Servers,
 } from "./http";
 import { CompiledServerModules, ModulesApi, ServerModules } from "@freeact/types";
 import { createModulesApi } from "./api";
+import { IncomingMessage } from "http";
 
 export async function serve<T>(
   render: (resolve?: (value: T) => void) => JSX.Element,
@@ -98,7 +100,7 @@ export function createSessionHandler<Modules extends ServerModules>(options: Req
     >
   ) {
     const { title, windowDimensions } = configuration || {};
-    const handleHttp = async (req, res): Promise<T | undefined> => {
+    const handleHttp: HTTPRequestHandler = async (req, res): Promise<T | undefined> => {
       const url = new URL(req.url || "/", `http://${req.headers.host}`);
       if (!url.pathname.endsWith("/")) {
         log(

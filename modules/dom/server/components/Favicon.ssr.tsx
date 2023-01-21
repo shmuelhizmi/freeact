@@ -1,4 +1,4 @@
-import React from "react";
+import * as React from "react";
 import { FaviconViewProps } from "../../types/favicon";
 
 export function Favicon(props: FaviconViewProps) {

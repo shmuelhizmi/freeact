@@ -1,4 +1,4 @@
-import React from "react";
+import * as React from "react";
 import { TypographyViewProps } from "../../types/ui/typography";
 import { Base } from "./Base";
 import { Typography as JoyTypography } from "@mui/joy";

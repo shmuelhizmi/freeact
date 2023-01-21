@@ -1,18 +1,5 @@
 import { createCompiler } from "freeact/compiler";
-import JOY from ".";
+import JOY from "./index";
 import DOM from "@freeact/dom";
 
-export default createCompiler()
-  .addModule(JOY)
-  .addModule(DOM)
-  .compile();
-
-export {
-  useState,
-  useEffect,
-  useContext,
-  useReducer,
-  useCallback,
-  useMemo,
-  useRef,
-} from "react";
+export = createCompiler().addModule(JOY).addModule(DOM).compile();

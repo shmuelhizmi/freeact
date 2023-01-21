@@ -1,4 +1,4 @@
-import React from "react";
+import * as React from "react";
 import { ButtonProps } from "../../types/ui/button";
 import {  Base } from "./Base";
 import { Button as JoyButton } from "@mui/joy";

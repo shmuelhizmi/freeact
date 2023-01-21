@@ -1,4 +1,4 @@
-import React from "react";
+import * as React from "react";
 import { TypographyProps } from "../../types/ui/typography";
 import { ClientComponents } from "../../types";
 import { nodeToText } from "./nodeToText";

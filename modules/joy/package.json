@@ -1,17 +1,22 @@
 {
     "name": "@freeact/joy",
     "exports": {
-        ".": {
-            "import": "./dist/server/index.mjs",
-            "require": "./dist/server/index.js",
-            "types": "./dist/types/server/index.d.ts"
-        },
-        "./react": {
-            "import": "./dist/server/react.mjs",
-            "require": "./dist/server/react.js",
-            "types": "./dist/types/server/react.d.ts"
+        "./react": "./dist/server/react.js",
+        ".": "./dist/server/index.js"
+    },
+    "type": "commonjs",
+    "typesVersions": {
+        "*": {
+            "react": [
+                "dist/server/react.d.ts"
+            ],
+            ".": [
+                "dist/server/index.d.ts"
+            ]
         }
     },
+    "main": "dist/server/index.js",
+    "types": "dist/server/index.d.ts",
     "files": [
         "dist"
     ],
@@ -28,15 +33,10 @@
     },
     "devDependencies": {
         "@freeact/cli": "workspace:*",
+        "@types/node": "^16",
         "typescript": "4.9.4"
     },
     "scripts": {
-        "build": "freeact-cli build",
-        "start": "freeact-cli start"
-    },
-    "freeact": {
-        "server": "./server/index.ts",
-        "react": "./server/react.ts",
-        "client": "./client/index.ts"
+        "build": "tsc"
     }
 }

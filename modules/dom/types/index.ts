@@ -46,8 +46,8 @@ export interface WindowAPI {
 }
 
 
-export const enum APIEvents {
-  NavigationAPI_Navigate,
+export enum APIEvents {
+  NavigationAPI_Navigate = 0,
   NavigationAPI_ReplaceState,
   NavigationAPI_PushState,
   NavigationAPI_Reload,
@@ -60,7 +60,7 @@ export const enum APIEvents {
   WindowAPI_Resize,
 }
 
-export const enum APIEventData {
+export enum APIEventData {
   IOAPI_CameraAPI_CameraFront = 0,
   IOAPI_CameraAPI_CameraBack,
 }

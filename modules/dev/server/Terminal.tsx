@@ -1,4 +1,4 @@
-import React from "react";
+import * as React from "react";
 import * as socketIO from "socket.io";
 import * as http from "http";
 import { spawn, IPty } from "node-pty";

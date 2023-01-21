@@ -4,4 +4,4 @@ import { } from "@mui/types";
 
 export const components = implementComponents(() => JoyComponents);
 
-export const filename = import.meta.url;
+export const filename = __filename;

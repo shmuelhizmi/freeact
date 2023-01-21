@@ -34,6 +34,7 @@ function useLoadAdditionalBundles(socket: Socket) {
     const promises = Object.entries(window.modules || {}).map(
       ([name, modulePath]) =>
         import(modulePath).then((mod) => {
+          mod = mod.default || mod;
           (mod as UIModule<any>).api?.(apiTransport(name, socket as any) as any);
           return Promise.resolve((mod as UIModule<any>).components()).then(
             (comps) => ({ name, module: mod, comps })

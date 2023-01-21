@@ -1,5 +1,6 @@
 import os from "os";
 import { exec } from "child_process";
+// @ts-ignore
 import chromePaths from "chrome-paths";
 import { SocketConnection } from "./http";
 import { GlobalAppServeOptions, ServeOptionsBase } from "./types";

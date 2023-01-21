@@ -4,7 +4,7 @@ import fs from "fs/promises";
 import { getClientsGlobals } from "./utils";
 import mime from "mime-types";
 import { renderToString } from "react-dom/server";
-import React from "react";
+import * as React from "react";
 import { HTTPRequestHandler, SocketConnection } from "./http";
 import { CompiledServerModules } from "@freeact/types";
 import { getSsrComponentMap } from "./module";
@@ -34,19 +34,10 @@ const makeBundles = (
   };
 };
 
-export function dirname() {
-  // if commonjs
-  if (typeof __dirname === "string") {
-    return __dirname;
-  }
-  // if esm
-  // @ts-ignore
-  return path.dirname(new URL(import.meta.url).pathname);
-}
 
 
 export function hostStatics(modules: CompiledServerModules) {
-  const statics = path.join(dirname(), "../../", "views");
+  const statics = path.join(__dirname, "../", "views");
 
   const bundles = makeBundles(modules).filesMap;
   const handler: HTTPRequestHandler<Promise<void>> = async (req, res) => {

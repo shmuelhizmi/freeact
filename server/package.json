@@ -3,52 +3,31 @@
   "version": "0.0.9",
   "private": false,
   "description": "",
-  "exports": {
-    "./compiler": {
-      "import": "./dist/server/esm/exports/compiler.js",
-      "node": "./dist/server/cjs/exports/compiler.js",
-      "require": "./dist/server/cjs/exports/compiler.js",
-      "browser": "./dist/server/esm/exports/compiler.js"
-    },
-    "./client": {
-      "import": "./dist/server/esm/exports/client.js",
-      "node": "./dist/server/cjs/exports/client.js",
-      "require": "./dist/server/cjs/exports/client.js",
-      "browser": "./dist/server/esm/exports/client.js"
-    },
-    "./module": {
-      "import": "./dist/server/esm/exports/module.js",
-      "node": "./dist/server/cjs/exports/module.js",
-      "require": "./dist/server/cjs/exports/module.js",
-      "browser": "./dist/server/esm/exports/module.js"
-    },
-    "./types": {
-      "import": "./dist/server/esm/exports/types.js",
-      "node": "./dist/server/cjs/exports/types.js",
-      "require": "./dist/server/cjs/exports/types.js",
-      "browser": "./dist/server/esm/exports/types.js"
-    },
-    "./package.json": "./package.json"
-  },
   "typesVersions": {
     "*": {
       "client": [
-        "dist/server/esm/exports/client.d.ts"
+        "dist/server/exports/client.d.ts"
       ],
       "compiler": [
-        "dist/server/esm/exports/compiler.d.ts"
+        "dist/server/exports/compiler.d.ts"
       ],
       "module": [
-        "dist/server/esm/exports/module.d.ts"
+        "dist/server/exports/module.d.ts"
       ],
       "types": [
-        "dist/server/esm/exports/types.d.ts"
+        "dist/server/exports/types.d.ts"
       ]
     }
   },
+  "exports": {
+    "./client": "./dist/server/exports/client.js",
+    "./compiler": "./dist/server/exports/compiler.js",
+    "./module": "./dist/server/exports/module.js",
+    "./types": "./dist/server/exports/types.js"
+  },
   "scripts": {
     "prepublish": "pnpm run build",
-    "build": "tsx ./build.ts && tsc -p tsconfig.json --module esnext --target es2020 --outDir dist/server/esm && tsc -p tsconfig.json --module commonjs --target es2020 --outDir dist/server/cjs"
+    "build": "tsx ./build.ts && tsc -p tsconfig.json"
   },
   "dependencies": {
     "uuid": "^9.0.0",
@@ -72,8 +51,11 @@
     "react": "^18.2.0",
     "socket.io": "4.5.4",
     "socket.io-client": "4.5.4",
-    "typescript": "4.9.4"
+    "typescript": "4.9.4",
+    "react-dom": "18.2.0",
+    "@freeact/tsconfig": "workspace:*"
   },
+  "bin": "./bin/index.js",
   "keywords": [],
   "author": "",
   "license": "MIT"

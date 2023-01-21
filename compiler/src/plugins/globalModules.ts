@@ -14,8 +14,7 @@ export const GLOBAL_MODULES = [
   "react/jsx-runtime",
   "react-dom",
   "@react-fullstack/fullstack",
-  "@react-fullstack/fullstack-socket-client",
-  "freeact/client"
+  "@react-fullstack/fullstack-socket-client"
 ];
 
 export function globalModules() {

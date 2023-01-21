@@ -1,7 +1,5 @@
 import esbuild from "esbuild";
 import { replaceImport, withoutModules } from "../plugins/withoutModules";
-import { replaceDirNameWithImportMetaUrl } from "../plugins/esm";
-
 /**
  * this will bundle the library without the modules
  * and will generate both cjs and mjs files
@@ -13,7 +11,7 @@ export async function bundleLib(
 ) {
   const options: esbuild.BuildOptions = {
     platform: "neutral",
-    target: "es2020",
+    target: "esnext",
     bundle: true,
     plugins: [
       withoutModules,
@@ -22,15 +20,10 @@ export async function bundleLib(
     entryPoints: [entryPoint],
   };
   await esbuild.build(
-    replaceDirNameWithImportMetaUrl({
+    {
       ...options,
       format: "cjs",
       outfile: outFile,
-    })
+    }
   );
-  await esbuild.build({
-    ...options,
-    format: "esm",
-    outfile: outFile.replace(".js", ".mjs"),
-  });
 }

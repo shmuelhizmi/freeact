@@ -1,24 +1,24 @@
 {
   "compilerOptions": {
-    "useDefineForClassFields": true,
     "lib": ["DOM", "DOM.Iterable", "ESNext"],
     "allowJs": false,
-    "skipLibCheck": true,
-    "esModuleInterop": true,
-    "declaration": true,
+    "esModuleInterop": false,
     "allowSyntheticDefaultImports": true,
+    "declaration": true,
     "strict": true,
     "forceConsistentCasingInFileNames": true,
-    "module": "ESNext",
+    "module": "CommonJS",
     "moduleResolution": "Node",
     "isolatedModules":true,
-    "resolveJsonModule": true,
+    "resolveJsonModule": false,
     "noImplicitAny": false,
-    "jsx": "react-jsx",
+    "jsx": "react",
     "target": "ESNext",
+    "sourceMap": true,
     "types": [
       "@mui/types"
-    ]
+    ],
+    "outDir": "dist"
   },
   "include": ["./server/**/*", "./client/**/*", "./types/**/*"],
 }

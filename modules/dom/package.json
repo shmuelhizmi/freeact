@@ -1,20 +1,22 @@
 {
     "name": "@freeact/dom",
     "exports": {
-        ".": {
-            "import": "./dist/server/index.mjs",
-            "require": "./dist/server/index.js",
-            "types": "./dist/types/server/index.d.ts"
-        },
-        "./react": {
-            "import": "./dist/server/react.mjs",
-            "require": "./dist/server/react.js",
-            "types": "./dist/types/server/react.d.ts"
-        }
+        "./react": "./dist/server/react.js",
+        ".": "./dist/server/index.js"
     },
     "main": "./dist/server/index.js",
-    "module": "./dist/server/index.mjs",
-    "types": "./dist/types/server/index.d.ts",
+    "types": "./dist/server/index.d.ts",
+    "type": "commonjs",
+    "typesVersions": {
+        "*": {
+            "react": [
+                "dist/server/react.d.ts"
+            ],
+            ".": [
+                "dist/server/index.d.ts"
+            ]
+        }
+    },
     "dependencies": {
         "freeact": "workspace:*",
         "mime-types": "2.1.35"
@@ -23,16 +25,11 @@
         "@freeact/cli": "workspace:*",
         "@types/mime-types": "2.1.1",
         "@types/react": "^18.0.24",
+        "@types/node": "^16",
         "react": "^18.2.0"
     },
     "scripts": {
-        "build": "freeact-cli build",
-        "start": "freeact-cli start"
-    },
-    "freeact": {
-        "server": "./server/index.ts",
-        "react": "./server/react.ts",
-        "client": "./client/index.ts"
+        "build": "tsc"
     },
     "files": [
         "dist"

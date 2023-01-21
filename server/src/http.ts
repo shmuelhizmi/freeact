@@ -66,11 +66,11 @@ export function getServers(options: ServeOptionsBase | GlobalAppServeOptions | R
 
 export type Servers = ReturnType<typeof getServers>;
 
-export function createNamespaceTransport(namespace: Namespace) {
+export function createNamespaceTransport(namespace: Namespace): ServerTransport {
   return {
     on: (event, callback) => {
       if (event === "connection") {
-        namespace.on(event, callback);
+        namespace.on(event, callback as any);
       } else {
         namespace.sockets.forEach((socket) => socket.on(event, callback));
       }
@@ -197,7 +197,7 @@ export function createRequestHandler({
   const destroy = () => {
     namespaceSocket.disconnectSockets();
     namespaceSocket.removeAllListeners();
-    delete io._nsps[namespace];
+    io._nsps.delete(namespace);
   };
   awaitDisconnection.then(destroy);
   return {

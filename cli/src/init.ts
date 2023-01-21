@@ -1,4 +1,4 @@
-import cliJSON from "../package.json";
+const cliJSON = require("../package.json");
 import fs from "fs/promises";
 import path from "path";
 import freeactPackageJSON from "freeact/package.json";

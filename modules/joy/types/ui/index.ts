@@ -3,7 +3,7 @@ import type { InputProps } from "./input"
 import type { ButtonProps } from "./button"
 import type { BoxProps } from "./box"
 import type { ImageProps } from "./image"
-import React from "react"
+import * as React from "react"
 
 export type ClientComponents = {
     Typography: TypographyViewProps;

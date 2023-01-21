@@ -1,4 +1,4 @@
-import React from "react";
+import * as React from "react";
 import { Component } from "@react-fullstack/fullstack/client";
 import { View } from "@react-fullstack/fullstack/shared";
 import { TerminalViewProps } from "../terminal";

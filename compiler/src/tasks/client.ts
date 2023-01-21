@@ -21,20 +21,18 @@ export async function mainViews(entryPoint: string, outFile: string) {
 }
 
 export async function runtimeBundle(entryPoint: string) {
-    let betterEntryPoint = entryPoint;
-    if (entryPoint.endsWith('.js')) {
-      if (await exists(entryPoint.replace('.js', '.mjs'))) {
-        betterEntryPoint = entryPoint.replace('.js', '.mjs');
-      } 
-    }
     const outPut = await esbuild.build({
-        entryPoints: [betterEntryPoint],
+        entryPoints: [entryPoint],
         bundle: true,
         write: false,
         format: "esm",
         platform: "browser",
         plugins: [globalModules().pluginConsume],
         target: "es2019",
+        define: {
+          '__dirname': '""',
+          '__filename': '""',
+        }
       });
       if (outPut.errors.length) {
         throw new Error(outPut.errors[0].text);
