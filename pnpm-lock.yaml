@@ -131,6 +131,7 @@ importers:
     specifiers:
       '@freeact/dom': workspace:*
       '@freeact/joy': workspace:*
+      '@freeact/tsconfig': workspace:*
       '@types/react': ^18.0.24
       freeact: workspace:*
       react: ^18.2.0
@@ -142,6 +143,7 @@ importers:
       react: 18.2.0
       socket.io: 4.5.4
     devDependencies:
+      '@freeact/tsconfig': link:../tsconfig
       '@types/react': 18.0.24
 
   tsconfig:

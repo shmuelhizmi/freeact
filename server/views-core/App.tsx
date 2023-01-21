@@ -3,7 +3,7 @@ import { ClientConnection, UIModule } from "../../types/dist";
 import { Client } from "@react-fullstack/fullstack/client";
 import { emit, Events } from "@react-fullstack/fullstack/shared";
 import { io, Socket } from "socket.io-client";
-import { apiTransport } from "../src/shared/api"
+import { apiTransport } from "../src/shared/api";
 
 declare global {
   interface Window {
@@ -35,7 +35,9 @@ function useLoadAdditionalBundles(socket: Socket) {
       ([name, modulePath]) =>
         import(modulePath).then((mod) => {
           mod = mod.default || mod;
-          (mod as UIModule<any>).api?.(apiTransport(name, socket as any) as any);
+          (mod as UIModule<any>).api?.(
+            apiTransport(name, socket as any) as any
+          );
           return Promise.resolve((mod as UIModule<any>).components()).then(
             (comps) => ({ name, module: mod, comps })
           );
@@ -73,10 +75,18 @@ const socket = io(
 
 function App({ onLoad }: { onLoad(): void }) {
   const comps = useLoadAdditionalBundles(socket);
+  const [viewTreeLoaded, setViewTreeLoaded] = useState(false);
   useEffect(() => {
-    socket.on(String(Events.UpdateViewsTree), onLoad);
-    emit.request_views_tree(socket as any);
-  }, [comps]);
+    socket.on(String(Events.UpdateViewsTree), () => {
+      setViewTreeLoaded(true);
+    });
+    // emit.request_views_tree(socket as any);
+  }, []);
+  useEffect(() => {
+    if (viewTreeLoaded && comps) {
+      onLoad();
+    }
+  }, [viewTreeLoaded, comps]);
   if (!comps) return null;
   if (!SERVER_HOST) {
     document.body.innerHTML = "No server host found";

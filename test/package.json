@@ -17,7 +17,8 @@
         "socket.io": "4.5.4"
     },
     "devDependencies": {
-        "@types/react": "^18.0.24"
+        "@types/react": "^18.0.24",
+        "@freeact/tsconfig": "workspace:*"
     },
     "files": [
         "dist",
