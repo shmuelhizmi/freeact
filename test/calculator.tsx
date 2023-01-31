@@ -1,13 +1,19 @@
-import React, { useState } from "../server";
+import React, { $ } from "@freeact/joy/react";
+import { Box, Button, Input, Favicon  } from "@freeact/joy/ui";
+
+const __dirname = new URL(".", import.meta.url).pathname;
 
 function Calculator() {
-  const [expression, setExpression] = useState("");
+  const [expression, setExpression] = React.useState("");
+  const buttonBaseProps = {
+    variant: "solid" as const,
+    size: "lg" as const,
+  };
   const button = (num: number | string) => {
     return (
-      <React.Button
+      <Button
         onClick={() => setExpression(expression + num)}
-        variant="solid"
-        size="lg"
+        {...buttonBaseProps}
         color={typeof num === "number" ? "primary" : "info"}
         label={num.toString()}
       />
@@ -27,26 +33,27 @@ function Calculator() {
       setExpression("WTF?");
     }
   };
+
   return (
     <>
-      <React.Favicon
+      <Favicon
         type="path"
         absolutePath={__dirname + "/assets/circle.svg"}
       />
-      <React.Box
+      <Box
         columns={"min(100vw, 500px)"}
         rows={["80px", "calc(95% - 80px)"]}
         gap={10}
         padding={"3%"}
       >
-        <React.Input
+        <Input
           onChange={(text) => setExpression(text)}
           value={expression}
           placeholder="expression"
           type="text"
           fontSize={60}
         />
-        <React.Box
+        <Box
           rows={["25%", "25%", "25%", "25%"]}
           columns={["25%", "25%", "25%", "25%"]}
           gap={"2%"}
@@ -65,23 +72,21 @@ function Calculator() {
           {button(8)}
           {button(9)}
           {button("*")}
-          <React.Button
+          <Button
             onClick={() => setExpression("")}
-            variant="solid"
-            size="lg"
+            {...buttonBaseProps}
             color="danger"
             label="clear"
           />
           {button(0)}
-          <React.Button
+          <Button
             onClick={() => calc()}
-            variant="solid"
-            size="lg"
+            {...buttonBaseProps}
             color="success"
             label="="
           />
-        </React.Box>
-      </React.Box>
+        </Box>
+      </Box>
     </>
   );
 }
@@ -89,5 +94,5 @@ function Calculator() {
 React.serve(() => <Calculator />, {
   runFrom: "browser",
   title: "Calculator",
-  windowDimensions: { width: 500, height: 750 },
+  windowDimensions: { width: 550, height: 750 },
 });

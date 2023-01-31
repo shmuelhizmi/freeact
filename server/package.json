@@ -1,0 +1,61 @@
+{
+  "name": "freeact",
+  "version": "0.0.10",
+  "private": false,
+  "description": "",
+  "typesVersions": {
+    "*": {
+      "client": [
+        "dist/server/exports/client.d.ts"
+      ],
+      "compiler": [
+        "dist/server/exports/compiler.d.ts"
+      ],
+      "module": [
+        "dist/server/exports/module.d.ts"
+      ],
+      "types": [
+        "dist/server/exports/types.d.ts"
+      ]
+    }
+  },
+  "exports": {
+    "./client": "./dist/server/exports/client.js",
+    "./compiler": "./dist/server/exports/compiler.js",
+    "./module": "./dist/server/exports/module.js",
+    "./types": "./dist/server/exports/types.js"
+  },
+  "scripts": {
+    "prepublish": "pnpm run build",
+    "build": "tsx ./build.ts && tsc -p tsconfig.json"
+  },
+  "dependencies": {
+    "uuid": "^9.0.0",
+    "@freeact/types": "workspace:*",
+    "@freeact/compiler": "workspace:*"
+  },
+  "devDependencies": {
+    "@react-fullstack/fullstack": "0.3.1-alpha.8",
+    "tsx": "3.12.1",
+    "@react-fullstack/fullstack-socket-client": "0.3.1-alpha.8",
+    "@react-fullstack/fullstack-socket-server": "0.3.1-alpha.8",
+    "@react-fullstack/render": "^0.3.0",
+    "@types/mime-types": "^2.1.1",
+    "@types/node": "^16",
+    "@types/react": "^18.0.24",
+    "@types/react-dom": "^18.0.7",
+    "@types/uuid": "^9.0.0",
+    "chrome-paths": "^1.0.1",
+    "get-port": "5.1.1",
+    "mime-types": "^2.1.35",
+    "react": "^18.2.0",
+    "socket.io": "4.5.4",
+    "socket.io-client": "4.5.4",
+    "typescript": "4.9.4",
+    "react-dom": "18.2.0",
+    "@freeact/tsconfig": "workspace:*"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT"
+}

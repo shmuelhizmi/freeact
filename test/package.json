@@ -1,0 +1,32 @@
+{
+    "name": "@freeact/monorepo-tests",
+    "version": "1.0.0",
+    "private": true,
+    "type": "commonjs",
+    "scripts": {
+        "test:calc": "tsx watch ./calculator.tsx",
+        "test:form": "tsx watch ./sessions/form.tsx",
+        "test:counter": "tsx watch ./counter.tsx",
+        "test:customLocalServer": "tsx watch ./customLocalServer.tsx"
+    },
+    "dependencies": {
+        "@freeact/dom": "workspace:*",
+        "@freeact/joy": "workspace:*",
+        "@freeact/dev-ui": "workspace:*",
+        "freeact": "workspace:*",
+        "react": "^18.2.0",
+        "socket.io": "4.5.4"
+    },
+    "devDependencies": {
+        "@types/react": "^18.0.24",
+        "tsx": "3.12.1",
+        "@freeact/tsconfig": "workspace:*"
+    },
+    "files": [
+        "dist",
+        "**/*.d.ts"
+    ],
+    "keywords": [],
+    "author": "",
+    "license": "MIT"
+}

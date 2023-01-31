@@ -1,5 +1,19 @@
-import React, { useState } from "../server";
+import DevModule from "@freeact/dev-ui";
+import JoyModule from "@freeact/joy";
+import DomModule from "@freeact/dom";
+import { createCompiler } from "freeact/compiler";
 import http from "http";
+import { useState } from "react";
+import * as socketIO from "socket.io";
+
+const React = createCompiler()
+  .addModule(DomModule)
+  .addModule(JoyModule)
+  .addModule(DevModule)
+  .compile();
+const { JOY, Dev } = React.$;
+const { Box, Typography, Button } = JOY;
+const { Terminal } = Dev;
 
 const server = http.createServer((req, res) => {
   console.log(req.url);
@@ -20,42 +34,58 @@ const server = http.createServer((req, res) => {
     `);
   }
 });
+const io = new socketIO.Server(server);
+const statics = React.hostStatics(server, '/dev/statics/');
+const sessionHandler =  React.createSessionHandler({
+  staticsBasePath: statics.path,
+  connection: {
+    httpServer: server,
+    socket: {
+      io,
+    }
+  }
+})
 server.listen(4433);
+io.setMaxListeners(100);
 
 function App() {
   const [count, setCount] = useState(69);
   return (
-    <React.Box rows={["45px", "25%", "30%"]} columns="70%" gap={35}>
-      <React.Typography variant="solid" type="h1">
+    <Box rows={["45px", "25%", "30%"]} columns="70%" gap={35}>
+      <Typography variant="solid" type="h1">
         The Terminal Output Counter
-      </React.Typography>
-      <React.Box
+      </Typography>
+      <Box
         variant="soft"
         columns={"100%"}
         rows={["25%", "65%"]}
         gap={"5%"}
         padding={"5%"}
       >
-        <React.Typography type="h2">Count: {count}</React.Typography>
-        <React.Button
+        <Typography type="h2">Count: {count}</Typography>
+        <Button
           onClick={() => setCount(count + 1)}
           variant="outlined"
           color="primary"
           label="increment"
         />
-      </React.Box>
-      <React.Terminal
+      </Box>
+      <Terminal
         initialExecution={{ shell: "zsh", args: ["-c", 'echo "freeact";zsh'] }}
         onData={() => setCount((c) => c + 1)}
       />
-    </React.Box>
+    </Box>
   );
 }
 
-React.serve(() => <App />, {
-  connection: {
-    basePath: "/dev/",
-    httpServer: server,
-  },
-  runFrom: "browser",
+server.on('request', (req, res) => {
+  if (req.url === '/dev/') {
+   sessionHandler.handle((api) => {
+      return <App />;
+    }).http(req, res);
+  }
+  if (req.url === '/dev') {
+    res.writeHead(302, { 'Location': '/dev/' });
+    res.end();
+  }
 });

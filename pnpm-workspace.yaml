@@ -1,0 +1,7 @@
+packages:
+  - server
+  - types
+  - modules/*
+  - compiler
+  - test
+  - tsconfig

@@ -1,0 +1,7 @@
+{
+  "extends": "@freeact/tsconfig/tsconfig.lib.json",
+  "compilerOptions": {
+    "outDir": "dist",
+  },
+  "include": ["server/**/*", "client/**/*", "types/**/*"],
+}

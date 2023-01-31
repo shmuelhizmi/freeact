@@ -1,6 +1,0 @@
-
-  let globals = {} as any;
-    window.globals = globals;
-  const lazy = Promise.all([import("react/jsx-runtime").then((m) => (globals["react/jsx-runtime"] = m)),import("react").then((m) => (globals["react"] = m)),import("react-dom").then((m) => (globals["react-dom"] = m)),import("react-resize-detector").then((m) => (globals["react-resize-detector"] = m)),import("xterm").then((m) => (globals["xterm"] = m)),import("xterm-addon-fit").then((m) => (globals["xterm-addon-fit"] = m)),import("@emotion/react").then((m) => (globals["@emotion/react"] = m)),import("@emotion/styled").then((m) => (globals["@emotion/styled"] = m)),import("@mui/joy").then((m) => (globals["@mui/joy"] = m)),import("@react-fullstack/fullstack-socket-client").then((m) => (globals["@react-fullstack/fullstack-socket-client"] = m)),import("@react-fullstack/fullstack").then((m) => (globals["@react-fullstack/fullstack"] = m)),import("socket.io-client").then((m) => (globals["socket.io-client"] = m))]);
-    export default lazy;
-  

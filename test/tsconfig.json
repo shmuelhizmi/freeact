@@ -1,0 +1,8 @@
+{
+  "extends": "@freeact/tsconfig/tsconfig.json",
+  "compilerOptions": {
+    "target": "ESNext",
+    "module": "ESNext",
+  },
+  "include": ["./**/*"],
+}

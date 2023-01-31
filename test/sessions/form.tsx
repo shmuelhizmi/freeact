@@ -1,14 +1,16 @@
+import React, { $ } from "@freeact/joy/react";
 // express js + socket io
-import React, { useEffect, useState } from "../../server";
 import http from "http";
-import socketIO from "socket.io";
+import { useState } from "react";
+import * as socketIO from "socket.io";
+
 
 const server = http.createServer();
 const io = new socketIO.Server(server);
 server.listen(3644);
 
 const { handle } = React.createSessionHandler({
-  staticsBasePath: React.hostClientBundles(server, "/client/").path,
+  staticsBasePath: React.hostStatics(server, "/client/").path,
   connection: {
     httpServer: server,
     socket: {
@@ -18,7 +20,7 @@ const { handle } = React.createSessionHandler({
 });
 
 const helloWorldApp = handle(
-  (res) => <React.Typography type="h1">Hello World</React.Typography>,
+  (api) => <$.JOY.Typography type="h1">Hello World</$.JOY.Typography>,
   {
     title: "Hello World",
   }
@@ -32,15 +34,15 @@ function Form(props: {
   const [selfie, setSelfie] = useState("");
 
   return (
-    <React.Box gap={5}>
-      <React.Typography type="h1">Form</React.Typography>
-      <React.Input value={value} onChange={setValue} label="username" />
+    <$.JOY.Box gap={5}>
+      <$.JOY.Typography type="h1">Form</$.JOY.Typography>
+      <$.JOY.Input value={value} onChange={setValue} label="username" />
       {
-        selfie && <React.Image alt={"you"} url={selfie} />
+        selfie && <$.JOY.Image alt={"you"} url={selfie} />
       }
-      <React.Button onClick={() => props.getSelfie().then(setSelfie)} label="Take selfie" />
-      <React.Button onClick={() => props.onSubmit(value)} label="Submit" />
-    </React.Box>
+      <$.JOY.Button onClick={() => props.getSelfie().then(setSelfie)} label="Take selfie" />
+      <$.JOY.Button onClick={() => props.onSubmit(value)} label="Submit" />
+    </$.JOY.Box>
   );
 }
 
@@ -49,9 +51,9 @@ const formApp = handle<string>(
     return (
       <Form
         onSubmit={(str) =>
-          api.navigation.navigate("/hello/").then(() => res(str))
+          api.DOM.navigation.navigate("/hello/").then(() => res(str))
         }
-        getSelfie={() => api.io.camera.takePicture('front')}
+        getSelfie={() => api.DOM.io.camera.takePicture('front')}
       />
     );
   },
@@ -62,11 +64,11 @@ const formApp = handle<string>(
 
 server.on("request", (req, res) => {
   if (req.url === "/hello/") {
-    helloWorldApp(req, res);
+    helloWorldApp.http(req, res);
     return;
   }
   if (req.url === "/form/") {
-    const result = formApp(req, res);
+    const result = formApp.http(req, res);
     result.then((value) => {
       console.log("Form value:", value);
     });
