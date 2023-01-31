@@ -1,6 +1,5 @@
-import React, { useState, $ } from "@freeact/joy/react";
-const { JOY } = $;
-const { Box, Typography, Button } = JOY;
+import React, { useState } from "@freeact/joy/react";
+import { Box, Typography, Button } from "@freeact/joy/ui";
 
 function App() {
   const [count, setCount] = useState(0);

@@ -8,7 +8,7 @@ export interface GlobalAppServeOptions extends ServeOptionsBase {
   windowDimensions?: { width: number; height: number };
   title?: string;
   connection?: ServeOptionsBase["connection"] & {
-    basePath: string;
+    basePath?: string;
   };
 }
 

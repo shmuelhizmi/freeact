@@ -91,6 +91,19 @@ export async function compileModules<Modules extends ServerModules>(
     };
   }, Promise.resolve({}) as Promise<CompiledServerModules>);
 }
+
+type UnionToType<U extends Record<string, unknown>> = {
+  [K in U extends unknown ? keyof U : never]: U extends unknown
+    ? K extends keyof U
+      ? U[K]
+      : never
+    : never;
+};
+
+type CombinedComponents<Modules extends ServerModules> = UnionToType<
+  ModulesComponents<Modules>[keyof ModulesComponents<Modules>]
+>;
+
 /**
  * this hack is used so module components can be used before they are compiled
  */
@@ -125,6 +138,26 @@ function dummyModules<Modules extends ServerModules>(names: string[]) {
         ),
       };
     }, {} as ModulesComponents<Modules>),
+    dummyCombined: new Proxy(
+      {},
+      {
+        get(_, prop) {
+          return (props: any) => {
+            const module = Object.values(modules).find(
+              (module) => module[prop as string]
+            );
+            if (!module) {
+              throw new Error(
+                `${
+                  prop as string
+                } has not been compiled yet. Use the compiler to compile your modules.`
+              );
+            }
+            return React.createElement(module[prop as string], props);
+          };
+        },
+      }
+    ) as CombinedComponents<Modules>,
   };
 }
 
@@ -132,7 +165,7 @@ export function withReact<
   Modules extends ServerModules,
   T extends Record<string, any>
 >(base: T, modules: Promise<CompiledServerModules>, moduleNames: string[]) {
-  const { dummy, update } = dummyModules<Modules>(moduleNames);
+  const { dummy, update, dummyCombined } = dummyModules<Modules>(moduleNames);
   const freeact = {
     ...base,
     ...React,
@@ -143,11 +176,16 @@ export function withReact<
      * <React.$.MyModule.MyComponent />
      */
     $: dummy,
+    $$: dummyCombined,
   };
   modules.then((modules) => {
     const componentMap = getServerComponentMap(modules);
     update(componentMap as ModulesComponents<Modules>);
     freeact.$ = componentMap as ModulesComponents<Modules>;
+    freeact.$$ = Object.values(componentMap).reduce(
+      (acc, module) => ({ ...acc, ...module }),
+      {} as CombinedComponents<Modules>
+    ) as CombinedComponents<Modules>;
   });
   return freeact;
 }

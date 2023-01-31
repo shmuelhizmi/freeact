@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "private": true,
   "description": "freeact monorepo root",
+  "scripts": {
+    "prepublishOnly": "cp README.md ./server/README.md"
+  },
   "workspaces": {
     "packages": [
       "server",

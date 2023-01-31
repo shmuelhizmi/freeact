@@ -1,6 +1,5 @@
 import React, { $ } from "@freeact/joy/react";
-const { Box, Button, Input } = $.JOY;
-const { Favicon } = $.DOM;
+import { Box, Button, Input, Favicon  } from "@freeact/joy/ui";
 
 const __dirname = new URL(".", import.meta.url).pathname;
 

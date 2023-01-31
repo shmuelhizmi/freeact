@@ -2,6 +2,7 @@
     "name": "@freeact/joy",
     "exports": {
         "./react": "./dist/server/react.js",
+        "./ui": "./dist/server/ui.js",
         ".": "./dist/server/index.js"
     },
     "type": "commonjs",
@@ -9,6 +10,9 @@
         "*": {
             "react": [
                 "dist/server/react.d.ts"
+            ],
+            "ui": [
+                "dist/server/ui.d.ts"
             ],
             ".": [
                 "dist/server/index.d.ts"
