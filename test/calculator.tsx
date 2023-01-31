@@ -1,14 +1,18 @@
-import React, { useState } from "../modules/joy/server/react";
+import React, { $ } from "@freeact/joy/react";
+const { Box, Button, Input } = $.JOY;
+const { Favicon } = $.DOM;
+
+const __dirname = new URL(".", import.meta.url).pathname;
 
 function Calculator() {
-  const [expression, setExpression] = useState("");
+  const [expression, setExpression] = React.useState("");
   const buttonBaseProps = {
     variant: "solid" as const,
     size: "lg" as const,
   };
   const button = (num: number | string) => {
     return (
-      <React.JOY.Button
+      <Button
         onClick={() => setExpression(expression + num)}
         {...buttonBaseProps}
         color={typeof num === "number" ? "primary" : "info"}
@@ -33,24 +37,24 @@ function Calculator() {
 
   return (
     <>
-      <React.DOM.Favicon
+      <Favicon
         type="path"
         absolutePath={__dirname + "/assets/circle.svg"}
       />
-      <React.JOY.Box
+      <Box
         columns={"min(100vw, 500px)"}
         rows={["80px", "calc(95% - 80px)"]}
         gap={10}
         padding={"3%"}
       >
-        <React.JOY.Input
+        <Input
           onChange={(text) => setExpression(text)}
           value={expression}
           placeholder="expression"
           type="text"
           fontSize={60}
         />
-        <React.JOY.Box
+        <Box
           rows={["25%", "25%", "25%", "25%"]}
           columns={["25%", "25%", "25%", "25%"]}
           gap={"2%"}
@@ -69,21 +73,21 @@ function Calculator() {
           {button(8)}
           {button(9)}
           {button("*")}
-          <React.JOY.Button
+          <Button
             onClick={() => setExpression("")}
             {...buttonBaseProps}
             color="danger"
             label="clear"
           />
           {button(0)}
-          <React.JOY.Button
+          <Button
             onClick={() => calc()}
             {...buttonBaseProps}
             color="success"
             label="="
           />
-        </React.JOY.Box>
-      </React.JOY.Box>
+        </Box>
+      </Box>
     </>
   );
 }

@@ -2,12 +2,12 @@
     "name": "@freeact/monorepo-tests",
     "version": "1.0.0",
     "private": true,
-    "type": "module",
+    "type": "commonjs",
     "scripts": {
-        "test:calc": "freeact watch ./calculator.tsx",
-        "test:form": "freeact watch ./sessions/form.tsx",
-        "test:counter": "freeact watch ./counter.tsx",
-        "test:customLocalServer": "freeact watch ./customLocalServer.tsx"
+        "test:calc": "tsx watch ./calculator.tsx",
+        "test:form": "tsx watch ./sessions/form.tsx",
+        "test:counter": "tsx watch ./counter.tsx",
+        "test:customLocalServer": "tsx watch ./customLocalServer.tsx"
     },
     "dependencies": {
         "@freeact/dom": "workspace:*",
@@ -19,6 +19,7 @@
     },
     "devDependencies": {
         "@types/react": "^18.0.24",
+        "tsx": "3.12.1",
         "@freeact/tsconfig": "workspace:*"
     },
     "files": [

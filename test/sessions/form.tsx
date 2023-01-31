@@ -1,4 +1,4 @@
-import React from "@freeact/joy/react";
+import React, { $ } from "@freeact/joy/react";
 // express js + socket io
 import http from "http";
 import { useState } from "react";
@@ -20,7 +20,7 @@ const { handle } = React.createSessionHandler({
 });
 
 const helloWorldApp = handle(
-  (api) => <React.JOY.Typography type="h1">Hello World</React.JOY.Typography>,
+  (api) => <$.JOY.Typography type="h1">Hello World</$.JOY.Typography>,
   {
     title: "Hello World",
   }
@@ -34,15 +34,15 @@ function Form(props: {
   const [selfie, setSelfie] = useState("");
 
   return (
-    <React.JOY.Box gap={5}>
-      <React.JOY.Typography type="h1">Form</React.JOY.Typography>
-      <React.JOY.Input value={value} onChange={setValue} label="username" />
+    <$.JOY.Box gap={5}>
+      <$.JOY.Typography type="h1">Form</$.JOY.Typography>
+      <$.JOY.Input value={value} onChange={setValue} label="username" />
       {
-        selfie && <React.JOY.Image alt={"you"} url={selfie} />
+        selfie && <$.JOY.Image alt={"you"} url={selfie} />
       }
-      <React.JOY.Button onClick={() => props.getSelfie().then(setSelfie)} label="Take selfie" />
-      <React.JOY.Button onClick={() => props.onSubmit(value)} label="Submit" />
-    </React.JOY.Box>
+      <$.JOY.Button onClick={() => props.getSelfie().then(setSelfie)} label="Take selfie" />
+      <$.JOY.Button onClick={() => props.onSubmit(value)} label="Submit" />
+    </$.JOY.Box>
   );
 }
 

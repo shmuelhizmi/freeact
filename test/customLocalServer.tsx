@@ -11,6 +11,9 @@ const React = createCompiler()
   .addModule(JoyModule)
   .addModule(DevModule)
   .compile();
+const { JOY, Dev } = React.$;
+const { Box, Typography, Button } = JOY;
+const { Terminal } = Dev;
 
 const server = http.createServer((req, res) => {
   console.log(req.url);
@@ -48,30 +51,30 @@ io.setMaxListeners(100);
 function App() {
   const [count, setCount] = useState(69);
   return (
-    <React.JOY.Box rows={["45px", "25%", "30%"]} columns="70%" gap={35}>
-      <React.JOY.Typography variant="solid" type="h1">
+    <Box rows={["45px", "25%", "30%"]} columns="70%" gap={35}>
+      <Typography variant="solid" type="h1">
         The Terminal Output Counter
-      </React.JOY.Typography>
-      <React.JOY.Box
+      </Typography>
+      <Box
         variant="soft"
         columns={"100%"}
         rows={["25%", "65%"]}
         gap={"5%"}
         padding={"5%"}
       >
-        <React.JOY.Typography type="h2">Count: {count}</React.JOY.Typography>
-        <React.JOY.Button
+        <Typography type="h2">Count: {count}</Typography>
+        <Button
           onClick={() => setCount(count + 1)}
           variant="outlined"
           color="primary"
           label="increment"
         />
-      </React.JOY.Box>
-      <React.Dev.Terminal
+      </Box>
+      <Terminal
         initialExecution={{ shell: "zsh", args: ["-c", 'echo "freeact";zsh'] }}
         onData={() => setCount((c) => c + 1)}
       />
-    </React.JOY.Box>
+    </Box>
   );
 }
 

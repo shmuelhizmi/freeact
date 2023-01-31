@@ -34,7 +34,11 @@ function createCompilerBase<Modules extends ServerModules>(modules: Modules) {
     compile() {
       const compiledModules = compileModules(modules);
       const api = apiWithModules<Modules>(compiledModules);
-      return withReact<Modules, typeof api>(api, compiledModules, Object.keys(modules));
+      return withReact<Modules, typeof api>(
+        api,
+        compiledModules,
+        Object.keys(modules)
+      );
     },
   };
 }
@@ -69,9 +73,7 @@ export async function compileModules<Modules extends ServerModules>(
       [
         Promise.resolve(module.getClientPath()).then(async (path) => {
           const { runtimeBundle } = await import("@freeact/compiler");
-          return runtimeBundle(parsePath(
-            path
-          ));
+          return runtimeBundle(parsePath(path));
         }),
         module.components(),
         module.ssrComponents(),
@@ -89,40 +91,63 @@ export async function compileModules<Modules extends ServerModules>(
     };
   }, Promise.resolve({}) as Promise<CompiledServerModules>);
 }
-
+/**
+ * this hack is used so module components can be used before they are compiled
+ */
 function dummyModules<Modules extends ServerModules>(names: string[]) {
-  return names.reduce((acc, key) => {
-    return {
-      ...acc,
-      [key]: new Proxy(
-        {},
-        {
-          get() {
-            return () => {
-              throw new Error(
-                `Module ${key} has not been compiled yet. Use the compiler to compile your modules.`
-              );
-            };
+  const modules = {} as ModulesComponents<Modules>;
+  return {
+    update(newModules: ModulesComponents<Modules>) {
+      Object.assign(modules, newModules);
+    },
+    dummy: names.reduce((acc, key) => {
+      return {
+        ...acc,
+        [key]: new Proxy(
+          {},
+          {
+            get(_, prop) {
+              return (props: any) => {
+                if (modules[key]) {
+                  return React.createElement(
+                    modules[key][prop as string],
+                    props
+                  );
+                }
+                throw new Error(
+                  `${
+                    prop as string
+                  } of Module ${key} has not been compiled yet. Use the compiler to compile your modules.`
+                );
+              };
+            },
           }
-        }
-      ),
-    };
-  }, {} as ModulesComponents<Modules>);
+        ),
+      };
+    }, {} as ModulesComponents<Modules>),
+  };
 }
 
 export function withReact<
   Modules extends ServerModules,
   T extends Record<string, any>
 >(base: T, modules: Promise<CompiledServerModules>, moduleNames: string[]) {
+  const { dummy, update } = dummyModules<Modules>(moduleNames);
   const freeact = {
     ...base,
-    createElement: React.createElement,
-    Fragment: React.Fragment,
-    ...dummyModules<Modules>(moduleNames),
+    ...React,
+    /**
+     * All your compiled Freeact modules
+     * @example
+     * import React from '@freeact/lib/react'
+     * <React.$.MyModule.MyComponent />
+     */
+    $: dummy,
   };
   modules.then((modules) => {
     const componentMap = getServerComponentMap(modules);
-    Object.assign(freeact, componentMap);
+    update(componentMap as ModulesComponents<Modules>);
+    freeact.$ = componentMap as ModulesComponents<Modules>;
   });
   return freeact;
 }

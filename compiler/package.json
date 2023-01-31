@@ -2,6 +2,7 @@
     "name": "@freeact/compiler",
     "main": "./dist/index.js",
     "types": "./dist/index.d.ts",
+    "version": "0.0.1",
     "author": {
         "name": "shmuelhizmi",
         "url": "https://github.com/shmuelhizmi"
