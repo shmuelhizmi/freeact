@@ -1,7 +1,9 @@
-import * as React from "react";
 import { Render } from "@react-fullstack/render";
 import getPort from "get-port";
-import { GlobalAppServeOptions, RequestServeOptions, ServerTransport } from "./types";
+import {
+  GlobalAppServeOptions,
+  RequestServeOptions,
+} from "./types";
 import {
   Server,
   createInstanceRenderHandler,
@@ -12,12 +14,15 @@ import {
   createRequestHandler,
   createRouter,
   getServers,
-  HTTPRequestHandler,
   Servers,
 } from "./http";
-import { CompiledServerModules, ModulesApi, ServerModules } from "@freeact/types";
-import { createModulesApi } from "./api";
-import { IncomingMessage } from "http";
+import {
+  CompiledServerModules,
+  ModulesApi,
+  ServerModules,
+} from "@freeact/types";
+import { APIProvider, createModulesApi } from "./api";
+import { IncomingMessage, ServerResponse } from "http";
 
 export async function serve<T>(
   render: (resolve?: (value: T) => void) => JSX.Element,
@@ -86,7 +91,10 @@ export async function serve<T>(
   };
 }
 
-export function createSessionHandler<Modules extends ServerModules>(options: RequestServeOptions, modules: Promise<CompiledServerModules>) {
+export function createSessionHandler<Modules extends ServerModules>(
+  options: RequestServeOptions,
+  modules: Promise<CompiledServerModules>
+) {
   const servers = getServers(options);
   function handle<T>(
     render: (
@@ -100,7 +108,10 @@ export function createSessionHandler<Modules extends ServerModules>(options: Req
     >
   ) {
     const { title, windowDimensions } = configuration || {};
-    const handleHttp: HTTPRequestHandler = async (req, res): Promise<T | undefined> => {
+    const handleHttp = async (
+      req: IncomingMessage,
+      res: ServerResponse
+    ): Promise<T | undefined> => {
       const url = new URL(req.url || "/", `http://${req.headers.host}`);
       if (!url.pathname.endsWith("/")) {
         log(
@@ -166,30 +177,33 @@ function createConnection<T, Modules extends ServerModules>(
   const result = new Promise(async (resolve, reject) => {
     let resolvedOrRejected = false;
     const awaitedModules = await modules;
+    const apis = createModulesApi<Modules>(router.transport, awaitedModules);
     const { stop } = Render(
-      <Server
-        singleInstance
-        instanceRenderHandler={ssrHandler}
-        transport={router.transport}
-      >
-        {() =>
-          render(
-            createModulesApi<Modules>(router.transport, awaitedModules),
-            (value) => {
-              if (resolvedOrRejected) return;
-              resolve(value);
-              stop();
-              resolvedOrRejected = true;
-            },
-            (error) => {
-              if (resolvedOrRejected) return;
-              reject(error);
-              stop();
-              resolvedOrRejected = true;
-            }
-          )
-        }
-      </Server>
+      <APIProvider value={apis}>
+        <Server
+          singleInstance
+          instanceRenderHandler={ssrHandler}
+          transport={router.transport}
+        >
+          {() =>
+            render(
+              apis,
+              (value) => {
+                if (resolvedOrRejected) return;
+                resolve(value);
+                stop();
+                resolvedOrRejected = true;
+              },
+              (error) => {
+                if (resolvedOrRejected) return;
+                reject(error);
+                stop();
+                resolvedOrRejected = true;
+              }
+            )
+          }
+        </Server>
+      </APIProvider>
     );
     router.awaitDisconnection.then(() => {
       if (resolvedOrRejected) return;

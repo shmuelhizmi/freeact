@@ -67,12 +67,25 @@ export function getServers(options: ServeOptionsBase | GlobalAppServeOptions | R
 export type Servers = ReturnType<typeof getServers>;
 
 export function createNamespaceTransport(namespace: Namespace): ServerTransport {
+  const listeners = new Map<string , Set<(...args: any) => void>>();
+  namespace.on("connection", (socket) => {
+    for (const [event, callback] of listeners) {
+      for (const cb of callback) {
+        socket.on(event, cb);
+      }
+    }
+  });
+    
   return {
     on: (event, callback) => {
       if (event === "connection") {
         namespace.on(event, callback as any);
       } else {
         namespace.sockets.forEach((socket) => socket.on(event, callback));
+        if (!listeners.has(event)) {
+          listeners.set(event, new Set());
+        }
+        listeners.get(event)!.add(callback);
       }
     },
     emit: (event, ...args) => {
@@ -83,6 +96,9 @@ export function createNamespaceTransport(namespace: Namespace): ServerTransport 
         namespace.off(event, callback);
       } else {
         namespace.sockets.forEach((socket) => socket.off(event, callback));
+        if (listeners.has(event)) {
+          listeners.get(event)!.delete(callback);
+        }
       }
     },
   };

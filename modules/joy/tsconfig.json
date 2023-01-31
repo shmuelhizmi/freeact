@@ -1,8 +1,7 @@
 {
   "extends": "@freeact/tsconfig/tsconfig.lib.json",
   "compilerOptions": {
-    "types": [
-      "@mui/types"
-    ],
+    "outDir": "dist",
   },
+  "include": ["server/**/*", "client/**/*", "types/**/*"],
 }

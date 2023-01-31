@@ -30,6 +30,29 @@ importers:
       '@types/node': 16.18.3
       typescript: 4.9.4
 
+  modules/dev:
+    specifiers:
+      '@freeact/cli': workspace:*
+      '@freeact/tsconfig': workspace:*
+      '@types/node': ^16
+      '@types/react': ^18.0.24
+      freeact: workspace:*
+      node-pty: 0.10.1
+      react: ^18.2.0
+      xterm: 5.1.0
+      xterm-addon-fit: 0.7.0
+    dependencies:
+      freeact: link:../../server
+      node-pty: 0.10.1
+      xterm: 5.1.0
+      xterm-addon-fit: 0.7.0_xterm@5.1.0
+    devDependencies:
+      '@freeact/cli': link:../../cli
+      '@freeact/tsconfig': link:../../tsconfig
+      '@types/node': 16.18.3
+      '@types/react': 18.0.24
+      react: 18.2.0
+
   modules/dom:
     specifiers:
       '@freeact/cli': workspace:*
@@ -133,6 +156,7 @@ importers:
 
   test:
     specifiers:
+      '@freeact/dev-ui': workspace:*
       '@freeact/dom': workspace:*
       '@freeact/joy': workspace:*
       '@freeact/tsconfig': workspace:*
@@ -141,6 +165,7 @@ importers:
       react: ^18.2.0
       socket.io: 4.5.4
     dependencies:
+      '@freeact/dev-ui': link:../modules/dev
       '@freeact/dom': link:../modules/dom
       '@freeact/joy': link:../modules/joy
       freeact: link:../server
@@ -1181,6 +1206,10 @@ packages:
   /ms/2.1.2:
     resolution: {integrity: sha512-sGkPx+VjMtmA6MX27oA4FBFELFCZZ4S4XqeGOXCv68tT+jb3vk/RyaKWP0PTKyWtmLSM0b+adUTEvbs1PEaH2w==}
 
+  /nan/2.17.0:
+    resolution: {integrity: sha512-2ZTgtl0nJsO0KQCjEpxcIr5D+Yv90plTitZt9JBfQvVJDS5seMl3FOvsh3+9CoYWXf/1l5OaZzzF6nDm4cagaQ==}
+    dev: false
+
   /negotiator/0.6.3:
     resolution: {integrity: sha512-+EUsqGPLsM+j/zdChZjsnX51g4XrHFOIXwfnCVPGlQk/k5giakcKsuxCObBRu6DSm9opw/O6slWbJdghQM4bBg==}
     engines: {node: '>= 0.6'}
@@ -1189,6 +1218,13 @@ packages:
     resolution: {integrity: sha512-2iGbaQBV+ITgCz76ZEjmhUKAKVf7xfY1sRl4UiKQspfZMH2h06SyhNsnSVy50cwkFQDGLyif6m/6uFXHkOZ6rg==}
     hasBin: true
     dev: true
+
+  /node-pty/0.10.1:
+    resolution: {integrity: sha512-JTdtUS0Im/yRsWJSx7yiW9rtpfmxqxolrtnyKwPLI+6XqTAPW/O2MjS8FYL4I5TsMbH2lVgDb2VMjp+9LoQGNg==}
+    requiresBuild: true
+    dependencies:
+      nan: 2.17.0
+    dev: false
 
   /null-check/1.0.0:
     resolution: {integrity: sha512-j8ZNHg19TyIQOWCGeeQJBuu6xZYIEurf8M1Qsfd8mFrGEfIZytbw18YjKWg+LcO25NowXGZXZpKAx+Ui3TFfDw==}
@@ -1498,6 +1534,18 @@ packages:
     resolution: {integrity: sha512-QKxVRxiRACQcVuQEYFsI1hhkrMlrXHPegbbd1yn9UHOmRxY+si12nQYzri3vbzt8VdTTRviqcKxcyllFas5z2A==}
     engines: {node: '>=0.4.0'}
     dev: true
+
+  /xterm-addon-fit/0.7.0_xterm@5.1.0:
+    resolution: {integrity: sha512-tQgHGoHqRTgeROPnvmtEJywLKoC/V9eNs4bLLz7iyJr1aW/QFzRwfd3MGiJ6odJd9xEfxcW36/xRU47JkD5NKQ==}
+    peerDependencies:
+      xterm: ^5.0.0
+    dependencies:
+      xterm: 5.1.0
+    dev: false
+
+  /xterm/5.1.0:
+    resolution: {integrity: sha512-LovENH4WDzpwynj+OTkLyZgJPeDom9Gra4DMlGAgz6pZhIDCQ+YuO7yfwanY+gVbn/mmZIStNOnVRU/ikQuAEQ==}
+    dev: false
 
   /yaml/1.10.2:
     resolution: {integrity: sha512-r3vXyErRCYJ7wg28yvBY5VSoAF8ZvlcW9/BwUzEtUsjvX/DKs24dIkuwjtuprwJJHsbyUbLApepYTR1BN4uHrg==}

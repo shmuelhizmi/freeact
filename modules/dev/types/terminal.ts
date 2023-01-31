@@ -11,7 +11,7 @@ export interface TerminalProps {
 }
 
 export interface TerminalViewProps {
-    port: string;
+    uid: string;
 }
 
 export type ExposedTerminal = React.FC<TerminalProps>;

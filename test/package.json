@@ -12,6 +12,7 @@
     "dependencies": {
         "@freeact/dom": "workspace:*",
         "@freeact/joy": "workspace:*",
+        "@freeact/dev-ui": "workspace:*",
         "freeact": "workspace:*",
         "react": "^18.2.0",
         "socket.io": "4.5.4"

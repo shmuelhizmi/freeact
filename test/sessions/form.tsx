@@ -20,7 +20,7 @@ const { handle } = React.createSessionHandler({
 });
 
 const helloWorldApp = handle(
-  (res) => <React.JOY.Typography type="h1">Hello World</React.JOY.Typography>,
+  (api) => <React.JOY.Typography type="h1">Hello World</React.JOY.Typography>,
   {
     title: "Hello World",
   }

@@ -1,27 +1,21 @@
-import * as React from "react";
-import * as socketIO from "socket.io";
-import * as http from "http";
+import React, { useMemo } from "react";
 import { spawn, IPty } from "node-pty";
 import * as os from "os";
 import { useEffect } from "react";
-import { TerminalProps } from "../terminal";
-import { Components } from "../../../types/module";
-import { ClientComps } from "../types";
-import { getPort } from "../../../server/utils/getPort";
+import { TerminalProps } from "../types/terminal";
+import { API, ClientComps } from "../types";
+import { Components } from "freeact/types";
+import { useAPI } from "freeact/module";
+import { randomUUID } from "crypto";
 
 export const maxTerminalHistoryLength = 100000;
 
 export function createTerminal(comps: Components<ClientComps>) {
   const { Terminal: TerminalView } = comps;
   return function Terminal(props: TerminalProps) {
-    const [port, setPort] = React.useState<number>(0);
+    const api = useAPI<API>("Dev");
+    const connection = useMemo(() => api.channel(randomUUID().slice(0, 8)), []);
     useEffect(() => {
-      const server = http.createServer();
-      const io = new socketIO.Server(server, {
-        cors: {
-          origin: "*",
-        },
-      });
       const defaultBash = getDefaultBash();
       let history = "";
       const pty = new PTY(
@@ -32,38 +26,31 @@ export function createTerminal(comps: Components<ClientComps>) {
             history.length
           );
           props.onData?.(data);
-          io.emit("output", data);
+          connection.write(data);
         },
         props.initialExecution?.shell || defaultBash,
         props.initialExecution?.cwd || process.cwd(),
         props.initialExecution?.args || [],
         props.environmentVariables
       );
-      io.on("connection", (socket) => {
-        socket.emit("output", history);
-        socket.on("input", (data) => {
-          if (props.readOnly) {
-            return;
-          }
-          pty.write(data);
-        });
+      connection.onHistory(() => {
+        return history;
+      });
+      connection.listen((data) => {
+        if (props.readOnly) {
+          return;
+        }
+        pty.write(data);
       });
       pty.ptyProcess.onExit(({ exitCode, signal }) => {
         props.onExecutionEnd?.(exitCode, signal);
       });
-      const listening = getPort().then((port) => {
-        server.listen(port);
-        setPort(port);
-      });
       return () => {
         pty.ptyProcess.kill();
-        listening.then(() => {
-          server.close();
-        });
       };
     }, []);
 
-    return port && <TerminalView port={String(port)} />;
+    return <TerminalView uid={connection.uid} />;
   };
 }
 const getDefaultBash = () => {
@@ -80,7 +67,7 @@ const getDefaultBash = () => {
 class PTY {
   public ptyProcess!: IPty;
   constructor(
-    public out: (data) => void,
+    public out: (data: string) => void,
     public shell: string,
     public cwd: string,
     public args: string[],
@@ -126,7 +113,7 @@ class PTY {
    * @param {*} data Input from user like a command sent from terminal UI
    */
 
-  write(data) {
+  write(data: string) {
     this.ptyProcess.write(data);
   }
 

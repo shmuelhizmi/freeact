@@ -1,5 +1,16 @@
-import React, { useState } from "../modules/joy/server/react";
+import DevModule from "@freeact/dev-ui";
+import JoyModule from "@freeact/joy";
+import DomModule from "@freeact/dom";
+import { createCompiler } from "freeact/compiler";
 import http from "http";
+import { useState } from "react";
+import * as socketIO from "socket.io";
+
+const React = createCompiler()
+  .addModule(DomModule)
+  .addModule(JoyModule)
+  .addModule(DevModule)
+  .compile();
 
 const server = http.createServer((req, res) => {
   console.log(req.url);
@@ -20,7 +31,19 @@ const server = http.createServer((req, res) => {
     `);
   }
 });
+const io = new socketIO.Server(server);
+const statics = React.hostStatics(server, '/dev/statics/');
+const sessionHandler =  React.createSessionHandler({
+  staticsBasePath: statics.path,
+  connection: {
+    httpServer: server,
+    socket: {
+      io,
+    }
+  }
+})
 server.listen(4433);
+io.setMaxListeners(100);
 
 function App() {
   const [count, setCount] = useState(69);
@@ -44,18 +67,22 @@ function App() {
           label="increment"
         />
       </React.JOY.Box>
-      {/* <React.JOY.Terminal
+      <React.Dev.Terminal
         initialExecution={{ shell: "zsh", args: ["-c", 'echo "freeact";zsh'] }}
         onData={() => setCount((c) => c + 1)}
-      /> */}
+      />
     </React.JOY.Box>
   );
 }
 
-React.serve(() => <App />, {
-  connection: {
-    basePath: "/dev/",
-    httpServer: server,
-  },
-  runFrom: "browser",
+server.on('request', (req, res) => {
+  if (req.url === '/dev/') {
+   sessionHandler.handle((api) => {
+      return <App />;
+    }).http(req, res);
+  }
+  if (req.url === '/dev') {
+    res.writeHead(302, { 'Location': '/dev/' });
+    res.end();
+  }
 });
