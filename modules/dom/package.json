@@ -22,7 +22,6 @@
         "mime-types": "2.1.35"
     },
     "devDependencies": {
-        "@freeact/cli": "workspace:*",
         "@types/mime-types": "2.1.1",
         "@types/react": "^18.0.24",
         "@types/node": "^16",

@@ -24,7 +24,6 @@
         "xterm-addon-fit": "0.7.0"
     },
     "devDependencies": {
-        "@freeact/cli": "workspace:*",
         "@types/react": "^18.0.24",
         "@types/node": "^16",
         "react": "^18.2.0",

@@ -1,7 +1,6 @@
 packages:
   - server
   - types
-  - cli
   - modules/*
   - compiler
   - test

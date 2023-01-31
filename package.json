@@ -12,7 +12,6 @@
       "test",
       "types",
       "modules/*",
-      "cli",
       "compiler"
     ]
   }

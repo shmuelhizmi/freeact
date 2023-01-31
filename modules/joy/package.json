@@ -36,7 +36,6 @@
         "react": "^18.2.0"
     },
     "devDependencies": {
-        "@freeact/cli": "workspace:*",
         "@types/node": "^16",
         "typescript": "4.9.4",
         "@freeact/tsconfig": "workspace:*"
