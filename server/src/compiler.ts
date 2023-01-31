@@ -117,10 +117,10 @@ function dummyModules<Modules extends ServerModules>(names: string[]) {
       return {
         ...acc,
         [key]: new Proxy(
-          {},
+          {} as any,
           {
-            get(_, prop) {
-              return (props: any) => {
+            get(target, prop) {
+              const func =  target[prop as string] || ((props: any) => {
                 if (modules[key]) {
                   return React.createElement(
                     modules[key][prop as string],
@@ -132,17 +132,19 @@ function dummyModules<Modules extends ServerModules>(names: string[]) {
                     prop as string
                   } of Module ${key} has not been compiled yet. Use the compiler to compile your modules.`
                 );
-              };
+              });
+              target[prop] = func;
+              return func;
             },
           }
         ),
       };
     }, {} as ModulesComponents<Modules>),
     dummyCombined: new Proxy(
-      {},
+      {} as any,
       {
-        get(_, prop) {
-          return (props: any) => {
+        get(target, prop) {
+          const func =  target[prop as string] || ((props: any) => {
             const module = Object.values(modules).find(
               (module) => module[prop as string]
             );
@@ -154,7 +156,9 @@ function dummyModules<Modules extends ServerModules>(names: string[]) {
               );
             }
             return React.createElement(module[prop as string], props);
-          };
+          });
+          target[prop] = func;
+          return func;
         },
       }
     ) as CombinedComponents<Modules>,
