@@ -13,6 +13,7 @@ export async function bundleLib(
     platform: "neutral",
     target: "esnext",
     bundle: true,
+    treeShaking: true,
     plugins: [
       withoutModules,
       ...(clientPath ? [replaceImport(...clientPath)] : []),

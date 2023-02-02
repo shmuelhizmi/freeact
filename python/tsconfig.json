@@ -1,0 +1,7 @@
+{
+  "extends": "@freeact/tsconfig/tsconfig.json",
+  "compilerOptions": {},
+  "include": [
+    "src/**/*"
+  ],
+}

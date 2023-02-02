@@ -1,5 +1,6 @@
 import * as React from "react";
-import { CssBaseline, CssVarsProvider } from "@mui/joy";
+import {CssVarsProvider} from "@mui/joy/styles/CssVarsProvider";
+import CssBaseline from "@mui/joy/CssBaseline";
 
 export default function Baseline({ children }: { children?: any }) {
   return (

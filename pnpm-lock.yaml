@@ -7,12 +7,14 @@ importers:
 
   compiler:
     specifiers:
+      '@freeact/tsconfig': workspace:*
       '@types/node': ^16
       esbuild: 0.15.16
       typescript: 4.9.4
     dependencies:
       esbuild: 0.15.16
     devDependencies:
+      '@freeact/tsconfig': link:../tsconfig
       '@types/node': 16.18.3
       typescript: 4.9.4
 
@@ -83,6 +85,21 @@ importers:
     devDependencies:
       '@freeact/tsconfig': link:../../tsconfig
       '@types/node': 16.18.3
+      typescript: 4.9.4
+
+  python:
+    specifiers:
+      '@freeact/tsconfig': workspace:*
+      '@types/node': ^16
+      node-calls-python: 1.7.6
+      tsx: 3.12.2
+      typescript: 4.9.4
+    dependencies:
+      '@freeact/tsconfig': link:../tsconfig
+      node-calls-python: 1.7.6
+    devDependencies:
+      '@types/node': 16.18.3
+      tsx: 3.12.2
       typescript: 4.9.4
 
   server:
@@ -1173,6 +1190,11 @@ packages:
     resolution: {integrity: sha512-+EUsqGPLsM+j/zdChZjsnX51g4XrHFOIXwfnCVPGlQk/k5giakcKsuxCObBRu6DSm9opw/O6slWbJdghQM4bBg==}
     engines: {node: '>= 0.6'}
 
+  /node-calls-python/1.7.6:
+    resolution: {integrity: sha512-vC9QFywQTNrfxH9DHCG0e2E/NbijDusdPqlphCh0GOKmRWum5pV1khrqCR4Jq5CG0R6oKqaCpPqnkzeTLvTxBA==}
+    requiresBuild: true
+    dev: false
+
   /node-gyp-build/4.5.0:
     resolution: {integrity: sha512-2iGbaQBV+ITgCz76ZEjmhUKAKVf7xfY1sRl4UiKQspfZMH2h06SyhNsnSVy50cwkFQDGLyif6m/6uFXHkOZ6rg==}
     hasBin: true
@@ -1419,6 +1441,17 @@ packages:
 
   /tsx/3.12.1:
     resolution: {integrity: sha512-Rcg1x+rNe7qwlP8j7kx4VjP/pJo/V57k+17hlrn6a7FuQLNwkaw5W4JF75tYornNVCxkXdSUnqlIT8JY/ttvIw==}
+    hasBin: true
+    dependencies:
+      '@esbuild-kit/cjs-loader': 2.4.1
+      '@esbuild-kit/core-utils': 3.0.0
+      '@esbuild-kit/esm-loader': 2.5.4
+    optionalDependencies:
+      fsevents: 2.3.2
+    dev: true
+
+  /tsx/3.12.2:
+    resolution: {integrity: sha512-ykAEkoBg30RXxeOMVeZwar+JH632dZn9EUJVyJwhfag62k6UO/dIyJEV58YuLF6e5BTdV/qmbQrpkWqjq9cUnQ==}
     hasBin: true
     dependencies:
       '@esbuild-kit/cjs-loader': 2.4.1

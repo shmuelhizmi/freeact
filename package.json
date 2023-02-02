@@ -12,7 +12,8 @@
       "test",
       "types",
       "modules/*",
-      "compiler"
+      "compiler",
+      "python"
     ]
   }
 }

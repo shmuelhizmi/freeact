@@ -12,6 +12,7 @@ export async function mainViews(entryPoint: string, outFile: string) {
     minify: true,
     format: "esm",
     platform: "browser",
+    treeShaking: true,
     outfile: outFile,
     target: "es2019",
     external: ["crypto"]
@@ -28,6 +29,7 @@ export async function runtimeBundle(entryPoint: string) {
         format: "esm",
         platform: "browser",
         plugins: [globalModules().pluginConsume],
+        treeShaking: true,
         target: "es2019",
         define: {
           '__dirname': '""',

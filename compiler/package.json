@@ -12,6 +12,7 @@
     },
     "devDependencies": {
         "@types/node": "^16",
+        "@freeact/tsconfig": "workspace:*",
         "typescript": "4.9.4"
     },
     "scripts": {

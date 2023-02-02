@@ -4,7 +4,7 @@ import {
   Size,
   StyleEnabled,
 } from "../../types/ui/base";
-import { styled } from "@mui/joy";
+import styled from "@mui/joy/styles/styled";
 import { withBaseline } from "./Baseline";
 
 const makeGridTemplate = (template?: GridTemplate) => {

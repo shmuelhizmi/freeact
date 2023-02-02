@@ -1,7 +1,7 @@
 import * as React from "react";
 import { TypographyViewProps } from "../../types/ui/typography";
 import { Base } from "./Base";
-import { Typography as JoyTypography } from "@mui/joy";
+import JoyTypography from "@mui/joy/Typography";
 import { StyleEnabled } from "../../types/ui/base";
 
 const Typography = (props: TypographyViewProps & StyleEnabled) => {

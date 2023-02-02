@@ -1,7 +1,7 @@
 import * as React from "react";
 import { ButtonProps } from "../../types/ui/button";
 import {  Base } from "./Base";
-import { Button as JoyButton } from "@mui/joy";
+import JoyButton from "@mui/joy/Button";
 import { useCallback } from "react";
 import { StyleEnabled } from "../../types/ui/base";
 
