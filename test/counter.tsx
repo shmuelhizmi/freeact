@@ -1,4 +1,5 @@
-import React, { useState } from "@freeact/joy/react";
+import { useState } from "react";
+import { Freeact } from "./domjoy";
 import { Box, Typography, Button } from "@freeact/joy/ui";
 
 function App() {
@@ -27,7 +28,7 @@ function App() {
   );
 }
 
-React.serve(() => <App />, {
+Freeact.serve(() => <App />, {
   title: "Counter App",
   runFrom: "chrome-app",
 });

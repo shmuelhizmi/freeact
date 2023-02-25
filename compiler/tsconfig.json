@@ -1,3 +1,4 @@
 {
-  "extends": "@freeact/tsconfig/tsconfig.json"
+  "extends": "@freeact/tsconfig/tsconfig.json",
+  "include": ["src"]
 }

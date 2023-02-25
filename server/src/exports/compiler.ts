@@ -1,1 +1,1 @@
-export { createCompiler } from "../compiler";
+export { createCompiler, exportModuleUI } from "../compiler";

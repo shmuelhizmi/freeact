@@ -1,6 +1,8 @@
 import DevModule from "@freeact/dev-ui";
 import JoyModule from "@freeact/joy";
 import DomModule from "@freeact/dom";
+import { Box, Typography, Button } from "@freeact/joy/ui";
+import { Terminal } from "@freeact/dev-ui/ui";
 import { createCompiler } from "freeact/compiler";
 import http from "http";
 import { useState } from "react";
@@ -11,9 +13,6 @@ const React = createCompiler()
   .addModule(JoyModule)
   .addModule(DevModule)
   .compile();
-const { JOY, Dev } = React.$;
-const { Box, Typography, Button } = JOY;
-const { Terminal } = Dev;
 
 const server = http.createServer((req, res) => {
   console.log(req.url);

@@ -1,7 +1,9 @@
-import React, { $ } from "@freeact/joy/react";
+import { useState } from "react";
+import { Typography, Box, Button, Image, Input } from "@freeact/joy/ui";
+import { Freeact } from "../domjoy";
+
 // express js + socket io
 import http from "http";
-import { useState } from "react";
 import * as socketIO from "socket.io";
 
 
@@ -9,8 +11,8 @@ const server = http.createServer();
 const io = new socketIO.Server(server);
 server.listen(3644);
 
-const { handle } = React.createSessionHandler({
-  staticsBasePath: React.hostStatics(server, "/client/").path,
+const { handle } = Freeact.createSessionHandler({
+  staticsBasePath: Freeact.hostStatics(server, "/client/").path,
   connection: {
     httpServer: server,
     socket: {
@@ -20,7 +22,7 @@ const { handle } = React.createSessionHandler({
 });
 
 const helloWorldApp = handle(
-  (api) => <$.JOY.Typography type="h1">Hello World</$.JOY.Typography>,
+  (api) => <Typography type="h1">Hello World</Typography>,
   {
     title: "Hello World",
   }
@@ -34,15 +36,15 @@ function Form(props: {
   const [selfie, setSelfie] = useState("");
 
   return (
-    <$.JOY.Box gap={5}>
-      <$.JOY.Typography type="h1">Form</$.JOY.Typography>
-      <$.JOY.Input value={value} onChange={setValue} label="username" />
+    <Box gap={5}>
+      <Typography type="h1">Form</Typography>
+      <Input value={value} onChange={setValue} label="username" />
       {
-        selfie && <$.JOY.Image alt={"you"} url={selfie} />
+        selfie && <Image alt={"you"} url={selfie} />
       }
-      <$.JOY.Button onClick={() => props.getSelfie().then(setSelfie)} label="Take selfie" />
-      <$.JOY.Button onClick={() => props.onSubmit(value)} label="Submit" />
-    </$.JOY.Box>
+      <Button onClick={() => props.getSelfie().then(setSelfie)} label="Take selfie" />
+      <Button onClick={() => props.onSubmit(value)} label="Submit" />
+    </Box>
   );
 }
 
@@ -75,3 +77,5 @@ server.on("request", (req, res) => {
     return;
   }
 });
+
+console.log("Listening on port http://localhost:3644");

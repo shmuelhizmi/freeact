@@ -61,4 +61,3 @@ export type CompiledServerModules = Record<
 export type ModulesComponents<Modules extends ServerModules> = {
   [key in keyof Modules]: ModuleComponents<Modules[key]>;
 };
-

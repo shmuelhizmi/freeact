@@ -1,3 +1,4 @@
-import React from "./react";
+import { exportModuleUI } from "freeact/compiler"
+import Module from ".";
 
-export = React.$$;
+export = exportModuleUI(Module);

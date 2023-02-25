@@ -1,10 +1,12 @@
-import React, { $ } from "@freeact/joy/react";
-import { Box, Button, Input, Favicon  } from "@freeact/joy/ui";
+import { useState } from "react";
+import { Box, Button, Input } from "@freeact/joy/ui";
+import { Favicon } from "@freeact/dom/ui";
+import { Freeact } from "./domjoy";
 
 const __dirname = new URL(".", import.meta.url).pathname;
 
 function Calculator() {
-  const [expression, setExpression] = React.useState("");
+  const [expression, setExpression] = useState("");
   const buttonBaseProps = {
     variant: "solid" as const,
     size: "lg" as const,
@@ -36,10 +38,7 @@ function Calculator() {
 
   return (
     <>
-      <Favicon
-        type="path"
-        absolutePath={__dirname + "/assets/circle.svg"}
-      />
+      <Favicon type="path" absolutePath={__dirname + "/assets/circle.svg"} />
       <Box
         columns={"min(100vw, 500px)"}
         rows={["80px", "calc(95% - 80px)"]}
@@ -91,8 +90,9 @@ function Calculator() {
   );
 }
 
-React.serve(() => <Calculator />, {
-  runFrom: "browser",
-  title: "Calculator",
-  windowDimensions: { width: 550, height: 750 },
-});
+Freeact
+  .serve(() => <Calculator />, {
+    runFrom: "none",
+    title: "Calculator",
+    windowDimensions: { width: 550, height: 750 },
+  });

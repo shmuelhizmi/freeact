@@ -1,13 +1,6 @@
-import { Render } from "@react-fullstack/render";
 import getPort from "get-port";
-import {
-  GlobalAppServeOptions,
-  RequestServeOptions,
-} from "./types";
-import {
-  Server,
-  createInstanceRenderHandler,
-} from "@react-fullstack/fullstack/server";
+import { GlobalAppServeOptions, RequestServeOptions } from "./types";
+import { createInstanceRenderHandler } from "@react-fullstack/fullstack/server";
 import { log, openBrowserOnHost, runChromeApp } from "./utils";
 import { createSsr, hostStatics } from "./client";
 import {
@@ -18,16 +11,20 @@ import {
 } from "./http";
 import {
   CompiledServerModules,
+  CompilerAppProvider,
   ModulesApi,
   ServerModules,
 } from "@freeact/types";
 import { APIProvider, createModulesApi } from "./api";
 import { IncomingMessage, ServerResponse } from "http";
+import { renderApp } from "./renderer";
+import { run } from "./utils/run";
 
 export async function serve<T>(
   render: (resolve?: (value: T) => void) => JSX.Element,
   modules: Promise<CompiledServerModules>,
-  options: Partial<GlobalAppServeOptions & RequestServeOptions> = {}
+  options: Partial<GlobalAppServeOptions & RequestServeOptions> = {},
+  compilerAppProvider: CompilerAppProvider
 ) {
   const logger = options.logger || console.log;
   const { basePath = "/", httpServer } = options.connection || {};
@@ -49,22 +46,12 @@ export async function serve<T>(
   router.handle(ssr, ["/index.html", "/"]);
   const statics = hostStatics(awaitedModules);
   router.handle(statics);
-  const result = new Promise<T>((resolve) => {
-    const { stop } = Render(
-      <Server
-        singleInstance
-        instanceRenderHandler={ssrHandler}
-        transport={router.transport}
-      >
-        {() =>
-          render((value) => {
-            resolve(value);
-            stop();
-          })
-        }
-      </Server>
-    );
-  });
+  const result = renderApp(
+    render,
+    ssrHandler,
+    router.transport,
+    compilerAppProvider
+  ).promise as Promise<T>;
   if (!httpServer) {
     const port = await getPort({ port: options.connection?.port || 3000 });
     const url = `http://localhost:${port}`;
@@ -93,7 +80,8 @@ export async function serve<T>(
 
 export function createSessionHandler<Modules extends ServerModules>(
   options: RequestServeOptions,
-  modules: Promise<CompiledServerModules>
+  modules: Promise<CompiledServerModules>,
+  compilerAppProvider: CompilerAppProvider
 ) {
   const servers = getServers(options);
   function handle<T>(
@@ -127,7 +115,8 @@ export function createSessionHandler<Modules extends ServerModules>(
       const { result, router, ssrHandler } = createConnection<T, Modules>(
         render,
         servers,
-        modules
+        modules,
+        compilerAppProvider
       );
       const ssr = createSsr(
         {
@@ -147,7 +136,12 @@ export function createSessionHandler<Modules extends ServerModules>(
     };
 
     const createSocketConnection = () => {
-      const { router, result } = createConnection(render, servers, modules);
+      const { router, result } = createConnection(
+        render,
+        servers,
+        modules,
+        compilerAppProvider
+      );
       return {
         result: result as Promise<T>,
         socket: router.socket,
@@ -170,49 +164,28 @@ function createConnection<T, Modules extends ServerModules>(
     reject: (error: any) => void
   ) => JSX.Element,
   servers: Servers,
-  modules: Promise<CompiledServerModules>
+  modules: Promise<CompiledServerModules>,
+  compilerAppProvider: CompilerAppProvider
 ) {
   const router = createRequestHandler({ servers });
   const ssrHandler = createInstanceRenderHandler();
-  const result = new Promise(async (resolve, reject) => {
-    let resolvedOrRejected = false;
+  const result = run(async () => {
     const awaitedModules = await modules;
     const apis = createModulesApi<Modules>(router.transport, awaitedModules);
-    const { stop } = Render(
-      <APIProvider value={apis}>
-        <Server
-          singleInstance
-          instanceRenderHandler={ssrHandler}
-          transport={router.transport}
-        >
-          {() =>
-            render(
-              apis,
-              (value) => {
-                if (resolvedOrRejected) return;
-                resolve(value);
-                stop();
-                resolvedOrRejected = true;
-              },
-              (error) => {
-                if (resolvedOrRejected) return;
-                reject(error);
-                stop();
-                resolvedOrRejected = true;
-              }
-            )
-          }
-        </Server>
-      </APIProvider>
+    const { stop, promise } = renderApp(
+      (res, rej) => render(apis, res, rej),
+      ssrHandler,
+      router.transport,
+      compilerAppProvider,
+      apis
     );
     router.awaitDisconnection.then(() => {
-      if (resolvedOrRejected) return;
-      resolve(undefined);
       stop();
-      resolvedOrRejected = true;
     });
+
+    promise.then(() => router.destroy());
+    return promise;
   });
-  result.then(() => router.destroy());
   return {
     result,
     router,

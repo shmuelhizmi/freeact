@@ -3,6 +3,8 @@ import { hostClientBundles, createHostClientBundlesMiddleware } from "./http";
 import { Server as HTTPServer } from "http";
 import {
   CompiledServerModules,
+  CompilerAppProvider,
+  ModuleComponents,
   ModulesComponents,
   ServerModule,
   ServerModules,
@@ -11,6 +13,7 @@ import { GlobalAppServeOptions, RequestServeOptions } from "./types";
 import * as React from "react";
 import { getServerComponentMap } from "./module";
 import { parsePath } from "./utils/parsePath";
+import { proxyWithCache } from "./utils/proxy";
 
 export function createCompiler() {
   return createCompilerBase({});
@@ -33,28 +36,43 @@ function createCompilerBase<Modules extends ServerModules>(modules: Modules) {
     },
     compile() {
       const compiledModules = compileModules(modules);
-      const api = apiWithModules<Modules>(compiledModules);
-      return withReact<Modules, typeof api>(
-        api,
-        compiledModules,
-        Object.keys(modules)
-      );
+      const dummyModules = createDummyModules(Object.keys(modules));
+      const api = apiWithModules<Modules>(compiledModules, dummyModules);
+      compiledModules.then((modules) => {
+        const componentMap = getServerComponentMap(modules);
+        dummyModules.update(componentMap as ModulesComponents<Modules>);
+      });
+      return api;
     },
   };
 }
 
 export function apiWithModules<Modules extends ServerModules>(
-  modules: Promise<CompiledServerModules>
+  modules: Promise<CompiledServerModules>,
+  dummyModules: DummyModules
 ) {
+  const compilerAppProvider: CompilerAppProvider = (props) => {
+    return React.createElement(
+      UIContext.Provider,
+      {
+        value: dummyModules.dummy,
+      },
+      props.children
+    );
+  };
   return {
     serve<T>(
       render: (resolve?: (value: T) => void) => JSX.Element,
       options: Partial<GlobalAppServeOptions & RequestServeOptions> = {}
     ) {
-      return serve(render, modules, options);
+      return serve(render, modules, options, compilerAppProvider);
     },
     createSessionHandler(options: RequestServeOptions) {
-      return createSessionHandler<Modules>(options, modules);
+      return createSessionHandler<Modules>(
+        options,
+        modules,
+        compilerAppProvider
+      );
     },
     hostStatics(server: HTTPServer, mountPath?: string) {
       return hostClientBundles(server, modules, mountPath);
@@ -92,22 +110,10 @@ export async function compileModules<Modules extends ServerModules>(
   }, Promise.resolve({}) as Promise<CompiledServerModules>);
 }
 
-type UnionToType<U extends Record<string, unknown>> = {
-  [K in U extends unknown ? keyof U : never]: U extends unknown
-    ? K extends keyof U
-      ? U[K]
-      : never
-    : never;
-};
-
-type CombinedComponents<Modules extends ServerModules> = UnionToType<
-  ModulesComponents<Modules>[keyof ModulesComponents<Modules>]
->;
-
 /**
  * this hack is used so module components can be used before they are compiled
  */
-function dummyModules<Modules extends ServerModules>(names: string[]) {
+function createDummyModules<Modules extends ServerModules>(names: string[]) {
   const modules = {} as ModulesComponents<Modules>;
   return {
     update(newModules: ModulesComponents<Modules>) {
@@ -116,11 +122,11 @@ function dummyModules<Modules extends ServerModules>(names: string[]) {
     dummy: names.reduce((acc, key) => {
       return {
         ...acc,
-        [key]: new Proxy(
-          {} as any,
-          {
-            get(target, prop) {
-              const func =  target[prop as string] || ((props: any) => {
+        [key]: new Proxy({} as any, {
+          get(target, prop) {
+            const func =
+              target[prop as string] ||
+              ((props: any) => {
                 if (modules[key]) {
                   return React.createElement(
                     modules[key][prop as string],
@@ -133,63 +139,57 @@ function dummyModules<Modules extends ServerModules>(names: string[]) {
                   } of Module ${key} has not been compiled yet. Use the compiler to compile your modules.`
                 );
               });
-              target[prop] = func;
-              return func;
-            },
-          }
-        ),
+            target[prop] = func;
+            return func;
+          },
+        }),
       };
     }, {} as ModulesComponents<Modules>),
-    dummyCombined: new Proxy(
-      {} as any,
-      {
-        get(target, prop) {
-          const func =  target[prop as string] || ((props: any) => {
-            const module = Object.values(modules).find(
-              (module) => module[prop as string]
-            );
-            if (!module) {
-              throw new Error(
-                `${
-                  prop as string
-                } has not been compiled yet. Use the compiler to compile your modules.`
-              );
-            }
-            return React.createElement(module[prop as string], props);
-          });
-          target[prop] = func;
-          return func;
-        },
-      }
-    ) as CombinedComponents<Modules>,
+    dummyCombined: proxyWithCache<any>((prop) => {
+      return (props: any) => {
+        const module = Object.values(modules).find(
+          (module) => module[prop as string]
+        );
+        if (!module) {
+          throw new Error(
+            `${
+              prop as string
+            } has not been compiled yet. Use the compiler to compile your modules.`
+          );
+        }
+        return React.createElement(module[prop as string], props);
+      };
+    }) as CombinedComponents<Modules>,
   };
 }
 
-export function withReact<
-  Modules extends ServerModules,
-  T extends Record<string, any>
->(base: T, modules: Promise<CompiledServerModules>, moduleNames: string[]) {
-  const { dummy, update, dummyCombined } = dummyModules<Modules>(moduleNames);
-  const freeact = {
-    ...base,
-    ...React,
-    /**
-     * All your compiled Freeact modules
-     * @example
-     * import React from '@freeact/lib/react'
-     * <React.$.MyModule.MyComponent />
-     */
-    $: dummy,
-    $$: dummyCombined,
-  };
-  modules.then((modules) => {
-    const componentMap = getServerComponentMap(modules);
-    update(componentMap as ModulesComponents<Modules>);
-    freeact.$ = componentMap as ModulesComponents<Modules>;
-    freeact.$$ = Object.values(componentMap).reduce(
-      (acc, module) => ({ ...acc, ...module }),
-      {} as CombinedComponents<Modules>
-    ) as CombinedComponents<Modules>;
-  });
-  return freeact;
+export type DummyModules = ReturnType<typeof createDummyModules>;
+
+type UnionToType<U extends Record<string, unknown>> = {
+  [K in U extends unknown ? keyof U : never]: U extends unknown
+    ? K extends keyof U
+      ? U[K]
+      : never
+    : never;
+};
+
+type CombinedComponents<Modules extends ServerModules> = UnionToType<
+  ModulesComponents<Modules>[keyof ModulesComponents<Modules>]
+>;
+
+export const UIContext = React.createContext<
+  Record<string, ModuleComponents<any>>
+>({});
+
+export function exportModuleUI<SM extends ServerModule<any, any, any>>(
+  module: SM
+): ModuleComponents<SM> {
+  return proxyWithCache<any>((prop) => {
+    return (props: any) => {
+      const context = React.useContext(UIContext);
+      const Component =
+        context[module.namespace as keyof typeof context][prop as string];
+      return React.createElement(Component, props);
+    };
+  }) as ModuleComponents<SM>;
 }
