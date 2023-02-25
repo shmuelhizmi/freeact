@@ -1,6 +1,6 @@
 {
     "name": "@freeact/python",
-    "version": "0.0.1",
+    "version": "0.0.2",
     "description": "node-calls-python wrapper, part of the freeact suit",
     "scripts": {
         "build": "tsc",
