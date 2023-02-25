@@ -1,5 +1,10 @@
 {
     "name": "@freeact/types",
+    "publishConfig": {
+        "access": "public",
+        "registry": "https://registry.npmjs.org/",
+        "tag": "latest"
+    },
     "private": false,
     "main": "./dist/index.js",
     "types": "./dist/index.d.ts",

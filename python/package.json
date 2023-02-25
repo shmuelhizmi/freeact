@@ -1,5 +1,10 @@
 {
     "name": "@freeact/python",
+    "publishConfig": {
+        "access": "public",
+        "registry": "https://registry.npmjs.org/",
+        "tag": "latest"
+    },
     "private": false,
     "version": "0.0.2",
     "description": "node-calls-python wrapper, part of the freeact suit",

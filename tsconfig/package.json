@@ -1,5 +1,10 @@
 {
     "name": "@freeact/tsconfig",
+    "publishConfig": {
+        "access": "public",
+        "registry": "https://registry.npmjs.org/",
+        "tag": "latest"
+    },
     "private": false,
     "version": "1.0.0",
     "description": "Freeact TypeScript configuration",

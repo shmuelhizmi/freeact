@@ -40,5 +40,10 @@
         "build": "tsc"
     },
     "version": "0.0.1",
+    "publishConfig": {
+        "access": "public",
+        "registry": "https://registry.npmjs.org/",
+        "tag": "latest"
+    },
     "private": false
 }
