@@ -1,5 +1,6 @@
 {
     "name": "@freeact/python",
+    "private": false,
     "version": "0.0.2",
     "description": "node-calls-python wrapper, part of the freeact suit",
     "scripts": {
@@ -7,6 +8,31 @@
         "test": "tsx ./test/main.ts",
         "test:js": "node -r ./dist/register.js ./test/js.js"
     },
+    "main": "dist/index.js",
+    "types": "dist/index.d.ts",
+    "exports": {
+        ".": {
+            "import": "./dist/index.js",
+            "require": "./dist/index.js"
+        },
+        "./register": {
+            "import": "./dist/register.js",
+            "require": "./dist/register.js"
+        }
+    },
+    "typesVersions": {
+        "*": {
+            "register": [
+                "dist/register.d.ts"
+            ],
+            ".": [
+                "dist/index.d.ts"
+            ]
+        }
+    },
+    "files": [
+        "dist"
+    ],
     "dependencies": {
         "node-calls-python": "1.7.6",
         "@freeact/tsconfig": "workspace:*"

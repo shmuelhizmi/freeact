@@ -19,6 +19,9 @@
       ]
     }
   },
+  "files": [
+    "dist"
+  ],
   "exports": {
     "./client": "./dist/server/exports/client.js",
     "./compiler": "./dist/server/exports/compiler.js",

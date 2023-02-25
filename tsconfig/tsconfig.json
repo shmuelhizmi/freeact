@@ -13,8 +13,6 @@
     "sourceMap": true,
     "isolatedModules": true,
     "noImplicitAny": true,
-    "outDir": "./dist/server",
     "jsx": "react-jsx"
-  },
-  "include": ["./src/**/*"],
+  }
 }

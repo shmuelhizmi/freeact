@@ -9,7 +9,7 @@ export function requirePythonModule<Mod extends Record<string, any>>(
   return proxy<Mod>(module);
 }
 
-export function proxy<Mod extends Record<string, any>>(
+function proxy<Mod extends Record<string, any>>(
   module: Promise<PyModule | PyObject>
 ): PromisifyDeep<Mod> {
   return new Proxy({} as PromisifyDeep<Mod>, {

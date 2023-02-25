@@ -1,4 +1,7 @@
 {
   "extends": "@freeact/tsconfig/tsconfig.json",
-  "include": ["src"]
+  "include": ["src"],
+  "compilerOptions": {
+    "outDir": "dist"
+  }
 }
