@@ -33,6 +33,7 @@ export async function serve<T>(
       `customConnection.basePath must start with a slash and not end with a slash. basePath: ${basePath}`
     );
   }
+
   const router = createRouter({ serveOptions: options });
   const ssrHandler = createInstanceRenderHandler();
   const awaitedModules = await modules;
@@ -100,17 +101,6 @@ export function createSessionHandler<Modules extends ServerModules>(
       req: IncomingMessage,
       res: ServerResponse
     ): Promise<T | undefined> => {
-      const url = new URL(req.url || "/", `http://${req.headers.host}`);
-      if (!url.pathname.endsWith("/")) {
-        log(
-          configuration,
-          "error",
-          'can only handle requests with a path that ends with a slash. e.g. "/sessions/"'
-        );
-        throw new Error(
-          'can only handle requests with a path that ends with a slash. e.g. "/sessions/'
-        );
-      }
       const awaitedModules = await modules;
       const { result, router, ssrHandler } = createConnection<T, Modules>(
         render,

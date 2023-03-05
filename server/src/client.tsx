@@ -69,7 +69,7 @@ export function hostStatics(modules: CompiledServerModules) {
 
 export function createSsr(
   options: Partial<
-    Pick<GlobalAppServeOptions, "title" | "windowDimensions"> &
+    Pick<GlobalAppServeOptions, "title" | "windowDimensions" | 'connection'> &
       Pick<RequestServeOptions, "staticsBasePath">
   >,
   modules: CompiledServerModules,
@@ -77,9 +77,13 @@ export function createSsr(
   socket: SocketConnection,
   ssrFunction: (views: Record<string, React.ComponentType>) => JSX.Element
 ) {
-  const { staticsBasePath } = options;
+  const { staticsBasePath, connection: { basePath } = {} } = options;
   const ssrViews = getSsrComponentMap(modules);
   const globals = getClientsGlobals(options, socket);
+  let modulesBasePath = staticsBasePath || basePath || '/';
+  if (!modulesBasePath.endsWith("/")) {
+    modulesBasePath += "/";
+  }
   const handler: HTTPRequestHandler<Promise<void>> = async (req, res) => {
     try {
       res.writeHead(200, { "Content-Type": "text/html" });
@@ -96,7 +100,7 @@ export function createSsr(
                 __html: `
                 const toInject = ${JSON.stringify({
                   ...globals,
-                  modules: makeBundles(modules, staticsBasePath).nameMap,
+                  modules: makeBundles(modules, staticsBasePath || basePath).nameMap,
                 })};
                 for (const key in toInject) {
                   window[key] = toInject[key];

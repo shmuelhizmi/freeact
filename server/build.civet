@@ -1,0 +1,55 @@
+type IFile =
+    content: string
+    ext: string
+
+async function transpile(folderPath: string, targetFolder: string, handler: Record<string, (content: string) => Promise<IFile>>): Promise<void>
+  fs := await import 'fs'
+  path := await import 'path'
+  files := await fs.promises.readdir folderPath
+  for file of files
+    stat := await fs.promises.stat path.join(folderPath, file)
+    isDir := stat.isDirectory()
+    if isDir
+      await transpile path.join(folderPath, file), path.join(targetFolder, file), handler
+    else
+      ext := path.extname file
+      content:= await fs.promises.readFile path.join(folderPath, file), 'utf8'
+      newFile := await handler[ext]? content
+      await fs.promises.mkdir targetFolder, { recursive: true }
+      if newFile
+        await fs.promises.writeFile path.join(targetFolder, path.basename(file, ext) + newFile.ext), newFile.content
+      else
+        await fs.promises.copyFile path.join(folderPath, file), path.join(targetFolder, file)
+  return
+
+
+async do
+  [path, { mainViews }, { exec: _spawn }, { promisify }, { compile }] := await Promise.all [
+    import 'path'
+    import '@freeact/compiler'
+    import 'child_process'
+    import 'util'
+    import '@danielx/civet'
+  ]
+
+  exec := promisify _spawn
+
+
+  transpileServerToTS := -> async do
+    await exec 'mkdir -p ./dist/server-typescript', { cwd: __dirname }
+    await transpile './src/', './dist/server-typescript/', {
+      '.civet': async (content) ->
+        return content: (await compile content, { js: false } ), ext: '.ts'
+    }
+  
+  compileServerTS := -> async do
+    await exec 'tsc -p ./tsconfig.cli.json', { cwd: __dirname }
+    await exec 'rm -rf ./dist/server-typescript', { cwd: __dirname }
+
+  compileClient := -> async do
+    await mainViews path.join(__dirname, "./views-core/main.tsx"), path.join(__dirname, "./dist/views/freeact.mjs")
+
+  await Promise.all [
+    transpileServerToTS().then(compileServerTS)
+    compileClient()
+  ]

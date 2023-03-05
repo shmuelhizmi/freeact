@@ -1,0 +1,12 @@
+export function reducePromise<Key extends string, Value>(
+    object: Record<Key, unknown>,
+    calc: (key: Key) => Promise<Value>,
+): Promise<Record<Key, Value>> {
+    return Object.keys(object).reduce(
+        async (acc, key) => {
+            const value = await calc(key as Key)
+            return { ...await acc, [key]: value }
+        },
+        Promise.resolve({} as Record<Key, Value>),
+    )
+}
