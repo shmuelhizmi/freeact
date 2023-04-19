@@ -39,7 +39,7 @@ async do
     await exec 'mkdir -p ./dist/server-typescript', { cwd: __dirname }
     await transpile './src/', './dist/server-typescript/', {
       '.civet': async (content) ->
-        return content: (await compile content, { js: false } ), ext: '.ts'
+        return content: (await compile content, { js: false } ), ext: '.tsx'
     }
   
   compileServerTS := -> async do

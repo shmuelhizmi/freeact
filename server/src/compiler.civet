@@ -14,16 +14,17 @@ import * as React from "react";
 import { getServerComponentMap } from "./module";
 import { parsePath } from "./utils/parsePath";
 import { proxyWithCache } from "./utils/proxy";
-import { reducePromise } from "./utils/reduce.civet";
+import { reducePromise } from "./utils/reduce";
 
-export createCompiler := -> createCompilerBase({});
+export createCompiler := => return createCompilerBase {};
 
 function createCompilerBase<Modules extends ServerModules>(modules: Modules) {
   function addModule<
       Name extends string,
       Comps extends Record<string, any>,
       APIInterface
-    >(module: ServerModule<Name, Comps, APIInterface>) -> createCompilerBase<
+    >(module: ServerModule<Name, Comps, APIInterface>) {
+    return createCompilerBase<
         Modules & {
           [key in Name]: ServerModule<Name, Comps, APIInterface>;
         }
@@ -31,6 +32,7 @@ function createCompilerBase<Modules extends ServerModules>(modules: Modules) {
         ...modules,
         [module.namespace]: module,
     });
+  }
     
   function compile() {
       compiledModules := compileModules(modules);
