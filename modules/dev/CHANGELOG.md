@@ -1,5 +1,13 @@
 # @freeact/dev-ui
 
+## 0.0.2
+
+### Patch Changes
+
+- aa22b37: try to fix versions
+- Updated dependencies [aa22b37]
+  - freeact@0.0.12
+
 ## null
 
 ### Patch Changes
