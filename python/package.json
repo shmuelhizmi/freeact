@@ -39,11 +39,11 @@
         "dist"
     ],
     "dependencies": {
-        "node-calls-python": "1.7.6",
-        "@freeact/tsconfig": "workspace:*"
+        "node-calls-python": "1.7.6"
     },
     "devDependencies": {
         "@types/node": "^16",
+        "@freeact/tsconfig": "workspace:*",
         "typescript": "4.9.4",
         "tsx": "3.12.2"
     }
