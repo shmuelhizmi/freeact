@@ -36,7 +36,7 @@ const makeBundles = (
 
 
 
-export function hostStatics(modules: CompiledServerModules) {
+export function hostStatics(modules: CompiledServerModules, logger: (message: string) => void) {
   const statics = path.join(__dirname, "../", "views");
 
   const bundles = makeBundles(modules).filesMap;
@@ -61,6 +61,8 @@ export function hostStatics(modules: CompiledServerModules) {
       return;
     } catch (e) {
       res.writeHead(404);
+      logger(`404: ${req.url}`);
+      logger(String(e));
       res.end();
     }
   };
@@ -69,7 +71,7 @@ export function hostStatics(modules: CompiledServerModules) {
 
 export function createSsr(
   options: Partial<
-    Pick<GlobalAppServeOptions, "title" | "windowDimensions" | 'connection'> &
+    Pick<GlobalAppServeOptions, "title" | "windowDimensions" | 'connection' | 'logger'> &
       Pick<RequestServeOptions, "staticsBasePath">
   >,
   modules: CompiledServerModules,
@@ -133,6 +135,8 @@ export function createSsr(
       return;
     } catch (e) {
       res.writeHead(404);
+      options.logger?.(`404: ${req.url}`);
+      options.logger?.(String(e));
       res.end();
     }
   };

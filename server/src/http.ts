@@ -235,8 +235,9 @@ export function hostClientBundles(
    */
   modules: Promise<CompiledServerModules>,
   basePath?: string,
+  log: (message: string) => void = console.log
 ) {
-  const handlerBase = modules.then((modules) => hostStatics(modules));
+  const handlerBase = modules.then((modules) => hostStatics(modules, log));
   const path = basePath || "/" + v4() + "/";
   const handler = (req: http.IncomingMessage, res: http.ServerResponse) => {
     const url = new URL(req.url! || "", "http://localhost");
@@ -257,8 +258,9 @@ export function hostClientBundles(
 export function createHostClientBundlesMiddleware(
   modules: Promise<CompiledServerModules>,
   basePath?: string,
+  log: (message: string) => void = console.log
 ) {
-  const handlerBase = modules.then((modules) => hostStatics(modules));
+  const handlerBase = modules.then((modules) => hostStatics(modules, log));
   const path = basePath || "/" + v4() + "/";
   const middleware = (
     req: http.IncomingMessage,

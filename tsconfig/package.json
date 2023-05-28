@@ -9,7 +9,7 @@
     "version": "1.0.0",
     "description": "Freeact TypeScript configuration",
     "dependencies": {
-        "@types/react": "^18.0.24",
+        "@types/react": "^18.2.7",
         "@types/node": "^16",
         "@types/react-test-renderer": "18.0.0"
     },

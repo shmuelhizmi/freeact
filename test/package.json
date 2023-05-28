@@ -18,7 +18,7 @@
         "socket.io": "4.5.4"
     },
     "devDependencies": {
-        "@types/react": "^18.0.24",
+        "@types/react": "^18.2.7",
         "tsx": "3.12.1",
         "@freeact/tsconfig": "workspace:*"
     },

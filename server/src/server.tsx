@@ -38,14 +38,14 @@ export async function serve<T>(
   const ssrHandler = createInstanceRenderHandler();
   const awaitedModules = await modules;
   const ssr = createSsr(
-    options,
+    {...options, logger},
     awaitedModules,
     basePath,
     router.socket,
     ssrHandler.render
   );
   router.handle(ssr, ["/index.html", "/"]);
-  const statics = hostStatics(awaitedModules);
+  const statics = hostStatics(awaitedModules, logger);
   router.handle(statics);
   const result = renderApp(
     render,

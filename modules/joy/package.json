@@ -21,13 +21,13 @@
         "dist"
     ],
     "dependencies": {
-        "@emotion/react": "11.10.5",
-        "@emotion/styled": "11.10.5",
+        "@emotion/react": "11.11.0",
+        "@emotion/styled": "11.11.0",
         "@freeact/dom": "workspace:*",
         "@freeact/types": "workspace:*",
-        "@mui/joy": "5.0.0-alpha.61",
-        "@mui/types": "7.2.3",
-        "@types/react": "^18.0.24",
+        "@mui/joy": "5.0.0-alpha.81",
+        "@mui/types": "7.2.4",
+        "@types/react": "^18.2.7",
         "freeact": "workspace:*",
         "react": "^18.2.0"
     },
