@@ -1,5 +1,15 @@
 # @freeact/monorepo-tests
 
+## 1.0.4
+
+### Patch Changes
+
+- Updated dependencies [eb94185]
+  - freeact@0.0.14
+  - @freeact/dev-ui@0.0.4
+  - @freeact/dom@0.0.4
+  - @freeact/joy@0.0.4
+
 ## 1.0.3
 
 ### Patch Changes
