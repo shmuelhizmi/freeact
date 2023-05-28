@@ -1,5 +1,13 @@
 # @freeact/joy
 
+## 0.0.3
+
+### Patch Changes
+
+- Updated dependencies [4274f47]
+  - freeact@0.0.13
+  - @freeact/dom@0.0.3
+
 ## 0.0.2
 
 ### Patch Changes
