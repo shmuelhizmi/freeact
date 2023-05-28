@@ -1,5 +1,16 @@
 # @freeact/monorepo-tests
 
+## 1.0.6
+
+### Patch Changes
+
+- update react version
+- Updated dependencies
+  - @freeact/dev-ui@0.0.5
+  - @freeact/dom@0.0.5
+  - freeact@0.0.15
+  - @freeact/joy@0.0.6
+
 ## 1.0.5
 
 ### Patch Changes

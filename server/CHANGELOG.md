@@ -1,5 +1,14 @@
 # freeact
 
+## 0.0.15
+
+### Patch Changes
+
+- update react version
+- Updated dependencies
+  - @freeact/compiler@0.0.4
+  - @freeact/types@0.0.4
+
 ## 0.0.14
 
 ### Patch Changes

@@ -1,5 +1,13 @@
 # @freeact/dev-ui
 
+## 0.0.5
+
+### Patch Changes
+
+- update react version
+- Updated dependencies
+  - freeact@0.0.15
+
 ## 0.0.4
 
 ### Patch Changes
