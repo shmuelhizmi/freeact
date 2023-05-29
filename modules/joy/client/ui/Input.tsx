@@ -35,6 +35,8 @@ const Input = (props: InputProps & StyleEnabled) => {
       fontSize: props.fontSize,
       maxWidth: '97%',
     },
+    width: '100%',
+    height: '100%',
   };
   return (
     <FormControl>

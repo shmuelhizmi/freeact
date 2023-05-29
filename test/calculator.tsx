@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Box, Button, Input } from "@freeact/joy/ui";
+import { Box, Button, Input, Card } from "@freeact/joy/ui";
 import { Favicon } from "@freeact/dom/ui";
 import { Freeact } from "./domjoy";
 
@@ -37,13 +37,15 @@ function Calculator() {
   };
 
   return (
-    <>
+    <Box color="primary" gap={20} rows={"90vh"} columns={"min(100vw, 500px)"}>
       <Favicon type="path" absolutePath={__dirname + "/assets/circle.svg"} />
-      <Box
-        columns={"min(100vw, 500px)"}
+      <Card
+        columns={"100%"}
         rows={["80px", "calc(95% - 80px)"]}
         gap={10}
         padding={"3%"}
+        color="neutral"
+        variant="solid"
       >
         <Input
           onChange={(text) => setExpression(text)}
@@ -85,8 +87,8 @@ function Calculator() {
             label="="
           />
         </Box>
-      </Box>
-    </>
+      </Card>
+    </Box>
   );
 }
 
