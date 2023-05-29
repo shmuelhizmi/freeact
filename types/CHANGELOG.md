@@ -1,5 +1,11 @@
 # @freeact/types
 
+## 0.0.5
+
+### Patch Changes
+
+- d6e74ef: seperate card and box components in joy lib
+
 ## 0.0.4
 
 ### Patch Changes

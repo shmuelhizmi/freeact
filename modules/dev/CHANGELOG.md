@@ -1,5 +1,13 @@
 # @freeact/dev-ui
 
+## 0.0.6
+
+### Patch Changes
+
+- d6e74ef: seperate card and box components in joy lib
+- Updated dependencies [d6e74ef]
+  - freeact@0.0.16
+
 ## 0.0.5
 
 ### Patch Changes

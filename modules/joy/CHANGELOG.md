@@ -1,5 +1,15 @@
 # @freeact/joy
 
+## 0.0.7
+
+### Patch Changes
+
+- d6e74ef: seperate card and box components in joy lib
+- Updated dependencies [d6e74ef]
+  - @freeact/dom@0.0.6
+  - freeact@0.0.16
+  - @freeact/types@0.0.5
+
 ## 0.0.6
 
 ### Patch Changes
